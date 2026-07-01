@@ -209,6 +209,7 @@ theorem charZero_of_nontrivial_scalar [Nontrivial M] : CharZero R := by
   letI : CharZero M := charZero_of_nontrivial (R := R) (M := M)
   exact CharZero.of_module M
 
+
 end IsFormallyReal
 
 /-- If *some* nontrivial Jordan algebra over `R` is formally real, then `R` itself is

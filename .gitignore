@@ -1,1 +1,8 @@
 /.lake
+small_lhs.txt
+small_rhs.txt
+lhs.txt
+rhs.txt
+small_rule.txt
+rule.txt
+__pycache__/*

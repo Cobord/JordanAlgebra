@@ -3,6 +3,7 @@ import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.LinearCombination
 import Mathlib.LinearAlgebra.Matrix.Unique
 import Jordan.RealQM
+import Jordan.SpinFactor
 
 /-!
 # Generalized octonion algebras
@@ -71,28 +72,65 @@ def mk (p q : ℍ[R, a, 0, b]) : Octonion R a b c := (p, q)
 @[simp] theorem mk_fst (p q : ℍ[R, a, 0, b]) : (mk p q : Octonion R a b c).1 = p := rfl
 @[simp] theorem mk_snd (p q : ℍ[R, a, 0, b]) : (mk p q : Octonion R a b c).2 = q := rfl
 
+section StarAspects
+
+/- `[StarRing R] [TrivialStar R]` are opened up manifestly starting here, right above `Mul`,
+because Cayley-Dickson multiplication is itself *defined* using `star` (of the quaternion
+components). As in `QuaternionicQM` (see the module doc there): that `star` -- and hence
+`Octonion`'s own `star` below -- is defined purely from `R`'s ring operations and never looks at
+any `Star R` instance, so none of `Mul`, `IsScalarTower`, `SMulCommClass`, `Star`, `StarRing`
+below actually need these hypotheses. `StarModule` further down is the one declaration where a
+*second*, genuinely `R`-level star aspect enters (`star (r • x) = star r • star x` only matches
+this `star` when `star r = r`). Keeping `[StarRing R] [TrivialStar R]` visible for this whole
+section, rather than opening it only locally right before `StarModule`, makes plain from the very
+first `star`-touching declaration that this territory is being entered, instead of leaving it an
+easy-to-miss detail of one declaration in the middle. -/
+variable [StarRing R] [TrivialStar R]
+
+set_option linter.unusedSectionVars false in
 /-- Cayley-Dickson multiplication:
 `(p, q) * (r, s) = (p * r - c • (star s * q), s * p + q * star r)`. -/
 instance : Mul (Octonion R a b c) where
   mul x y := mk (x.1 * y.1 - c • (star y.2 * x.2)) (y.2 * x.1 + x.2 * star y.1)
 
+set_option linter.unusedSectionVars false in
 @[simp] theorem mul_fst (x y : Octonion R a b c) :
     (x * y).1 = x.1 * y.1 - c • (star y.2 * x.2) := rfl
+set_option linter.unusedSectionVars false in
 @[simp] theorem mul_snd (x y : Octonion R a b c) :
     (x * y).2 = y.2 * x.1 + x.2 * star y.1 := rfl
 
-/-- Cayley-Dickson conjugation: `star (p, q) = (star p, -q)`. -/
-instance : Star (Octonion R a b c) where
-  star x := mk (star x.1) (-x.2)
+set_option linter.unusedSectionVars false in
+/-- `R`-scaling associates with Cayley-Dickson multiplication on the left: `(r • x) * y = r •
+(x * y)`. -/
+instance : IsScalarTower R (Octonion R a b c) (Octonion R a b c) where
+  smul_assoc r x y := by
+    apply Octonion.ext
+    · simp only [smul_eq_mul, smul_fst, mul_fst, smul_snd]
+      rw [smul_mul_assoc, mul_smul_comm, smul_comm c r, ← smul_sub]
+    · simp only [smul_eq_mul, smul_snd, mul_snd, smul_fst]
+      rw [mul_smul_comm, smul_mul_assoc, ← smul_add]
 
-@[simp] theorem star_fst (x : Octonion R a b c) : (star x).1 = star x.1 := rfl
-@[simp] theorem star_snd (x : Octonion R a b c) : (star x).2 = -x.2 := rfl
+set_option linter.unusedSectionVars false in
+/-- `R`-scaling commutes across Cayley-Dickson multiplication: `r • (x * y) = x * (r • y)`. The
+`star` in the proof is `QuaternionAlgebra`'s own conjugation (via `star_smul'`). -/
+instance : SMulCommClass R (Octonion R a b c) (Octonion R a b c) where
+  smul_comm r x y := by
+    apply Octonion.ext
+    · simp only [smul_eq_mul, mul_fst, smul_fst, smul_snd]
+      rw [mul_smul_comm, QuaternionAlgebra.star_smul', smul_mul_assoc, smul_comm c r, ← smul_sub]
+    · simp only [smul_eq_mul, mul_snd, smul_snd, smul_fst]
+      rw [smul_mul_assoc, QuaternionAlgebra.star_smul', mul_smul_comm, ← smul_add]
 
+set_option linter.unusedSectionVars false in
 instance : One (Octonion R a b c) := ⟨mk 1 0⟩
 
+set_option linter.unusedSectionVars false in
 @[simp] theorem one_fst : (1 : Octonion R a b c).1 = 1 := rfl
+set_option linter.unusedSectionVars false in
 @[simp] theorem one_snd : (1 : Octonion R a b c).2 = 0 := rfl
 
+set_option linter.unusedSectionVars false in
 instance : NonAssocRing (Octonion R a b c) where
   left_distrib x y z := by ext <;> simp [mul_add] <;> ring
   right_distrib x y z := by ext <;> simp [add_mul] <;> ring
@@ -101,12 +139,56 @@ instance : NonAssocRing (Octonion R a b c) where
   one_mul x := by ext <;> simp
   mul_one x := by ext <;> simp
 
+set_option linter.unusedSectionVars false in
+/-- Cayley-Dickson conjugation: `star (p, q) = (star p, -q)`. -/
+instance : Star (Octonion R a b c) where
+  star x := mk (star x.1) (-x.2)
+
+set_option linter.unusedSectionVars false in
+@[simp] theorem star_fst (x : Octonion R a b c) : (star x).1 = star x.1 := rfl
+set_option linter.unusedSectionVars false in
+@[simp] theorem star_snd (x : Octonion R a b c) : (star x).2 = -x.2 := rfl
+
+set_option linter.unusedSectionVars false in
 /-- Cayley-Dickson conjugation is an involutive anti-automorphism, exactly as for `ℍ` (it never
 needs `2` invertible): `star (x * y) = star y * star x`. -/
 instance : StarRing (Octonion R a b c) where
   star_involutive x := by apply Octonion.ext <;> simp
   star_add x y := by apply Octonion.ext <;> simp [add_comm]
   star_mul x y := by apply Octonion.ext <;> simp
+
+/-- Octonions form a `StarModule` over `R`: `star` commutes with `R`-scaling, i.e.
+`star (r • x) = star r • star x`. This genuinely needs `[StarRing R] [TrivialStar R]` (not just
+`[Star R]`): the proof reduces to `r • z = star r • z`, which only holds because `TrivialStar R`
+gives `star r = r`. -/
+instance : StarModule R (Octonion R a b c) where
+  star_smul r x := by
+    apply Octonion.ext
+    · simp [star_trivial]
+    · simp [star_trivial]
+
+omit [StarRing R] [TrivialStar R] in
+/-- The trace `p + star p` of a quaternion is a central scalar. -/
+private theorem add_star_eq_coe (p : ℍ[R, a, 0, b]) : p + star p = ((2 * p.re : R) : ℍ[R, a, 0, b]) := by
+  simpa using QuaternionAlgebra.self_add_star (c₂ := (0 : R)) p
+
+omit [StarRing R] [TrivialStar R] in
+private theorem add_star_mul_comm (p q : ℍ[R, a, 0, b]) : (p + star p) * q = q * (p + star p) := by
+  rw [add_star_eq_coe]; exact QuaternionAlgebra.coe_commutes _ q
+
+omit [StarRing R] [TrivialStar R] in
+/-- The norm `star q * q` of a quaternion is a central scalar, and agrees with `q * star q`. -/
+private theorem star_mul_self_eq_coe (q : ℍ[R, a, 0, b]) :
+    star q * q = ((star q * q).re : R) := QuaternionAlgebra.star_mul_eq_coe q
+
+omit [StarRing R] [TrivialStar R] in
+private theorem star_mul_self_mul_comm (p q : ℍ[R, a, 0, b]) :
+    (star q * q) * p = p * (star q * q) := by
+  rw [star_mul_self_eq_coe]; exact QuaternionAlgebra.coe_commutes _ p
+
+omit [StarRing R] [TrivialStar R] in
+private theorem mul_star_self_eq_star_mul_self (q : ℍ[R, a, 0, b]) : q * star q = star q * q :=
+  (star_comm_self' q).symm
 
 /-! ### Alternativity
 
@@ -118,24 +200,7 @@ is what survives associativity getting lost in the doubling. -/
 
 section Alternative
 
-/-- The trace `p + star p` of a quaternion is a central scalar. -/
-theorem add_star_eq_coe (p : ℍ[R, a, 0, b]) : p + star p = ((2 * p.re : R) : ℍ[R, a, 0, b]) := by
-  simpa using QuaternionAlgebra.self_add_star (c₂ := (0 : R)) p
-
-theorem add_star_mul_comm (p q : ℍ[R, a, 0, b]) : (p + star p) * q = q * (p + star p) := by
-  rw [add_star_eq_coe]; exact QuaternionAlgebra.coe_commutes _ q
-
-/-- The norm `star q * q` of a quaternion is a central scalar, and agrees with `q * star q`. -/
-theorem star_mul_self_eq_coe (q : ℍ[R, a, 0, b]) :
-    star q * q = ((star q * q).re : R) := QuaternionAlgebra.star_mul_eq_coe q
-
-theorem star_mul_self_mul_comm (p q : ℍ[R, a, 0, b]) :
-    (star q * q) * p = p * (star q * q) := by
-  rw [star_mul_self_eq_coe]; exact QuaternionAlgebra.coe_commutes _ p
-
-theorem mul_star_self_eq_star_mul_self (q : ℍ[R, a, 0, b]) : q * star q = star q * q :=
-  (star_comm_self' q).symm
-
+set_option linter.unusedSectionVars false in
 private theorem alternative_left (x y : Octonion R a b c) : x * (x * y) = (x * x) * y := by
   apply Octonion.ext
   · show x.1 * (x * y).1 - c • (star (x * y).2 * x.2) =
@@ -189,6 +254,8 @@ instance : IsAlternative (Octonion R a b c) where
 
 end Alternative
 
+end StarAspects
+
 /-! ### The `1 x 1` self-adjoint case
 
 The self-adjoint ("Hermitian") elements of `Octonion R a b c` are exactly the scalars: with `2`
@@ -197,18 +264,18 @@ invertible, `star x = x` forces every octonion-imaginary coordinate of `x` to va
 of the (here unbuilt, since octonions are non-associative beyond `n = 3`) Hermitian-octonionic-
 matrix construction, and it agrees with the `n = 1` case of `RealQM`. -/
 
-section SelfAdjointOne
+section ScalarEmbeddings
 
-variable [Invertible (2 : R)]
+variable [Invertible (2 : R)] [StarRing R] [TrivialStar R]
 
-theorem eq_zero_of_neg_eq_self {N : Type*} [AddCommGroup N] [Module R N] {z : N} (hz : -z = z) :
+omit [StarRing R] [TrivialStar R] in
+private theorem eq_zero_of_neg_eq_self {N : Type*} [AddCommGroup N] [Module R N] {z : N} (hz : -z = z) :
     z = 0 := by
   have h2 : (2 : R) • z = 0 := by
     rw [two_smul, add_eq_zero_iff_eq_neg]; exact hz.symm
   simpa [smul_smul] using congrArg (⅟(2 : R) • ·) h2
 
-/-- The scalar embedding `R → Octonion R a b c`: the `1 x 1` case of a Hermitian-matrix
-construction, where there are no off-diagonal entries to speak of. -/
+/-- The scalar embedding `R → Octonion R a b c`-/
 def scalarEmbed : R →+* Octonion R a b c where
   toFun r := mk (algebraMap R ℍ[R, a, 0, b] r) 0
   map_one' := by apply Octonion.ext <;> simp
@@ -217,19 +284,23 @@ def scalarEmbed : R →+* Octonion R a b c where
   map_add' _ _ := by apply Octonion.ext <;> simp
 
 omit [Invertible (2 : R)] in
+set_option linter.unusedSectionVars false in
 @[simp] theorem scalarEmbed_fst (r : R) :
     (scalarEmbed r : Octonion R a b c).1 = algebraMap R ℍ[R, a, 0, b] r := rfl
 
 omit [Invertible (2 : R)] in
+set_option linter.unusedSectionVars false in
 @[simp] theorem scalarEmbed_snd (r : R) : (scalarEmbed r : Octonion R a b c).2 = 0 := rfl
 
 omit [Invertible (2 : R)] in
+set_option linter.unusedSectionVars false in
 theorem scalarEmbed_injective :
     Function.Injective (scalarEmbed (R := R) (a := a) (b := b) (c := c)) := by
   intro r s h
   exact QuaternionAlgebra.algebraMap_injective (congrArg Prod.fst h)
 
 omit [Invertible (2 : R)] in
+set_option linter.unusedSectionVars false in
 @[simp] theorem star_scalarEmbed (r : R) :
     star (scalarEmbed r : Octonion R a b c) = scalarEmbed r := by
   apply Octonion.ext <;> simp
@@ -257,7 +328,7 @@ theorem isSelfAdjoint_iff (x : Octonion R a b c) : star x = x ↔ ∃ r : R, x =
   · rintro ⟨r, rfl⟩
     exact star_scalarEmbed r
 
-end SelfAdjointOne
+end ScalarEmbeddings
 
 end Octonion
 
@@ -265,7 +336,6 @@ section OctonionMatrices
 
 variable {R : Type*}
   [CommRing R] [i2: Invertible (2 : R)] [StarRing R] [TrivialStar R]
-  [IsAddTorsionFree R]
   {a b c : R}
   {n : Type*} [Fintype n] [DecidableEq n]
 
@@ -331,7 +401,7 @@ instance Mul_HermitianOctonionMatrix : Mul (↥(HermitianOctonionMatrix (R:=R) (
     repeat erw [hx.symm, hy.symm]
   ⟩
 
-omit [IsAddTorsionFree R] [Fintype n] [DecidableEq n] in
+omit [Fintype n] [DecidableEq n] in
 lemma diag_real
   (M : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n))
   (i : n) :
@@ -339,28 +409,33 @@ lemma diag_real
   have h := congrArg (fun M => M i i) M.property
   exact (Octonion.isSelfAdjoint_iff (M.val i i)).mp h
 
-omit i2 [StarRing R] [TrivialStar R] [IsAddTorsionFree R] in
-lemma diag_just_11 (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.re = r := by
+omit i2 in
+set_option linter.unusedSectionVars false in
+private lemma diag_just_11 (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.re = r := by
   intro h
   simp [h]
-omit i2 [StarRing R] [TrivialStar R] [IsAddTorsionFree R] in
-lemma diag_no_1i (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imI = 0 := by
+omit i2 in
+set_option linter.unusedSectionVars false in
+private lemma diag_no_1i (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imI = 0 := by
   intro h
   simp [h]
-omit i2 [StarRing R] [TrivialStar R] [IsAddTorsionFree R] in
-lemma diag_no_1j (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imJ = 0 := by
+omit i2 in
+set_option linter.unusedSectionVars false in
+private lemma diag_no_1j (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imJ = 0 := by
   intro h
   simp [h]
-omit i2 [StarRing R] [TrivialStar R] [IsAddTorsionFree R] in
-lemma diag_no_1k (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imK = 0 := by
+omit i2 in
+set_option linter.unusedSectionVars false in
+private lemma diag_no_1k (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imK = 0 := by
   intro h
   simp [h]
-omit i2 [StarRing R] [TrivialStar R] [IsAddTorsionFree R] in
-lemma diag_no_2 (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.2 = 0 := by
+omit i2 in
+set_option linter.unusedSectionVars false in
+private lemma diag_no_2 (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.2 = 0 := by
   intro h
   simp [h]
 
-omit i2 [StarRing R] [TrivialStar R] [IsAddTorsionFree R] in
+omit i2 [StarRing R] [TrivialStar R] in
 private lemma transpose_trivial (x: OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 1)): x.transpose = x := by
   have subsing : Subsingleton (Fin 1) := by infer_instance
   apply Matrix.ext
@@ -425,6 +500,90 @@ end OctonionMatrices
 
 namespace Octonion
 
+section InnerProduct
+
+variable {R : Type*}
+variable [CommRing R] [Invertible (2 : R)] [StarRing R] [TrivialStar R]
+variable {a b c : R}
+
+/-- The underlying function of `innerProduct`: the polarization `⅟2 * (x * star y + y * star x)`
+of the octonion norm form, which is self-adjoint for any `x y` (hence a scalar, read off via
+`.1.re`). Kept separate from the bundled `innerProduct` so the bilinearity proofs below can be
+named lemmas about it rather than inlined terms in a `LinearMap.mk₂` call. -/
+private def innerProductFun (x y : Octonion R a b c) : R :=
+  ⅟(2 : R) * (x * star y + y * star x).1.re
+
+omit [StarRing R] [TrivialStar R] in
+private theorem innerProductFun_add_left (x₁ x₂ y : Octonion R a b c) :
+    innerProductFun (x₁ + x₂) y = innerProductFun x₁ y + innerProductFun x₂ y := by
+  unfold innerProductFun
+  have h : (x₁ + x₂) * star y + y * star (x₁ + x₂) =
+      (x₁ * star y + y * star x₁) + (x₂ * star y + y * star x₂) := by
+    rw [add_mul, star_add, mul_add]; abel
+  rw [h]
+  -- `.1` (Prod.fst) and `.re` (`QuaternionAlgebra.reₗ`) are each additive by `rfl` (see
+  -- `Octonion.add_fst` and `QuaternionAlgebra.reₗ.map_add'`), so this `show` just forces that
+  -- reduction before finishing with `mul_add`.
+  show ⅟(2 : R) * ((x₁ * star y + y * star x₁).1.re + (x₂ * star y + y * star x₂).1.re) = _
+  rw [mul_add]
+
+private theorem innerProductFun_smul_left (r : R) (x y : Octonion R a b c) :
+    innerProductFun (r • x) y = r * innerProductFun x y := by
+  unfold innerProductFun
+  have h : r • x * star y + y * star (r • x) = r • (x * star y + y * star x) := by
+    rw [smul_add]
+    rw [smul_mul_assoc]
+    rw [star_smul]
+    rw [star_trivial (R:=R)]
+    rw [mul_smul_comm]
+  rw [h]
+  show ⅟(2 : R) * (r • (x * star y + y * star x)).1.re = _
+  show ⅟(2 : R) * (r * (x * star y + y * star x).1.re) = _
+  rw [mul_left_comm]
+
+omit [StarRing R] [TrivialStar R] in
+private theorem innerProductFun_add_right (x y₁ y₂ : Octonion R a b c) :
+    innerProductFun x (y₁ + y₂) = innerProductFun x y₁ + innerProductFun x y₂ := by
+  unfold innerProductFun
+  have h : x * star (y₁ + y₂) + (y₁ + y₂) * star x =
+      (x * star y₁ + y₁ * star x) + (x * star y₂ + y₂ * star x) := by
+    rw [star_add, mul_add, add_mul]; abel
+  rw [h]
+  show ⅟(2 : R) * ((x * star y₁ + y₁ * star x).1.re + (x * star y₂ + y₂ * star x).1.re) = _
+  rw [mul_add]
+
+private theorem innerProductFun_smul_right (r : R) (x y : Octonion R a b c) :
+    innerProductFun x (r • y) = r * innerProductFun x y := by
+  unfold innerProductFun
+  have h : x * star (r • y) + r • y * star x = r • (x * star y + y * star x) := by
+    rw [smul_add]
+    rw [smul_mul_assoc]
+    rw [star_smul]
+    rw [star_trivial (R:=R)]
+    rw [mul_smul_comm]
+  rw [h]
+  show ⅟(2 : R) * (r • (x * star y + y * star x)).1.re = _
+  show ⅟(2 : R) * (r * (x * star y + y * star x).1.re) = _
+  rw [mul_left_comm]
+
+/-- The octonion "inner product", bundled as a bilinear form: the polarization
+`⅟2 * (x * star y + y * star x)` of the octonion norm form, which is self-adjoint for any `x y`
+(hence a scalar, read off via `.1.re`). This is a fact about pairs of octonions on their own,
+independent of any matrix construction -- it feeds the octonion part of the `2 x 2` Hermitian
+identification's bilinear form. -/
+noncomputable def innerProduct : LinearMap.BilinForm R (Octonion R a b c) :=
+  LinearMap.mk₂ R innerProductFun
+    innerProductFun_add_left innerProductFun_smul_left
+    innerProductFun_add_right innerProductFun_smul_right
+
+set_option linter.unusedSectionVars false in
+@[simp] theorem innerProduct_apply (x y : Octonion R a b c) :
+    innerProduct (R := R) (a := a) (b := b) (c := c) x y =
+      ⅟(2 : R) * (x * star y + y * star x).1.re :=
+  rfl
+
+end InnerProduct
+
 /-! ### Comparison with `RealQM`'s `1 x 1` case
 
 `RealQM.symmetricMatrices R (Fin 1)` collapses to plain `R` too (`RealQM.oneRingEquiv`), since a
@@ -436,10 +595,8 @@ section OneByOne
 
 variable {R : Type*}
 variable [CommRing R] [i2: Invertible (2 : R)] [StarRing R] [TrivialStar R]
-  [IsAddTorsionFree R]
 variable {a b c : R}
 
-omit [IsAddTorsionFree R] in
 private lemma HermitianOctonionMatrixOne.ext_re
     {M N : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 1)}
     (h : (M.val 0 0).1.re = (N.val 0 0).1.re) : M = N := by
@@ -459,13 +616,12 @@ private lemma HermitianOctonionMatrixOne.ext_re
     simp
   rw [hM, hN, hrM, hrN, h]
 
-omit i2 [IsAddTorsionFree R] in
+omit i2 in
 private lemma HermitianOctonionMatrixOne.add_re
     (M N : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 1)) :
     (((M + N).val 0 0).1.re : R) = (M.val 0 0).1.re + (N.val 0 0).1.re := by
   rfl
 
-omit [IsAddTorsionFree R] in
 private lemma HermitianOctonionMatrixOne.mul_re
     (M N : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 1)) :
     ⅟(2 : R) * (((M.val * N.val) 0 0).1.re) +
@@ -547,16 +703,114 @@ end OneByOne
 
 /-! ### The `2 x 2` Hermitian octonionic case
 
-The `2 x 2` construction is the spin-factor case: a Hermitian matrix has two scalar diagonal
-entries and one octonionic off-diagonal entry, with the opposite off-diagonal entry forced by
-conjugate symmetry. The intended comparison theorem here is an explicit `≃+*`, parallel to
-`ofSymmetricMatricesOne`, but with the appropriate `SpinFactor` as the target instead of the
-`1 x 1` scalar algebra. -/
+The `2 x 2` construction is the spin-factor case, via the usual trace/trace-free split: writing a
+Hermitian matrix as `![![r, x], [star x, s]]` with `r s : R` and `x : Octonion R a b c`, the
+*scalar* coordinate is the half-trace `t = (r + s) / 2`, and the *vector* coordinate is the
+trace-free part `(x, (r - s) / 2) : Octonion R a b c × R` -- **not** simply the two diagonal
+entries directly, since only their half-sum survives as the scalar while their half-difference
+joins `x` in the vector part. The intended comparison theorem here is an explicit `≃+*`, parallel
+to `ofSymmetricMatricesOne`, but landing on `SpinFactor R (Octonion R a b c × R) B` for the
+appropriate bilinear form `B`, instead of the `1 x 1` scalar algebra. -/
 section TwoByTwo
 
-/- TODO: Construct the explicit `≃+*` between `2 x 2` Hermitian octonionic matrices and the
-appropriate `SpinFactor`, with the off-diagonal octonion providing the vector part and the two
-diagonal scalars providing the spin-factor scalar coordinates. -/
+variable {R : Type*}
+variable [CommRing R] [i2: Invertible (2 : R)] [StarRing R] [TrivialStar R]
+variable {a b c : R}
+
+omit i2 in
+/-- The off-diagonal Hermitian-symmetry condition, the `2 x 2` analogue of `diag_real` for the
+diagonal: in a Hermitian `2 x 2` octonionic matrix, the `(1,0)` entry is forced to be the
+conjugate of the `(0,1)` entry. -/
+private lemma HermitianOctonionMatrixTwo.off_diag
+    (M : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2)) :
+    M.val 1 0 = star (M.val 0 1) := by
+  have h : star (M.val 1 0) = M.val 0 1 := congrFun (congrFun M.property 0) 1
+  rw [← h, star_star]
+
+/-- The half-trace of a Hermitian `2 x 2` octonionic matrix, `t = (r + s) / 2` where `r, s` are the
+(real) diagonal entries -- read off directly via the quaternion real-part coordinate `.1.re`
+(matching `diag_just_11`), so this needs no case split on `diag_real`. This is the scalar
+coordinate of the intended `SpinFactor` identification; the division by `2` is genuinely needed
+here (unlike `off_diag` above), since it must match `SpinFactor`'s fixed `a • y + b • x`
+multiplication -- see the discussion above `TwoByTwo`. -/
+private def HermitianOctonionMatrixTwo.traceHalf
+    (M : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2)) : R :=
+  ⅟(2 : R) * ((M.val 0 0).1.re + (M.val 1 1).1.re)
+
+/-- The half-difference of the diagonal entries of a Hermitian `2 x 2` octonionic matrix,
+`p = (r - s) / 2`. Together with the off-diagonal octonion `M.val 0 1`, this is the trace-free
+"vector" coordinate of the intended `SpinFactor` identification. -/
+private def HermitianOctonionMatrixTwo.diffHalf
+    (M : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2)) : R :=
+  ⅟(2 : R) * ((M.val 0 0).1.re - (M.val 1 1).1.re)
+
+/-- The `(r, s) ↔ (t, p)` change of basis is invertible: given the two (real) diagonal entries
+`r, s` produced by `diag_real`, the half-sum/half-difference `traceHalf`/`diffHalf` recover them
+back via `r = t + p`, `s = t - p`. This is what makes the trace/trace-free decomposition a genuine
+reparametrization of the diagonal data, not merely a one-way projection. -/
+private lemma HermitianOctonionMatrixTwo.diag_eq_traceHalf_add_sub_diffHalf
+    (M : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2)) :
+    ∃ r s : R, M.val 0 0 = Octonion.scalarEmbed r ∧ M.val 1 1 = Octonion.scalarEmbed s ∧
+      r = traceHalf M + diffHalf M ∧ s = traceHalf M - diffHalf M := by
+  obtain ⟨r, hr⟩ := diag_real M 0
+  obtain ⟨s, hs⟩ := diag_real M 1
+  have hr' : (M.val 0 0).1.re = r := diag_just_11 (M.val 0 0) r hr
+  have hs' : (M.val 1 1).1.re = s := diag_just_11 (M.val 1 1) s hs
+  refine ⟨r, s, hr, hs, ?_, ?_⟩
+  · unfold HermitianOctonionMatrixTwo.traceHalf HermitianOctonionMatrixTwo.diffHalf
+    rw [hr', hs', ← mul_add]
+    have : r + s + (r - s) = 2 * r := by ring
+    rw [this, ← mul_assoc, invOf_mul_self, one_mul]
+  · unfold HermitianOctonionMatrixTwo.traceHalf HermitianOctonionMatrixTwo.diffHalf
+    rw [hr', hs', ← mul_sub]
+    have : r + s - (r - s) = 2 * s := by ring
+    rw [this, ← mul_assoc, invOf_mul_self, one_mul]
+
+/-- The underlying function of `hermitianTwoBilin`: the octonion polarization form
+`Octonion.innerProduct` on the octonion part, plus plain multiplication on the `R` part. Kept
+separate so the bilinearity proofs below can be named lemmas, as with `innerProductFun` above. -/
+private noncomputable def hermitianTwoBilinFun (z w : Octonion R a b c × R) : R :=
+  Octonion.innerProduct z.1 w.1 + z.2 * w.2
+
+private theorem hermitianTwoBilinFun_add_left (z₁ z₂ w : Octonion R a b c × R) :
+    hermitianTwoBilinFun (z₁ + z₂) w = hermitianTwoBilinFun z₁ w + hermitianTwoBilinFun z₂ w := by
+  unfold hermitianTwoBilinFun
+  simp only [Prod.fst_add, Prod.snd_add, map_add, LinearMap.add_apply, add_mul]
+  abel
+
+private theorem hermitianTwoBilinFun_smul_left (r : R) (z w : Octonion R a b c × R) :
+    hermitianTwoBilinFun (r • z) w = r * hermitianTwoBilinFun z w := by
+  unfold hermitianTwoBilinFun
+  simp only [Prod.smul_fst, Prod.smul_snd, map_smul, LinearMap.smul_apply, smul_eq_mul, mul_add,
+    mul_assoc]
+
+private theorem hermitianTwoBilinFun_add_right (z w₁ w₂ : Octonion R a b c × R) :
+    hermitianTwoBilinFun z (w₁ + w₂) = hermitianTwoBilinFun z w₁ + hermitianTwoBilinFun z w₂ := by
+  unfold hermitianTwoBilinFun
+  simp only [Prod.fst_add, Prod.snd_add, map_add, mul_add]
+  abel
+
+private theorem hermitianTwoBilinFun_smul_right (r : R) (z w : Octonion R a b c × R) :
+    hermitianTwoBilinFun z (r • w) = r * hermitianTwoBilinFun z w := by
+  unfold hermitianTwoBilinFun
+  simp only [Prod.smul_fst, Prod.smul_snd, map_smul, smul_eq_mul, mul_add, mul_left_comm]
+
+/-- The bilinear form on the trace-free vector space `Octonion R a b c × R`, making the `2 x 2`
+Hermitian identification work. -/
+private noncomputable def hermitianTwoBilin :
+    LinearMap.BilinForm R (Octonion R a b c × R) :=
+  LinearMap.mk₂ R hermitianTwoBilinFun
+    hermitianTwoBilinFun_add_left hermitianTwoBilinFun_smul_left
+    hermitianTwoBilinFun_add_right hermitianTwoBilinFun_smul_right
+
+/-- The intended explicit identification of `2 x 2` Hermitian octonionic matrices with the
+appropriate `SpinFactor`, parallel to `ofSymmetricMatricesOne`: the scalar coordinate is
+`traceHalf`, the vector coordinate is `(M.val 0 1, diffHalf M)`. -/
+noncomputable def ofSymmetricMatricesTwo :
+    HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2) ≃+*
+      SpinFactor R (Octonion R a b c × R)
+        (hermitianTwoBilin (R:=R) (a:=a) (b:=b) (c:=c)) := by
+  sorry
 
 end TwoByTwo
 
