@@ -1,5 +1,6 @@
 import Jordan.JordanAlgebra
 import Jordan.FormallyReal
+import Jordan.MooreDeterminant
 import Mathlib.Algebra.Quaternion
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.ConjTranspose
@@ -197,6 +198,40 @@ theorem isFormallyReal (hc₁ : c₁ < 0) (hc₃ : c₃ < 0) :
   have hq := (Finset.sum_eq_zero_iff_of_nonneg
     (fun q _ => norm_nonneg R c₁ c₃ hc₁ hc₃ _)).mp (hpq p (Finset.mem_univ p)) q (Finset.mem_univ q)
   exact (norm_eq_zero_iff R c₁ c₃ hc₁ hc₃ _).mp hq
+
+/-! #### Generic trace and determinant
+
+The ordinary matrix trace lands directly in `R` after reading off `.re` (the trace of a Hermitian
+matrix is genuinely real, though that isn't proved here, matching `ComplexQM`'s house style). The
+determinant, however, has no `Matrix.det` to fall back on at all -- `ℍ[R, c₁, 0, c₃]` is
+non-commutative -- so it's built from `MooreDeterminant.mooreDetSum` instead: a concrete,
+`R`-linear (in the scaling-degree sense of `det_smul`) alternating sum over permutations, read off
+via `.re` exactly as the trace is. -/
+
+variable [LinearOrder n]
+
+/-- The `n x n` quaternionic Hermitian matrices have a generic trace and determinant of rank
+`Fintype.card n`: the real parts of the ordinary matrix trace and of `mooreDetSum`. -/
+noncomputable def detTrace (hc₁ : c₁ < 0) (hc₃ : c₃ < 0) :
+    @IsFormallyRealDetTrace R (hermitianMatrices R n c₁ 0 c₃) _ _
+      (isFormallyReal R n c₁ c₃ hc₁ hc₃) := by
+  letI := isFormallyReal R n c₁ c₃ hc₁ hc₃
+  exact
+    { rank := Fintype.card n
+      trace := (QuaternionAlgebra.reₗ c₁ 0 c₃).comp
+        ((Matrix.traceLinearMap n R ℍ[R, c₁, 0, c₃]).comp (hermitianMatrices R n c₁ 0 c₃).subtype)
+      det := fun x => (mooreDetSum x.1).re
+      det_smul := fun r x => by
+        show (mooreDetSum (r • x.1)).re = r ^ Fintype.card n • (mooreDetSum x.1).re
+        rw [mooreDetSum_smul, QuaternionAlgebra.re_smul]
+      trace_one := by
+        show (Matrix.trace (1 : Matrix n n ℍ[R, c₁, 0, c₃])).re = (Fintype.card n : R)
+        rw [Matrix.trace_one]
+        norm_cast
+      det_one := by
+        show (mooreDetSum (1 : Matrix n n ℍ[R, c₁, 0, c₃])).re = 1
+        rw [mooreDetSum_one]
+        rfl }
 
 end FormallyReal
 

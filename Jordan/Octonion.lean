@@ -328,6 +328,92 @@ theorem isSelfAdjoint_iff (x : Octonion R a b c) : star x = x ↔ ∃ r : R, x =
   · rintro ⟨r, rfl⟩
     exact star_scalarEmbed r
 
+omit [Invertible (2 : R)] in
+/-- The octonion norm `x * star x` is a central scalar: the quaternion norm of the first
+component, plus `c` times the quaternion norm of the second. This is the composition-algebra fact
+that a general octonion doesn't lose in Cayley-Dickson doubling, even though associativity does --
+it's the key input still missing for `IsFormallyReal` on the `n x n` Hermitian octonionic matrices
+(see the `ThreeByThree` formal-reality remarks). -/
+theorem mul_star_self_eq_scalarEmbed (x : Octonion R a b c) :
+    x * star x = scalarEmbed ((star x.1 * x.1).re + c * (star x.2 * x.2).re) := by
+  apply Octonion.ext
+  · show x.1 * (star x).1 - c • (star (star x).2 * x.2) = _
+    rw [star_fst, star_snd, star_neg, neg_mul, smul_neg, sub_neg_eq_add,
+      mul_star_self_eq_star_mul_self, star_mul_self_eq_coe x.1, star_mul_self_eq_coe x.2,
+      scalarEmbed_fst]
+    norm_cast
+  · show (star x).2 * x.1 + x.2 * star (star x).1 = _
+    rw [star_snd, star_fst, star_star, neg_mul, scalarEmbed_snd]
+    abel
+
+omit [Invertible (2 : R)] in
+set_option linter.unusedSectionVars false in
+/-- The real part of an octonion product doesn't care about the order of the factors: `Re(xy) =
+Re(yx)`, even though `xy` and `yx` themselves genuinely differ. Same brute-force technique as
+`re_mul_mul_eq_re_mul_mul` below. -/
+theorem re_mul_comm (x y : Octonion R a b c) : (x * y).1.re = (y * x).1.re := by
+  obtain ⟨x1, x2⟩ := x
+  obtain ⟨y1, y2⟩ := y
+  obtain ⟨x1a, x1b, x1c, x1d⟩ := x1
+  obtain ⟨x2a, x2b, x2c, x2d⟩ := x2
+  obtain ⟨y1a, y1b, y1c, y1d⟩ := y1
+  obtain ⟨y2a, y2b, y2c, y2d⟩ := y2
+  simp only [mul_fst, QuaternionAlgebra.mk_mul_mk, QuaternionAlgebra.mk_sub_mk,
+    QuaternionAlgebra.star_mk, QuaternionAlgebra.smul_mk, smul_eq_mul]
+  ring
+
+omit [Invertible (2 : R)] in
+set_option linter.unusedSectionVars false in
+/-- The real part of a triple product of octonions doesn't depend on how it's associated: `(x*y)*z`
+and `x*(y*z)` may genuinely differ (octonions are non-associative), but their real parts agree, so
+`Re(x*y*z)` is unambiguous. This is the composition-algebra fact needed to make a
+Freudenthal-style cubic form/determinant well-defined for the `n = 3` Hermitian octonionic
+matrices -- the next building block after `mul_star_self_eq_scalarEmbed` towards
+`ThreeByThree.detTrace`. Proved by brute-force expansion into the `8`-real-coordinate formulas for
+Cayley-Dickson multiplication (twice: octonion from quaternion, quaternion from `R`), where the
+claim becomes a polynomial identity `ring` can close directly -- no need for the general
+alternative-algebra "associator is alternating" theorem. -/
+theorem re_mul_mul_eq_re_mul_mul (x y z : Octonion R a b c) :
+    ((x * y) * z).1.re = (x * (y * z)).1.re := by
+  obtain ⟨x1, x2⟩ := x
+  obtain ⟨y1, y2⟩ := y
+  obtain ⟨z1, z2⟩ := z
+  obtain ⟨x1a, x1b, x1c, x1d⟩ := x1
+  obtain ⟨x2a, x2b, x2c, x2d⟩ := x2
+  obtain ⟨y1a, y1b, y1c, y1d⟩ := y1
+  obtain ⟨y2a, y2b, y2c, y2d⟩ := y2
+  obtain ⟨z1a, z1b, z1c, z1d⟩ := z1
+  obtain ⟨z2a, z2b, z2c, z2d⟩ := z2
+  simp only [mul_fst, mul_snd, QuaternionAlgebra.mk_mul_mk, QuaternionAlgebra.mk_add_mk,
+    QuaternionAlgebra.mk_sub_mk, QuaternionAlgebra.star_mk, QuaternionAlgebra.smul_mk,
+    smul_eq_mul]
+  ring
+
+set_option linter.unusedSectionVars false in
+private theorem star_algebraMap (r : R) :
+    star (algebraMap R ℍ[R, a, 0, b] r) = algebraMap R ℍ[R, a, 0, b] r := by
+  rw [QuaternionAlgebra.algebraMap_eq]
+  apply QuaternionAlgebra.ext <;> simp
+
+set_option linter.unusedSectionVars false in
+theorem scalarEmbed_mul (r : R) (x : Octonion R a b c) : scalarEmbed r * x = r • x := by
+  apply Octonion.ext
+  · show algebraMap R ℍ[R, a, 0, b] r * x.1 - c • (star x.2 * (0 : ℍ[R, a, 0, b])) = r • x.1
+    rw [mul_zero, smul_zero, sub_zero, Algebra.smul_def]
+  · show x.2 * algebraMap R ℍ[R, a, 0, b] r + (0 : ℍ[R, a, 0, b]) * star x.1 = r • x.2
+    rw [zero_mul, add_zero, ← Algebra.commutes, Algebra.smul_def]
+
+theorem mul_scalarEmbed (x : Octonion R a b c) (r : R) : x * scalarEmbed r = r • x := by
+  apply Octonion.ext
+  · show x.1 * algebraMap R ℍ[R, a, 0, b] r - c • (star (0 : ℍ[R, a, 0, b]) * x.2) = r • x.1
+    rw [star_zero, zero_mul, smul_zero, sub_zero, ← Algebra.commutes, Algebra.smul_def]
+  · show (0 : ℍ[R, a, 0, b]) * x.1 + x.2 * star (algebraMap R ℍ[R, a, 0, b] r) = r • x.2
+    rw [zero_mul, zero_add, star_algebraMap, ← Algebra.commutes, Algebra.smul_def]
+
+theorem smul_scalarEmbed (r K : R) :
+    r • (scalarEmbed K : Octonion R a b c) = scalarEmbed (r * K) := by
+  rw [← scalarEmbed_mul, map_mul]
+
 end ScalarEmbeddings
 
 end Octonion
@@ -367,6 +453,12 @@ instance : StarModule R (OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n)) wher
   star_smul := by
     intros r a1
     ext i j <;> simp only [star] <;> simp
+
+instance : IsScalarTower R (OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n))
+    (OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n)) := inferInstance
+
+instance : SMulCommClass R (OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n))
+    (OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n)) := inferInstance
 
 /-- The Hermitian octonionic `n × n` matrices: those fixed by conjugate-transpose. A `Submodule`
 so that `Add`, `Module R`, `Neg`, etc. are inherited for free; `Mul` is defined separately as the
@@ -449,7 +541,7 @@ private lemma transpose_trivial (x: OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (
   rw [hij]
   simp
 
-instance CommRing_HermitianOctonionMatrixOne : NonAssocCommRing (HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n)) where
+instance CommRing_HermitianOctonionMatrix : NonAssocCommRing (HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n)) where
   __ := (inferInstance : AddCommGroup
     (HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n)))
   __ := (inferInstance : Mul
@@ -495,6 +587,37 @@ instance CommRing_HermitianOctonionMatrixOne : NonAssocCommRing (HermitianOctoni
     apply Subtype.ext
     change (⅟2 : R) • (x.1 * 1 + 1 * x.1) = x.1
     rw [mul_one, one_mul, ← two_smul R x.1, smul_smul, invOf_mul_self, one_smul]
+
+/-- `R`-scaling associates with the symmetrized Hermitian product `⅟2 • (AB + BA)`. Not inherited
+automatically from `IsScalarTower R (OctonionMatrix ...) (OctonionMatrix ...)`, since `Mul` on
+`HermitianOctonionMatrix` is the symmetrized product, not the ambient matrix product. -/
+instance IsScalarTower_HermitianOctonionMatrix :
+    IsScalarTower R (HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n))
+      (HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n)) where
+  smul_assoc r x y := by
+    apply Subtype.ext
+    change (⅟2 : R) • ((r • x.1) * y.1 + y.1 * (r • x.1)) =
+      r • ((⅟2 : R) • (x.1 * y.1 + y.1 * x.1))
+    rw [smul_mul_assoc, mul_smul_comm, ← smul_add, smul_comm (⅟2 : R) r]
+
+/-- `R`-scaling commutes across the symmetrized Hermitian product, for the same reason
+`IsScalarTower_HermitianOctonionMatrix` needs its own proof. -/
+instance SMulCommClass_HermitianOctonionMatrix :
+    SMulCommClass R (HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n))
+      (HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n)) where
+  smul_comm r x y := by
+    apply Subtype.ext
+    change r • ((⅟2 : R) • (x.1 * y.1 + y.1 * x.1)) =
+      (⅟2 : R) • (x.1 * (r • y.1) + (r • y.1) * x.1)
+    rw [mul_smul_comm, smul_mul_assoc, ← smul_add, smul_comm r (⅟2 : R)]
+
+instance Star_HermitianOctonionMatrix : Star (HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n)) where
+  star x := x
+
+instance TrivialStar_HermitianOctonionMatrix : TrivialStar (HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=n)) where
+  star_trivial := by
+    intro r
+    rfl
 
 end OctonionMatrices
 
@@ -581,6 +704,37 @@ set_option linter.unusedSectionVars false in
     innerProduct (R := R) (a := a) (b := b) (c := c) x y =
       ⅟(2 : R) * (x * star y + y * star x).1.re :=
   rfl
+
+/-- The polarization of `mul_star_self_eq_scalarEmbed`: `x * star y + y * star x` is a central
+scalar too, namely `2 * innerProduct x y`. Proved directly from `star_mul`/`star_star` (showing
+`x * star y + y * star x` is self-adjoint) rather than by re-deriving `mul_star_self_eq_scalarEmbed`
+at `x + y`, since `isSelfAdjoint_iff` already hands us the scalar and `innerProduct_apply` then
+pins down its value. -/
+theorem mul_star_add_star_mul_eq_scalarEmbed (x y : Octonion R a b c) :
+    x * star y + y * star x = scalarEmbed (2 * innerProduct x y) := by
+  have hself : star (x * star y + y * star x) = x * star y + y * star x := by
+    rw [star_add, star_mul, star_mul, star_star, star_star]
+    abel
+  obtain ⟨r, hr⟩ := (isSelfAdjoint_iff _).mp hself
+  have hre : innerProduct x y = ⅟(2 : R) * r := by
+    rw [innerProduct_apply, hr, scalarEmbed_fst]
+    rfl
+  rw [hr]
+  congr 1
+  rw [hre, ← mul_assoc, mul_invOf_self, one_mul]
+
+/-- `innerProduct` doesn't see simultaneous conjugation of both arguments: `⟨star x, star y⟩ =
+⟨x, y⟩`. Follows from `re_mul_comm` (`Re(xy) = Re(yx)`) applied to the two cross terms. -/
+theorem innerProduct_star_star (x y : Octonion R a b c) :
+    innerProduct (star x) (star y) = innerProduct x y := by
+  simp only [innerProduct_apply, star_star]
+  have h1 : (star x * y).1.re = (y * star x).1.re := re_mul_comm _ _
+  have h2 : (star y * x).1.re = (x * star y).1.re := re_mul_comm _ _
+  have hsum : (star x * y + star y * x).1.re = (x * star y + y * star x).1.re := by
+    show (star x * y).1.re + (star y * x).1.re = (x * star y).1.re + (y * star x).1.re
+    rw [h1, h2]
+    ring
+  rw [hsum]
 
 end InnerProduct
 
@@ -803,28 +957,245 @@ private noncomputable def hermitianTwoBilin :
     hermitianTwoBilinFun_add_left hermitianTwoBilinFun_smul_left
     hermitianTwoBilinFun_add_right hermitianTwoBilinFun_smul_right
 
+private def buildTwo (x : Octonion R a b c) (t p : R) :
+    OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2) :=
+  !![Octonion.scalarEmbed (t + p), x; star x, Octonion.scalarEmbed (t - p)]
+
+set_option linter.unusedSectionVars false in
+private lemma buildTwo_isHermitian (x : Octonion R a b c) (t p : R) :
+    star (buildTwo (R:=R) (a:=a) (b:=b) (c:=c) x t p) = buildTwo x t p := by
+  apply Matrix.ext
+  intro i j
+  show star (buildTwo x t p j i) = buildTwo x t p i j
+  fin_cases i <;> fin_cases j <;> simp [buildTwo, star_scalarEmbed, star_star]
+
+private lemma traceHalf_buildTwo (x : Octonion R a b c) (t p : R) :
+    HermitianOctonionMatrixTwo.traceHalf ⟨buildTwo x t p, buildTwo_isHermitian x t p⟩ = t := by
+  show ⅟(2 : R) * ((buildTwo x t p 0 0).1.re + (buildTwo x t p 1 1).1.re) = t
+  show ⅟(2 : R) * ((scalarEmbed (t + p) : Octonion R a b c).1.re +
+    (scalarEmbed (t - p) : Octonion R a b c).1.re) = t
+  rw [scalarEmbed_fst, scalarEmbed_fst, QuaternionAlgebra.algebraMap_eq, QuaternionAlgebra.algebraMap_eq]
+  show ⅟(2 : R) * ((t + p) + (t - p)) = t
+  rw [show (t + p) + (t - p) = 2 * t from by ring, ← mul_assoc, invOf_mul_self, one_mul]
+
+private lemma diffHalf_buildTwo (x : Octonion R a b c) (t p : R) :
+    HermitianOctonionMatrixTwo.diffHalf ⟨buildTwo x t p, buildTwo_isHermitian x t p⟩ = p := by
+  show ⅟(2 : R) * ((buildTwo x t p 0 0).1.re - (buildTwo x t p 1 1).1.re) = p
+  show ⅟(2 : R) * ((scalarEmbed (t + p) : Octonion R a b c).1.re -
+    (scalarEmbed (t - p) : Octonion R a b c).1.re) = p
+  rw [scalarEmbed_fst, scalarEmbed_fst, QuaternionAlgebra.algebraMap_eq, QuaternionAlgebra.algebraMap_eq]
+  show ⅟(2 : R) * ((t + p) - (t - p)) = p
+  rw [show (t + p) - (t - p) = 2 * p from by ring, ← mul_assoc, invOf_mul_self, one_mul]
+
 /-- The intended explicit identification of `2 x 2` Hermitian octonionic matrices with the
 appropriate `SpinFactor`, parallel to `ofSymmetricMatricesOne`: the scalar coordinate is
 `traceHalf`, the vector coordinate is `(M.val 0 1, diffHalf M)`. -/
 noncomputable def ofSymmetricMatricesTwo :
     HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2) ≃+*
       SpinFactor R (Octonion R a b c × R)
-        (hermitianTwoBilin (R:=R) (a:=a) (b:=b) (c:=c)) := by
-  sorry
+        (hermitianTwoBilin (R:=R) (a:=a) (b:=b) (c:=c)) where
+  toFun M := SpinFactor.mk _ (M.val 0 1, HermitianOctonionMatrixTwo.diffHalf M)
+    (HermitianOctonionMatrixTwo.traceHalf M)
+  invFun z := ⟨buildTwo z.1.1 z.2 z.1.2, buildTwo_isHermitian z.1.1 z.2 z.1.2⟩
+  left_inv M := by
+    obtain ⟨r, s, hr, hs, hr', hs'⟩ := HermitianOctonionMatrixTwo.diag_eq_traceHalf_add_sub_diffHalf M
+    apply Subtype.ext
+    apply Matrix.ext
+    intro i j
+    show buildTwo (M.val 0 1) (HermitianOctonionMatrixTwo.traceHalf M)
+        (HermitianOctonionMatrixTwo.diffHalf M) i j = M.val i j
+    fin_cases i <;> fin_cases j
+    · show scalarEmbed (HermitianOctonionMatrixTwo.traceHalf M + HermitianOctonionMatrixTwo.diffHalf M) =
+        M.val 0 0
+      rw [← hr', hr]
+    · rfl
+    · show star (M.val 0 1) = M.val 1 0
+      exact (HermitianOctonionMatrixTwo.off_diag M).symm
+    · show scalarEmbed (HermitianOctonionMatrixTwo.traceHalf M - HermitianOctonionMatrixTwo.diffHalf M) =
+        M.val 1 1
+      rw [← hs', hs]
+  right_inv z := by
+    apply SpinFactor.ext
+    · show (buildTwo z.1.1 z.2 z.1.2 0 1, HermitianOctonionMatrixTwo.diffHalf
+        ⟨buildTwo z.1.1 z.2 z.1.2, buildTwo_isHermitian z.1.1 z.2 z.1.2⟩) = z.1
+      rw [diffHalf_buildTwo]
+      show (z.1.1, z.1.2) = z.1
+      rfl
+    · show HermitianOctonionMatrixTwo.traceHalf
+        ⟨buildTwo z.1.1 z.2 z.1.2, buildTwo_isHermitian z.1.1 z.2 z.1.2⟩ = z.2
+      rw [traceHalf_buildTwo]
+  map_mul' M N := by
+    obtain ⟨r1, s1, hr1, hs1, hr1', hs1'⟩ :=
+      HermitianOctonionMatrixTwo.diag_eq_traceHalf_add_sub_diffHalf M
+    obtain ⟨r2, s2, hr2, hs2, hr2', hs2'⟩ :=
+      HermitianOctonionMatrixTwo.diag_eq_traceHalf_add_sub_diffHalf N
+    set t1 := HermitianOctonionMatrixTwo.traceHalf M
+    set p1 := HermitianOctonionMatrixTwo.diffHalf M
+    set t2 := HermitianOctonionMatrixTwo.traceHalf N
+    set p2 := HermitianOctonionMatrixTwo.diffHalf N
+    set x1 := M.val 0 1 with hx1
+    set x2 := N.val 0 1 with hx2
+    have h10 : M.val 1 0 = star x1 := HermitianOctonionMatrixTwo.off_diag M
+    have h20 : N.val 1 0 = star x2 := HermitianOctonionMatrixTwo.off_diag N
+    have hmul : (M * N).val = (⅟2 : R) • (M.val * N.val + N.val * M.val) := rfl
+    have hP01 : (M * N).val 0 1 = t1 • x2 + t2 • x1 := by
+      show ((⅟2 : R) • (M.val * N.val + N.val * M.val)) 0 1 = t1 • x2 + t2 • x1
+      show (⅟2 : R) • ((M.val * N.val) 0 1 + (N.val * M.val) 0 1) = t1 • x2 + t2 • x1
+      have e1 : ⅟(2 : R) * (2 * t1) = t1 := by rw [← mul_assoc, invOf_mul_self, one_mul]
+      have e2 : ⅟(2 : R) * (2 * t2) = t2 := by rw [← mul_assoc, invOf_mul_self, one_mul]
+      rw [Matrix.mul_apply, Matrix.mul_apply, Fin.sum_univ_two, Fin.sum_univ_two]
+      rw [hr1, hs1, hr2, hs2]
+      rw [scalarEmbed_mul, mul_scalarEmbed, scalarEmbed_mul, mul_scalarEmbed]
+      rw [hr1', hs1', hr2', hs2']
+      rw [show (t1 + p1) • x2 + (t2 - p2) • x1 + ((t2 + p2) • x1 + (t1 - p1) • x2) =
+          (2 * t1) • x2 + (2 * t2) • x1 from by module]
+      rw [smul_add, smul_smul, smul_smul, e1, e2]
+    have hP00 : (M * N).val 0 0 = scalarEmbed (r1 * r2 + innerProduct x1 x2) := by
+      show (⅟2 : R) • ((M.val * N.val) 0 0 + (N.val * M.val) 0 0) = _
+      rw [Matrix.mul_apply, Matrix.mul_apply, Fin.sum_univ_two, Fin.sum_univ_two]
+      rw [hr1, hr2, h10, h20]
+      have hkey : x1 * star x2 + x2 * star x1 = scalarEmbed (2 * innerProduct x1 x2) :=
+        mul_star_add_star_mul_eq_scalarEmbed x1 x2
+      have hsum : scalarEmbed r1 * scalarEmbed r2 + x1 * star x2 +
+          (scalarEmbed r2 * scalarEmbed r1 + x2 * star x1) =
+          scalarEmbed (r1 * r2 + r2 * r1 + 2 * innerProduct x1 x2) := by
+        rw [map_add, map_add, map_mul, map_mul, ← hkey]
+        abel
+      rw [hsum, smul_scalarEmbed]
+      congr 1
+      have expand : r1 * r2 + r2 * r1 + 2 * innerProduct x1 x2 =
+          2 * (r1 * r2 + innerProduct x1 x2) := by ring
+      rw [expand, ← mul_assoc, invOf_mul_self, one_mul]
+    have hP11 : (M * N).val 1 1 = scalarEmbed (s1 * s2 + innerProduct x1 x2) := by
+      show (⅟2 : R) • ((M.val * N.val) 1 1 + (N.val * M.val) 1 1) = _
+      rw [Matrix.mul_apply, Matrix.mul_apply, Fin.sum_univ_two, Fin.sum_univ_two]
+      rw [hs1, hs2, h10, h20]
+      have hkey : star x1 * x2 + star x2 * x1 = scalarEmbed (2 * innerProduct (star x1) (star x2)) := by
+        have := mul_star_add_star_mul_eq_scalarEmbed (star x1) (star x2)
+        rwa [star_star, star_star] at this
+      rw [innerProduct_star_star] at hkey
+      have hsum : star x1 * x2 + scalarEmbed s1 * scalarEmbed s2 +
+          (star x2 * x1 + scalarEmbed s2 * scalarEmbed s1) =
+          scalarEmbed (s1 * s2 + s2 * s1 + 2 * innerProduct x1 x2) := by
+        rw [map_add, map_add, map_mul, map_mul, ← hkey]
+        abel
+      rw [hsum, smul_scalarEmbed]
+      congr 1
+      have expand : s1 * s2 + s2 * s1 + 2 * innerProduct x1 x2 =
+          2 * (s1 * s2 + innerProduct x1 x2) := by ring
+      rw [expand, ← mul_assoc, invOf_mul_self, one_mul]
+    apply SpinFactor.ext
+    · show ((M * N).val 0 1, HermitianOctonionMatrixTwo.diffHalf (M * N)) = t1 • (x2, p2) + t2 • (x1, p1)
+      apply Prod.ext
+      · exact hP01
+      · show HermitianOctonionMatrixTwo.diffHalf (M * N) = t1 * p2 + t2 * p1
+        show ⅟(2 : R) * (((M * N).val 0 0).1.re - ((M * N).val 1 1).1.re) = t1 * p2 + t2 * p1
+        rw [hP00, hP11, scalarEmbed_fst, scalarEmbed_fst, QuaternionAlgebra.algebraMap_eq,
+          QuaternionAlgebra.algebraMap_eq]
+        show ⅟(2 : R) * ((r1 * r2 + innerProduct x1 x2) - (s1 * s2 + innerProduct x1 x2)) =
+          t1 * p2 + t2 * p1
+        rw [hr1', hs1', hr2', hs2']
+        rw [show ((t1 + p1) * (t2 + p2) + innerProduct x1 x2) -
+            ((t1 - p1) * (t2 - p2) + innerProduct x1 x2) = 2 * (t1 * p2 + t2 * p1) from by ring,
+          ← mul_assoc, invOf_mul_self, one_mul]
+    · show HermitianOctonionMatrixTwo.traceHalf (M * N) =
+        hermitianTwoBilin (R:=R) (a:=a) (b:=b) (c:=c) (x1, p1) (x2, p2) + t1 * t2
+      show ⅟(2 : R) * (((M * N).val 0 0).1.re + ((M * N).val 1 1).1.re) = _
+      rw [hP00, hP11, scalarEmbed_fst, scalarEmbed_fst, QuaternionAlgebra.algebraMap_eq,
+        QuaternionAlgebra.algebraMap_eq]
+      show ⅟(2 : R) * ((r1 * r2 + innerProduct x1 x2) + (s1 * s2 + innerProduct x1 x2)) =
+        hermitianTwoBilinFun (x1, p1) (x2, p2) + t1 * t2
+      show ⅟(2 : R) * ((r1 * r2 + innerProduct x1 x2) + (s1 * s2 + innerProduct x1 x2)) =
+        (innerProduct x1 x2 + p1 * p2) + t1 * t2
+      rw [hr1', hs1', hr2', hs2']
+      rw [show ((t1 + p1) * (t2 + p2) + innerProduct x1 x2) +
+          ((t1 - p1) * (t2 - p2) + innerProduct x1 x2) =
+          2 * (innerProduct x1 x2 + p1 * p2 + t1 * t2) from by ring,
+        ← mul_assoc, invOf_mul_self, one_mul]
+  map_add' M N := by
+    apply SpinFactor.ext
+    · show ((M + N).val 0 1, HermitianOctonionMatrixTwo.diffHalf (M + N)) =
+        (M.val 0 1, HermitianOctonionMatrixTwo.diffHalf M) +
+          (N.val 0 1, HermitianOctonionMatrixTwo.diffHalf N)
+      apply Prod.ext
+      · rfl
+      · show HermitianOctonionMatrixTwo.diffHalf (M + N) =
+          HermitianOctonionMatrixTwo.diffHalf M + HermitianOctonionMatrixTwo.diffHalf N
+        show ⅟(2 : R) * (((M + N).val 0 0).1.re - ((M + N).val 1 1).1.re) =
+          ⅟(2 : R) * ((M.val 0 0).1.re - (M.val 1 1).1.re) +
+            ⅟(2 : R) * ((N.val 0 0).1.re - (N.val 1 1).1.re)
+        have h00 : ((M + N).val 0 0).1.re = (M.val 0 0).1.re + (N.val 0 0).1.re := rfl
+        have h11 : ((M + N).val 1 1).1.re = (M.val 1 1).1.re + (N.val 1 1).1.re := rfl
+        rw [h00, h11]
+        ring
+    · show HermitianOctonionMatrixTwo.traceHalf (M + N) =
+        HermitianOctonionMatrixTwo.traceHalf M + HermitianOctonionMatrixTwo.traceHalf N
+      show ⅟(2 : R) * (((M + N).val 0 0).1.re + ((M + N).val 1 1).1.re) =
+        ⅟(2 : R) * ((M.val 0 0).1.re + (M.val 1 1).1.re) +
+          ⅟(2 : R) * ((N.val 0 0).1.re + (N.val 1 1).1.re)
+      have h00 : ((M + N).val 0 0).1.re = (M.val 0 0).1.re + (N.val 0 0).1.re := rfl
+      have h11 : ((M + N).val 1 1).1.re = (M.val 1 1).1.re + (N.val 1 1).1.re := rfl
+      rw [h00, h11]
+      ring
 
 end TwoByTwo
 
 /-! ### The `3 x 3` Hermitian octonionic case
 
-The `3 x 3` construction is the exceptional Hermitian octonionic Jordan algebra. It uses the same
-ambient matrix type and symmetrized product, but no associative matrix algebra is assumed: all
-identities here must be proved from the non-associative octonion multiplication and the Hermitian
-closure of `⅟2 • (AB + BA)`. -/
+The `3 x 3` construction is the exceptional Hermitian octonionic Jordan algebra.
+It uses the same ambient matrix type and symmetrized product
+but no associative matrix algebra so `HermitianJordan.ofInvolutiveAlgebra` does not apply. -/
 section ThreeByThree
 
-/- TODO: Develop the `3 x 3` Hermitian octonionic Jordan algebra. This is the exceptional case, so
-the main work is proving the Jordan identities directly for the symmetrized product without relying
-on associativity of octonion matrix multiplication. -/
+variable {R : Type*}
+variable [CommRing R] [i2: Invertible (2 : R)] [StarRing R] [TrivialStar R]
+variable {a b c : R}
+
+abbrev AlbertAlgebra := HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 3)
+
+instance ofAlbert : JordanAlgebra R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) where
+  jordan_mul_comm := by
+    intro x y
+    apply Subtype.ext
+    change (⅟2 : R) • (x.1 * y.1 + y.1 * x.1) =
+      (⅟2 : R) • (y.1 * x.1 + x.1 * y.1)
+    rw [add_comm]
+  jordan_identity x y := sorry
+
+/-! ### Formal reality
+
+Over an ordered `R`, with each Cayley-Dickson step's structure constant negative
+(`a < 0`, `b < 0`, generalizing Hamilton's quaternions, and `c < 0` for the final octonion
+doubling step, generalizing `a = b = c = -1`), the octonion norm form should be positive-definite,
+and `trace(A * A)` for a Hermitian `A` should decompose into a sum of those norms over the
+entries -- exactly as in `ComplexQM.isFormallyReal`/`QuaternionicQM.isFormallyReal`.
+
+Unlike those cases, that decomposition isn't yet available here: it needs `x * star x` to be a
+genuine central scalar (`= Octonion.scalarEmbed (N x)` for some norm form `N`) for *every*
+octonion `x`, not just the polarized/diagonal-entry facts already established (`innerProduct`,
+`isSelfAdjoint_iff`). That is a composition-algebra fact in its own right (needs the alternative
+laws, `IsAlternative`), not yet proved anywhere in this file. -/
+
+section FormallyReal
+
+variable [LinearOrder R] [IsStrictOrderedRing R]
+
+theorem isFormallyReal (ha : a < 0) (hb : b < 0) (hc : c < 0) :
+    IsFormallyReal R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) := by
+  sorry
+
+/-- Rank `3`, matching the classical Albert algebra. Stubbed alongside `isFormallyReal` above:
+unlike the associative `RealQM`/`ComplexQM`/`QuaternionicQM` cases, octonion non-associativity
+means there's no analogue of `MooreDeterminant`'s recursion to fall back on either -- the cyclic
+product step in `orbitProd` genuinely uses associativity of the entries, which octonions don't
+have. A genuine determinant here needs its own, octonion-specific construction (classically, the
+Freudenthal/Jordan cubic form). -/
+noncomputable def detTrace (ha : a < 0) (hb : b < 0) (hc : c < 0) :
+    @IsFormallyRealDetTrace R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) _ _
+      (isFormallyReal ha hb hc) := by
+  sorry
+
+end FormallyReal
 
 end ThreeByThree
 

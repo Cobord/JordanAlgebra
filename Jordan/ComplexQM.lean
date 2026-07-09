@@ -167,6 +167,66 @@ theorem isFormallyReal (hab : 4 * a + b * b < 0) :
     (fun q _ => norm_nonneg R a b hab _)).mp (hpq p (Finset.mem_univ p)) q (Finset.mem_univ q)
   exact (norm_eq_zero_iff R a b hab _).mp hq
 
+/-! #### Generic trace and determinant
+
+For Hermitian `A`, both `Matrix.trace A` and `Matrix.det A` are self-adjoint elements of
+`ℂ[R, a, b]` (`star` commutes with `trace`/`det` via `Aᴴ = A`), hence lie in the image of
+`algebraMap R _`; reading off their real part (`.re`) therefore recovers the genuine `R`-valued
+trace/determinant, not merely a projection that discards information. -/
+
+omit [StarRing R] [TrivialStar R] [LinearOrder R] [IsStrictOrderedRing R] in
+private theorem eq_algebraMap_re_of_star_eq (z : ℂ[R, a, b]) (hz : star z = z) :
+    z = algebraMap R (ℂ[R, a, b]) z.re := by
+  have him : z.im = -z.im := by
+    have h := congrArg QuadraticAlgebra.im hz
+    simpa using h.symm
+  have h2 : (2 : R) • z.im = 0 := by
+    rw [two_smul, add_eq_zero_iff_eq_neg]; exact him
+  have him0 : z.im = 0 := by
+    have h3 := congrArg (⅟(2 : R) • ·) h2
+    simpa [smul_smul] using h3
+  ext
+  · simp [QuadraticAlgebra.algebraMap_eq]
+  · simp [QuadraticAlgebra.algebraMap_eq, him0]
+
+omit [StarRing R] [TrivialStar R] [DecidableEq n] [LinearOrder R] [IsStrictOrderedRing R] in
+theorem trace_eq_algebraMap (A : Matrix n n ℂ[R, a, b]) (hA : star A = A) :
+    Matrix.trace A = algebraMap R (ℂ[R, a, b]) (Matrix.trace A).re := by
+  apply eq_algebraMap_re_of_star_eq
+  have h := Matrix.trace_conjTranspose A
+  rw [← Matrix.star_eq_conjTranspose, hA] at h
+  exact h.symm
+
+omit [StarRing R] [TrivialStar R] [LinearOrder R] [IsStrictOrderedRing R] in
+theorem det_eq_algebraMap (A : Matrix n n ℂ[R, a, b]) (hA : star A = A) :
+    Matrix.det A = algebraMap R (ℂ[R, a, b]) (Matrix.det A).re := by
+  apply eq_algebraMap_re_of_star_eq
+  have h := Matrix.det_conjTranspose A
+  rw [← Matrix.star_eq_conjTranspose, hA] at h
+  exact h.symm
+
+/-- The `n x n` "complex" Hermitian matrices have a generic trace and determinant of rank
+`Fintype.card n`: the real parts of the ordinary matrix trace and determinant, which
+`trace_eq_algebraMap`/`det_eq_algebraMap` show genuinely recover them. -/
+noncomputable def detTrace (hab : 4 * a + b * b < 0) :
+    @IsFormallyRealDetTrace R (hermitianMatrices R a b n) _ _ (isFormallyReal R a b n hab) := by
+  letI := isFormallyReal R a b n hab
+  exact
+    { rank := Fintype.card n
+      trace := (QuadraticAlgebra.reₗ a b).comp
+        ((Matrix.traceLinearMap n R (ℂ[R, a, b])).comp (hermitianMatrices R a b n).subtype)
+      det := fun x => (Matrix.det x.1).re
+      det_smul := fun r x => by
+        show (Matrix.det (r • x.1)).re = r ^ Fintype.card n • (Matrix.det x.1).re
+        rw [Matrix.det_smul_of_tower, QuadraticAlgebra.re_smul]
+      trace_one := by
+        show (Matrix.trace (1 : Matrix n n (ℂ[R, a, b]))).re = (Fintype.card n : R)
+        rw [Matrix.trace_one]
+        norm_cast
+      det_one := by
+        show (Matrix.det (1 : Matrix n n (ℂ[R, a, b]))).re = 1
+        rw [Matrix.det_one, QuadraticAlgebra.re_one] }
+
 end FormallyReal
 
 end ComplexQM

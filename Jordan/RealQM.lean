@@ -141,6 +141,31 @@ theorem isFormallyReal : IsFormallyReal R (symmetricMatrices R n) := by
     (fun q _ => mul_self_nonneg ((X i).1 p q))).mp (hpq p (Finset.mem_univ p)) q (Finset.mem_univ q)
   exact mul_self_eq_zero.mp hq
 
+/-! #### Generic trace and determinant
+
+The ordinary matrix trace and determinant already land in `R`, so no self-adjointness argument is
+needed to extract a generic trace/determinant pair (unlike `ComplexQM`/`QuaternionicQM`, where the
+entries live in a larger ring). -/
+
+/-- The `n x n` symmetric matrices have a generic trace and determinant of rank `Fintype.card n`:
+the ordinary matrix trace and determinant. -/
+noncomputable def detTrace :
+    @IsFormallyRealDetTrace R (symmetricMatrices R n) _ _ (isFormallyReal R n) := by
+  letI := isFormallyReal R n
+  exact
+    { rank := Fintype.card n
+      trace := (Matrix.traceLinearMap n R R).comp (symmetricMatrices R n).subtype
+      det := fun x => Matrix.det x.1
+      det_smul := fun r x => by
+        show Matrix.det (r • x.1) = r ^ Fintype.card n • Matrix.det x.1
+        rw [Matrix.det_smul, smul_eq_mul]
+      trace_one := by
+        show Matrix.trace (1 : Matrix n n R) = (Fintype.card n : R)
+        exact Matrix.trace_one
+      det_one := by
+        show Matrix.det (1 : Matrix n n R) = 1
+        exact Matrix.det_one }
+
 end FormallyReal
 
 end RealQM
