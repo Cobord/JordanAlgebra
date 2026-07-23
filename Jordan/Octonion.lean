@@ -4,6 +4,7 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.LinearAlgebra.Matrix.Unique
 import Jordan.RealQM
 import Jordan.SpinFactor
+import Jordan.Alternative
 
 /-!
 # Generalized octonion algebras
@@ -29,15 +30,6 @@ Hermitian-matrix Albert algebra construction work, unlike for a generic non-asso
 
 open scoped Quaternion
 
-/-- An *alternative* magma: multiplication need not be associative, but it satisfies the two
-weaker laws that survive Cayley-Dickson doubling of an associative algebra (such as the
-octonions, doubled from the associative quaternions). Mathlib has no class for this notion yet. -/
-class IsAlternative (M : Type*) [Mul M] : Prop where
-  /-- The left alternative law: `x * (x * y) = (x * x) * y`. -/
-  mul_alternative_left : ∀ x y : M, x * (x * y) = (x * x) * y
-  /-- The right alternative law: `(y * x) * x = y * (x * x)`. -/
-  mul_alternative_right : ∀ x y : M, (y * x) * x = y * (x * x)
-
 /-- The generalized octonion algebra `O(a, b, c)` over `R`: one further step of Cayley-Dickson
 doubling applied to the quaternion algebra `ℍ[R, a, 0, b]`, by the parameter `c`. A type synonym
 for `ℍ[R,a,0,b] × ℍ[R,a,0,b]`, kept distinct so the `c`-dependent `Mul`/`Star` instances below
@@ -53,6 +45,13 @@ instance : AddCommGroup (Octonion R a b c) :=
 
 instance : Module R (Octonion R a b c) :=
   (inferInstance : Module R (ℍ[R, a, 0, b] × ℍ[R, a, 0, b]))
+
+/-- `Octonion R a b c` is a free `R`-module, inherited from `ℍ[R, a, 0, b]`'s own `basisOneIJK`
+(via `Module.Free.prod`), the same way `AddCommGroup`/`Module` above are copied across the `def`
+barrier from the underlying product type. This is what ultimately lets `AlbertAlgebra` below be
+shown free, without needing `R` to be a PID for a submodule-of-free-is-free argument. -/
+instance : Module.Free R (Octonion R a b c) :=
+  (inferInstance : Module.Free R (ℍ[R, a, 0, b] × ℍ[R, a, 0, b]))
 
 @[ext] theorem ext {x y : Octonion R a b c} (h1 : x.1 = y.1) (h2 : x.2 = y.2) : x = y :=
   Prod.ext h1 h2
@@ -347,6 +346,46 @@ theorem mul_star_self_eq_scalarEmbed (x : Octonion R a b c) :
     abel
 
 omit [Invertible (2 : R)] in
+/-- The flip of `mul_star_self_eq_scalarEmbed`: `star x * x` is the *same* central scalar as `x *
+star x`. Obtained by applying `mul_star_self_eq_scalarEmbed` to `star x` itself and simplifying the
+result back down via `star_star`/`mul_star_self_eq_star_mul_self` (at the quaternion level, on
+`x.1`) -- not a new composition-algebra input. -/
+theorem star_mul_self_eq_scalarEmbed (x : Octonion R a b c) :
+    star x * x = scalarEmbed ((star x.1 * x.1).re + c * (star x.2 * x.2).re) := by
+  have h := mul_star_self_eq_scalarEmbed (star x)
+  rw [star_star] at h
+  rw [h]
+  congr 2
+  · rw [star_fst, star_star, mul_star_self_eq_star_mul_self]
+  · rw [star_snd, star_neg, neg_mul]
+    rw [mul_neg, neg_neg]
+
+omit [Invertible (2 : R)] in
+/-- The octonion trace `x + star x` is a central scalar, exactly `2 * Re(x)` -- the octonion
+analogue of `add_star_eq_coe` for quaternions. Combined with `mul_alternative_right`, this is what
+lets a `star y` sitting next to a product be traded for a plain (unstarred) `y`, e.g. `(u * y) *
+star y = (2 * Re y) • (u * y) - u * (y * y)`: since `star y = scalarEmbed (2 * Re y) - y`, expanding
+`(u * y) * star y` this way needs only the right alternative law `(u * y) * y = u * (y * y)`, not
+any genuine Moufang identity. -/
+theorem add_star_eq_scalarEmbed (x : Octonion R a b c) :
+    x + star x = scalarEmbed (2 * x.1.re) := by
+  apply Octonion.ext
+  · show x.1 + star x.1 = algebraMap R ℍ[R, a, 0, b] (2 * x.1.re)
+    rw [add_star_eq_coe, QuaternionAlgebra.algebraMap_eq]
+    rfl
+  · show x.2 + (star x).2 = (0 : ℍ[R, a, 0, b])
+    rw [star_snd]
+    abel
+
+omit [Invertible (2 : R)] in
+/-- `star x` is an `R`-affine combination of `x` and `1`: the octonion analogue of solving
+`add_star_eq_scalarEmbed` for `star x`. -/
+theorem star_eq_scalarEmbed_sub (x : Octonion R a b c) :
+    star x = scalarEmbed (2 * x.1.re) - x := by
+  rw [← add_star_eq_scalarEmbed]
+  abel
+
+omit [Invertible (2 : R)] in
 set_option linter.unusedSectionVars false in
 /-- The real part of an octonion product doesn't care about the order of the factors: `Re(xy) =
 Re(yx)`, even though `xy` and `yx` themselves genuinely differ. Same brute-force technique as
@@ -413,6 +452,22 @@ theorem mul_scalarEmbed (x : Octonion R a b c) (r : R) : x * scalarEmbed r = r �
 theorem smul_scalarEmbed (r K : R) :
     r • (scalarEmbed K : Octonion R a b c) = scalarEmbed (r * K) := by
   rw [← scalarEmbed_mul, map_mul]
+
+/-- Trading a `star y` sitting to the right of a product for a plain `y`: `(u * y) * star y = (2 *
+Re y) • (u * y) - u * (y * y)`. Needs only the right alternative law `(u * y) * y = u * (y * y)`
+(`alternative_right`) plus `star_eq_scalarEmbed_sub`, not any genuine Moufang identity -- this is
+the key tool for resolving cross terms like `(p * t) * star t` (two independent off-diagonal
+octonion matrix entries `p`, `t`) that show up when expanding `jordan_identity` on `AlbertAlgebra`. -/
+theorem mul_mul_star_eq (u y : Octonion R a b c) :
+    (u * y) * star y = (2 * y.1.re) • (u * y) - u * (y * y) := by
+  rw [star_eq_scalarEmbed_sub, mul_sub, mul_scalarEmbed, alternative_right y u]
+
+/-- The mirror-image tool to `mul_mul_star_eq`, trading a `star y` sitting to the left of a product
+for a plain `y`: `star y * (y * u) = (2 * Re y) • (y * u) - (y * y) * u`. Needs only the left
+alternative law `y * (y * u) = (y * y) * u` (`alternative_left`). -/
+theorem star_mul_mul_eq (y u : Octonion R a b c) :
+    star y * (y * u) = (2 * y.1.re) • (y * u) - (y * y) * u := by
+  rw [star_eq_scalarEmbed_sub, sub_mul, scalarEmbed_mul, alternative_left y u]
 
 end ScalarEmbeddings
 
@@ -704,6 +759,9 @@ set_option linter.unusedSectionVars false in
     innerProduct (R := R) (a := a) (b := b) (c := c) x y =
       ⅟(2 : R) * (x * star y + y * star x).1.re :=
   rfl
+
+theorem innerProduct_comm (x y : Octonion R a b c) : innerProduct x y = innerProduct y x := by
+  simp only [innerProduct_apply, add_comm]
 
 /-- The polarization of `mul_star_self_eq_scalarEmbed`: `x * star y + y * star x` is a central
 scalar too, namely `2 * innerProduct x y`. Proved directly from `star_mul`/`star_star` (showing
@@ -1153,6 +1211,406 @@ variable {a b c : R}
 
 abbrev AlbertAlgebra := HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 3)
 
+/-- Build a `3 x 3` Hermitian octonionic matrix from its three (real) diagonal entries and its
+three upper off-diagonal octonion entries -- the `3 x 3` analogue of `buildTwo`. -/
+private def buildThree (r0 r1 r2 : R) (x01 x02 x12 : Octonion R a b c) :
+    OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 3) :=
+  !![Octonion.scalarEmbed r0, x01, x02;
+     star x01, Octonion.scalarEmbed r1, x12;
+     star x02, star x12, Octonion.scalarEmbed r2]
+
+omit i2 in
+private lemma buildThree_isHermitian (r0 r1 r2 : R) (x01 x02 x12 : Octonion R a b c) :
+    star (buildThree (R:=R) (a:=a) (b:=b) (c:=c) r0 r1 r2 x01 x02 x12) =
+      buildThree r0 r1 r2 x01 x02 x12 := by
+  apply Matrix.ext
+  intro i j
+  show star (buildThree r0 r1 r2 x01 x02 x12 j i) = buildThree r0 r1 r2 x01 x02 x12 i j
+  fin_cases i <;> fin_cases j <;>
+    simp [buildThree, Octonion.star_scalarEmbed, star_star]
+
+private def buildThreeH (r0 r1 r2 : R) (x01 x02 x12 : Octonion R a b c) :
+    AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c) :=
+  ⟨buildThree r0 r1 r2 x01 x02 x12, buildThree_isHermitian r0 r1 r2 x01 x02 x12⟩
+
+/-- The (real) `i`-th diagonal entry of a Hermitian `3 x 3` octonionic matrix, read off via the
+quaternion real-part coordinate, the `3 x 3` analogue of `HermitianOctonionMatrixTwo.traceHalf`/
+`diffHalf` (but a single raw diagonal entry, with no half-sum/half-difference reparametrization
+needed since here it is paired with the *other two* diagonal entries, not folded into one). -/
+private def HermitianOctonionMatrixThree.diagCoord
+    (M : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) (i : Fin 3) : R :=
+  (M.val i i).1.re
+
+private lemma HermitianOctonionMatrixThree.diag_eq_scalarEmbed_diagCoord
+    (M : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) (i : Fin 3) :
+    M.val i i = Octonion.scalarEmbed (HermitianOctonionMatrixThree.diagCoord M i) := by
+  obtain ⟨r, hr⟩ := diag_real M i
+  have : HermitianOctonionMatrixThree.diagCoord M i = r := diag_just_11 (M.val i i) r hr
+  rw [this, hr]
+
+omit i2 in
+/-- The off-diagonal Hermitian-symmetry conditions, the `3 x 3` analogue of
+`HermitianOctonionMatrixTwo.off_diag`: in a Hermitian `3 x 3` octonionic matrix, each below-diagonal
+entry is forced to be the conjugate of the corresponding above-diagonal entry. -/
+private lemma HermitianOctonionMatrixThree.off_diag_10
+    (M : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) :
+    M.val 1 0 = star (M.val 0 1) := by
+  have h : star (M.val 1 0) = M.val 0 1 := congrFun (congrFun M.property 0) 1
+  rw [← h, star_star]
+
+omit i2 in
+private lemma HermitianOctonionMatrixThree.off_diag_20
+    (M : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) :
+    M.val 2 0 = star (M.val 0 2) := by
+  have h : star (M.val 2 0) = M.val 0 2 := congrFun (congrFun M.property 0) 2
+  rw [← h, star_star]
+
+omit i2 in
+private lemma HermitianOctonionMatrixThree.off_diag_21
+    (M : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) :
+    M.val 2 1 = star (M.val 1 2) := by
+  have h : star (M.val 2 1) = M.val 1 2 := congrFun (congrFun M.property 1) 2
+  rw [← h, star_star]
+
+/-- Every Hermitian `3 x 3` octonionic matrix is recovered from `buildThree` applied to its own
+diagonal coordinates and upper off-diagonal entries -- the `3 x 3` analogue of
+`HermitianOctonionMatrixTwo.diag_eq_traceHalf_add_sub_diffHalf` composed with `buildTwo`, but
+stated directly as a round-trip identity so it can double as the `left_inv` field of `albertEquiv`
+below and as the decomposition step in `jordan_identity`. -/
+private lemma HermitianOctonionMatrixThree.eq_buildThreeH
+    (M : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) :
+    M = buildThreeH (HermitianOctonionMatrixThree.diagCoord M 0)
+      (HermitianOctonionMatrixThree.diagCoord M 1) (HermitianOctonionMatrixThree.diagCoord M 2)
+      (M.val 0 1) (M.val 0 2) (M.val 1 2) := by
+  apply Subtype.ext
+  apply Matrix.ext
+  intro i j
+  show M.val i j =
+    buildThree (HermitianOctonionMatrixThree.diagCoord M 0)
+      (HermitianOctonionMatrixThree.diagCoord M 1) (HermitianOctonionMatrixThree.diagCoord M 2)
+      (M.val 0 1) (M.val 0 2) (M.val 1 2) i j
+  fin_cases i <;> fin_cases j
+  · exact HermitianOctonionMatrixThree.diag_eq_scalarEmbed_diagCoord M 0
+  · rfl
+  · rfl
+  · exact HermitianOctonionMatrixThree.off_diag_10 M
+  · exact HermitianOctonionMatrixThree.diag_eq_scalarEmbed_diagCoord M 1
+  · rfl
+  · exact HermitianOctonionMatrixThree.off_diag_20 M
+  · exact HermitianOctonionMatrixThree.off_diag_21 M
+  · exact HermitianOctonionMatrixThree.diag_eq_scalarEmbed_diagCoord M 2
+
+omit i2 in
+private lemma HermitianOctonionMatrixThree.diagCoord_buildThreeH_0
+    (r0 r1 r2 : R) (x01 x02 x12 : Octonion R a b c) :
+    HermitianOctonionMatrixThree.diagCoord (buildThreeH r0 r1 r2 x01 x02 x12) 0 = r0 :=
+  diag_just_11 _ r0 rfl
+
+omit i2 in
+private lemma HermitianOctonionMatrixThree.diagCoord_buildThreeH_1
+    (r0 r1 r2 : R) (x01 x02 x12 : Octonion R a b c) :
+    HermitianOctonionMatrixThree.diagCoord (buildThreeH r0 r1 r2 x01 x02 x12) 1 = r1 :=
+  diag_just_11 _ r1 rfl
+
+omit i2 in
+private lemma HermitianOctonionMatrixThree.diagCoord_buildThreeH_2
+    (r0 r1 r2 : R) (x01 x02 x12 : Octonion R a b c) :
+    HermitianOctonionMatrixThree.diagCoord (buildThreeH r0 r1 r2 x01 x02 x12) 2 = r2 :=
+  diag_just_11 _ r2 rfl
+
+/-- The decomposition of `AlbertAlgebra` as an `R`-module: it is `R`-linearly equivalent to three
+copies of `R` (the diagonal entries) times three copies of `Octonion R a b c` (the upper
+off-diagonal entries). This is *not* a ring isomorphism -- unlike `ofSymmetricMatricesTwo`, the
+target carries no algebra structure matching the symmetrized matrix product, and none is claimed.
+Its only jobs are: (1) exhibiting `AlbertAlgebra` as free (`albert_basis`), directly from
+`Octonion`'s own freeness rather than any submodule-of-a-free-module-over-a-PID argument, which
+`R` need not satisfy here; and (2) supplying the additive decomposition of an arbitrary `y` used to
+reduce `jordan_identity`, linear in `y`, down to the six cases where `y` is a single diagonal or
+off-diagonal generator. -/
+noncomputable def albertEquiv :
+    AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c) ≃ₗ[R]
+      (Fin 3 → R) × Octonion R a b c × Octonion R a b c × Octonion R a b c where
+  toFun M := (fun i => HermitianOctonionMatrixThree.diagCoord M i, M.val 0 1, M.val 0 2, M.val 1 2)
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  invFun p := buildThreeH (p.1 0) (p.1 1) (p.1 2) p.2.1 p.2.2.1 p.2.2.2
+  left_inv M := (HermitianOctonionMatrixThree.eq_buildThreeH M).symm
+  right_inv p := by
+    obtain ⟨f, x01, x02, x12⟩ := p
+    apply Prod.ext
+    · funext i
+      fin_cases i
+      · exact HermitianOctonionMatrixThree.diagCoord_buildThreeH_0 (f 0) (f 1) (f 2) x01 x02 x12
+      · exact HermitianOctonionMatrixThree.diagCoord_buildThreeH_1 (f 0) (f 1) (f 2) x01 x02 x12
+      · exact HermitianOctonionMatrixThree.diagCoord_buildThreeH_2 (f 0) (f 1) (f 2) x01 x02 x12
+    · rfl
+
+/-- `AlbertAlgebra` is a free `R`-module: transported from the freeness of
+`(Fin 3 → R) × Octonion R a b c × Octonion R a b c × Octonion R a b c` (a finite product of free
+modules, since `Octonion R a b c` is free) along `albertEquiv`. -/
+lemma albert_basis : Module.Free R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) :=
+  Module.Free.of_equiv albertEquiv.symm
+
+/-- The `3 x 3` Hermitian matrix with only the `0`-th diagonal entry nonzero. One of the six
+"standard basis" generators used to reduce `jordan_identity` below. -/
+private def diagPiece0 (r : R) : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c) :=
+  buildThreeH r 0 0 0 0 0
+
+private def diagPiece1 (r : R) : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c) :=
+  buildThreeH 0 r 0 0 0 0
+
+private def diagPiece2 (r : R) : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c) :=
+  buildThreeH 0 0 r 0 0 0
+
+/-- The `3 x 3` Hermitian matrix with only the `(0,1)`/`(1,0)` off-diagonal entries nonzero (equal
+to `x`/`star x`). One of the six "standard basis" generators used to reduce `jordan_identity`
+below. -/
+private def offPiece01 (x : Octonion R a b c) : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c) :=
+  buildThreeH 0 0 0 x 0 0
+
+private def offPiece02 (x : Octonion R a b c) : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c) :=
+  buildThreeH 0 0 0 0 x 0
+
+private def offPiece12 (x : Octonion R a b c) : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c) :=
+  buildThreeH 0 0 0 0 0 x
+
+omit i2 in
+/-- Every `buildThreeH` matrix splits additively into its six single-slot pieces: the three
+diagonal entries and the three off-diagonal entries, each placed on its own. Since both sides of
+`jordan_identity` are additive in `y` (the symmetrized product distributes over `+`), this is what
+lets that identity -- a priori needing to be checked against a fully generic `y` -- be reduced to
+checking it against each of these six generators (`jordan_case_diag0/1/2`, `jordan_case_off01/02/12`
+below) instead, without needing to further expand the off-diagonal octonion entries `x01 x02 x12`
+over any `R`-basis of `Octonion R a b c`. -/
+private lemma buildThreeH_eq_sum (r0 r1 r2 : R) (x01 x02 x12 : Octonion R a b c) :
+    buildThreeH r0 r1 r2 x01 x02 x12 =
+      diagPiece0 r0 + diagPiece1 r1 + diagPiece2 r2 +
+        offPiece01 x01 + offPiece02 x02 + offPiece12 x12 := by
+  apply Subtype.ext
+  apply Matrix.ext
+  intro i j
+  fin_cases i <;> fin_cases j <;>
+    simp [buildThreeH, buildThree, diagPiece0, diagPiece1, diagPiece2,
+      offPiece01, offPiece02, offPiece12]
+
+set_option linter.unreachableTactic false in
+/-- `x ∘ (diagPiece0 ρ)` only touches row/column `0` of `x`: the diagonal entry there gets scaled
+by `ρ`, the two off-diagonal entries touching it get scaled by `⅟2 * ρ`, and everything else
+vanishes. Pure bookkeeping (`Matrix.mul_apply` plus `scalarEmbed`/`smul` identities), no
+`IsAlternative` needed -- `diagPiece0 ρ` has only one nonzero entry, so no product of two distinct
+off-diagonal entries of `x` can appear. -/
+private lemma buildThreeH_mul_diagPiece0 (r0 r1 r2 ρ : R) (p q t : Octonion R a b c) :
+    buildThreeH r0 r1 r2 p q t * diagPiece0 ρ =
+      buildThreeH (r0 * ρ) 0 0 ((⅟2 * ρ) • p) ((⅟2 * ρ) • q) 0 := by
+  have hmul : (buildThreeH r0 r1 r2 p q t * diagPiece0 ρ).val =
+      (⅟2 : R) • (buildThree r0 r1 r2 p q t * buildThree ρ 0 0 0 0 0 +
+        buildThree ρ 0 0 0 0 0 * buildThree r0 r1 r2 p q t) := rfl
+  apply Subtype.ext
+  rw [hmul]
+  apply Matrix.ext
+  intro i j
+  rw [Matrix.smul_apply, Matrix.add_apply, Matrix.mul_apply, Matrix.mul_apply,
+    Fin.sum_univ_three, Fin.sum_univ_three]
+  fin_cases i <;> fin_cases j <;> simp only [buildThreeH, buildThree] <;> simp <;>
+    first
+      | (rw [mul_scalarEmbed, scalarEmbed_mul, smul_smul, ← two_smul R, smul_smul]
+         congr 1
+         rw [← mul_assoc, mul_invOf_self, one_mul])
+      | (rw [scalarEmbed_mul, smul_smul])
+      | (rw [mul_scalarEmbed, smul_smul])
+
+set_option linter.unreachableTactic false in
+/-- The `diagPiece1` analogue of `buildThreeH_mul_diagPiece0`: `x ∘ (diagPiece1 ρ)` only touches
+row/column `1` of `x`. -/
+private lemma buildThreeH_mul_diagPiece1 (r0 r1 r2 ρ : R) (p q t : Octonion R a b c) :
+    buildThreeH r0 r1 r2 p q t * diagPiece1 ρ =
+      buildThreeH 0 (r1 * ρ) 0 ((⅟2 * ρ) • p) 0 ((⅟2 * ρ) • t) := by
+  have hmul : (buildThreeH r0 r1 r2 p q t * diagPiece1 ρ).val =
+      (⅟2 : R) • (buildThree r0 r1 r2 p q t * buildThree 0 ρ 0 0 0 0 +
+        buildThree 0 ρ 0 0 0 0 * buildThree r0 r1 r2 p q t) := rfl
+  apply Subtype.ext
+  rw [hmul]
+  apply Matrix.ext
+  intro i j
+  rw [Matrix.smul_apply, Matrix.add_apply, Matrix.mul_apply, Matrix.mul_apply,
+    Fin.sum_univ_three, Fin.sum_univ_three]
+  fin_cases i <;> fin_cases j <;> simp only [buildThreeH, buildThree] <;> simp <;>
+    first
+      | (rw [mul_scalarEmbed, scalarEmbed_mul, smul_smul, ← two_smul R, smul_smul]
+         congr 1
+         rw [← mul_assoc, mul_invOf_self, one_mul])
+      | (rw [scalarEmbed_mul, smul_smul])
+      | (rw [mul_scalarEmbed, smul_smul])
+
+set_option linter.unreachableTactic false in
+/-- The `diagPiece2` analogue of `buildThreeH_mul_diagPiece0`: `x ∘ (diagPiece2 ρ)` only touches
+row/column `2` of `x`. -/
+private lemma buildThreeH_mul_diagPiece2 (r0 r1 r2 ρ : R) (p q t : Octonion R a b c) :
+    buildThreeH r0 r1 r2 p q t * diagPiece2 ρ =
+      buildThreeH 0 0 (r2 * ρ) 0 ((⅟2 * ρ) • q) ((⅟2 * ρ) • t) := by
+  have hmul : (buildThreeH r0 r1 r2 p q t * diagPiece2 ρ).val =
+      (⅟2 : R) • (buildThree r0 r1 r2 p q t * buildThree 0 0 ρ 0 0 0 +
+        buildThree 0 0 ρ 0 0 0 * buildThree r0 r1 r2 p q t) := rfl
+  apply Subtype.ext
+  rw [hmul]
+  apply Matrix.ext
+  intro i j
+  rw [Matrix.smul_apply, Matrix.add_apply, Matrix.mul_apply, Matrix.mul_apply,
+    Fin.sum_univ_three, Fin.sum_univ_three]
+  fin_cases i <;> fin_cases j <;> simp only [buildThreeH, buildThree] <;> simp <;>
+    first
+      | (rw [mul_scalarEmbed, scalarEmbed_mul, smul_smul, ← two_smul R, smul_smul]
+         congr 1
+         rw [← mul_assoc, mul_invOf_self, one_mul])
+      | (rw [scalarEmbed_mul, smul_smul])
+      | (rw [mul_scalarEmbed, smul_smul])
+
+omit i2 in
+/-- `scalarEmbed` of the real part of `x * star x` is `x * star x` itself -- i.e. `x * star x` is
+already exactly the scalar `mul_star_self_eq_scalarEmbed` says it is. Bridges the closed-form
+`.1.re` expressions used in `buildThreeH_mul_self`'s diagonal entries back to the raw octonion
+products that actually appear when expanding the matrix product. -/
+private lemma scalarEmbed_mul_star_self_re (x : Octonion R a b c) :
+    scalarEmbed ((x * star x).1.re) = x * star x := by
+  rw [diag_just_11 (x * star x) _ (mul_star_self_eq_scalarEmbed x)]
+  exact (mul_star_self_eq_scalarEmbed x).symm
+
+omit i2 in
+/-- The `star x * x` counterpart to `scalarEmbed_mul_star_self_re`. -/
+private lemma scalarEmbed_star_mul_self_re (x : Octonion R a b c) :
+    scalarEmbed ((star x * x).1.re) = star x * x := by
+  rw [diag_just_11 (star x * x) _ (star_mul_self_eq_scalarEmbed x)]
+  exact (star_mul_self_eq_scalarEmbed x).symm
+
+set_option linter.unreachableTactic false in
+/-- The Jordan square `x ∘ x = x * x` (the ordinary, not symmetrized, matrix square, since
+symmetrizing a matrix against itself is a no-op) of a Hermitian `3 x 3` octonionic matrix, in terms
+of its own six coordinates. The diagonal entries are genuine composition-algebra norms (central
+scalars, via `mul_star_self_eq_scalarEmbed`/`star_mul_self_eq_scalarEmbed`); the off-diagonal
+entries are left as raw octonion products of two of `x`'s own off-diagonal entries (e.g. `q * star
+t` at `(0,1)`) -- these are exactly the cross terms `mul_mul_star_eq`/`star_mul_mul_eq` exist to
+resolve, one step further down in `jordan_identity`, not here. -/
+private lemma buildThreeH_mul_self (r0 r1 r2 : R) (p q t : Octonion R a b c) :
+    buildThreeH r0 r1 r2 p q t * buildThreeH r0 r1 r2 p q t =
+      buildThreeH
+        (r0 * r0 + (p * star p).1.re + (q * star q).1.re)
+        (r1 * r1 + (star p * p).1.re + (t * star t).1.re)
+        (r2 * r2 + (star q * q).1.re + (star t * t).1.re)
+        ((r0 + r1) • p + q * star t)
+        ((r0 + r2) • q + p * t)
+        ((r1 + r2) • t + star p * q) := by
+  have hval : (buildThreeH r0 r1 r2 p q t * buildThreeH r0 r1 r2 p q t).val =
+      buildThree r0 r1 r2 p q t * buildThree r0 r1 r2 p q t := by
+    show (⅟2 : R) • (buildThree r0 r1 r2 p q t * buildThree r0 r1 r2 p q t +
+      buildThree r0 r1 r2 p q t * buildThree r0 r1 r2 p q t) = _
+    rw [← two_smul R, smul_smul, invOf_mul_self, one_smul]
+  apply Subtype.ext
+  rw [hval]
+  apply Matrix.ext
+  intro i j
+  rw [Matrix.mul_apply, Fin.sum_univ_three]
+  fin_cases i <;> fin_cases j <;> simp only [buildThreeH, buildThree] <;>
+    simp [-mul_fst, -mul_snd] <;>
+    simp only [scalarEmbed_mul_star_self_re, scalarEmbed_star_mul_self_re, mul_scalarEmbed,
+      scalarEmbed_mul] <;>
+    module
+
+/-- `scalarEmbed` of an `innerProduct` is exactly the polarized central scalar
+`mul_star_add_star_mul_eq_scalarEmbed` produces, halved back down -- the bridge from the
+closed-form `innerProduct` values used in `buildThreeH_mul_shape001`'s diagonal entries back to the
+raw octonion sums that actually appear when expanding the matrix product (parallel to
+`scalarEmbed_mul_star_self_re`/`scalarEmbed_star_mul_self_re` for `buildThreeH_mul_self`). -/
+private lemma scalarEmbed_innerProduct_eq (x y : Octonion R a b c) :
+    scalarEmbed (innerProduct x y) = (⅟2 : R) • (x * star y + y * star x) := by
+  rw [mul_star_add_star_mul_eq_scalarEmbed, smul_scalarEmbed, ← mul_assoc, invOf_mul_self, one_mul]
+
+/-- `x ∘ (buildThreeH s0 0 0 u v 0)`, i.e. `x` times a general row/column-`0`-supported piece
+(diagonal `s0` plus off-diagonal `u`, `v` at `(0,1)`, `(0,2)`) -- the lemma `jordan_case_diag0`
+actually needs, since both `x ∘ y` and `(x ∘ x) ∘ y` (for `y = diagPiece0 r`) are already of this
+shape by `buildThreeH_mul_diagPiece0`. The `(1,1)`/`(2,2)` diagonal entries are stated via
+`innerProduct (star p) (star u)`/`innerProduct (star q) (star v)` rather than the simplified
+`innerProduct p u`/`innerProduct q v` (equal by `innerProduct_star_star`, but not what the raw
+computation directly produces) so `scalarEmbed_innerProduct_eq` alone can close every diagonal
+entry uniformly. The `(1,2)`/`(2,1)` entries (`⅟2 • (star p * v + star u * q)`) are the one place
+two genuinely independent octonion products survive unresolved, carried through as-is. -/
+private lemma buildThreeH_mul_shape001 (r0 r1 r2 s0 : R) (p q t u v : Octonion R a b c) :
+    buildThreeH r0 r1 r2 p q t * buildThreeH s0 0 0 u v 0 =
+      buildThreeH
+        (r0 * s0 + innerProduct p u + innerProduct q v)
+        (innerProduct (star p) (star u))
+        (innerProduct (star q) (star v))
+        ((⅟2 : R) • ((r0 + r1) • u + s0 • p + v * star t))
+        ((⅟2 : R) • ((r0 + r2) • v + s0 • q + u * t))
+        ((⅟2 : R) • (star p * v + star u * q)) := by
+  have hmul : (buildThreeH r0 r1 r2 p q t * buildThreeH s0 0 0 u v 0).val =
+      (⅟2 : R) • (buildThree r0 r1 r2 p q t * buildThree s0 0 0 u v 0 +
+        buildThree s0 0 0 u v 0 * buildThree r0 r1 r2 p q t) := rfl
+  apply Subtype.ext
+  rw [hmul]
+  apply Matrix.ext
+  intro i j
+  rw [Matrix.smul_apply, Matrix.add_apply, Matrix.mul_apply, Matrix.mul_apply,
+    Fin.sum_univ_three, Fin.sum_univ_three]
+  fin_cases i <;> fin_cases j <;> simp only [buildThreeH, buildThree] <;>
+    simp [-mul_fst, -mul_snd, -innerProduct_apply]
+  · have key : (⅟2 : R) • (scalarEmbed (r0 * s0) : Octonion R a b c) +
+        (⅟2 : R) • (scalarEmbed (r0 * s0) : Octonion R a b c) = scalarEmbed (r0 * s0) := by
+      rw [← two_smul R, smul_smul, mul_comm, invOf_mul_self, one_smul]
+    rw [scalarEmbed_innerProduct_eq, scalarEmbed_innerProduct_eq, ← map_mul, ← map_mul,
+      show s0 * r0 = r0 * s0 from mul_comm s0 r0]
+    linear_combination (norm := module) key
+  · simp only [mul_scalarEmbed, scalarEmbed_mul]; module
+  · simp only [mul_scalarEmbed, scalarEmbed_mul]; module
+  · simp only [mul_scalarEmbed, scalarEmbed_mul]; module
+  · simp only [scalarEmbed_innerProduct_eq, star_star]; module
+  · simp only [mul_scalarEmbed, scalarEmbed_mul]; module
+  · module
+  · simp only [scalarEmbed_innerProduct_eq, star_star]; module
+
+/-! Each of the following six lemmas is the Jordan identity `x*x*(x*y) = x*(x*x*y)` restricted to
+`y` ranging over one of the six "standard basis" generators of `AlbertAlgebra` (three diagonal,
+three off-diagonal, per `buildThreeH_eq_sum`) -- the cases `jordan_identity` reduces to below. Each
+still quantifies over a fully generic diagonal scalar `r : R` or off-diagonal octonion `x : Octonion
+R a b c`, rather than expanding that parameter over any further `R`-basis (of `R` itself, or of
+`Octonion R a b c`) -- exactly the "module over `Octonion`, not all the way down to `R`" reduction
+described above. This is where the genuinely hard content of the exceptional Jordan algebra
+identity -- using `IsAlternative`/the octonion norm and Artin's theorem that any two elements of an
+alternative algebra generate an associative subalgebra -- has to go; none of that is used yet. -/
+private lemma jordan_case_diag0 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) (r : R) :
+    x * x * (x * diagPiece0 r) = x * (x * x * diagPiece0 r) := by
+  obtain ⟨r0, r1, r2, p, q, t, rfl⟩ : ∃ r0 r1 r2 p q t, x = buildThreeH r0 r1 r2 p q t :=
+    ⟨_, _, _, _, _, _, HermitianOctonionMatrixThree.eq_buildThreeH x⟩
+  simp only [buildThreeH_mul_self, buildThreeH_mul_diagPiece0, buildThreeH_mul_shape001]
+  apply Subtype.ext
+  apply Matrix.ext
+  intro i j
+  fin_cases i <;> fin_cases j <;> simp only [buildThreeH, buildThree] <;>
+    simp [-mul_fst, -mul_snd, -innerProduct_apply] <;>
+    (trace_state; sorry)
+
+private lemma jordan_case_diag1 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) (r : R) :
+    x * x * (x * diagPiece1 r) = x * (x * x * diagPiece1 r) := by
+  sorry
+
+private lemma jordan_case_diag2 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) (r : R) :
+    x * x * (x * diagPiece2 r) = x * (x * x * diagPiece2 r) := by
+  sorry
+
+private lemma jordan_case_off01 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c))
+    (o : Octonion R a b c) :
+    x * x * (x * offPiece01 o) = x * (x * x * offPiece01 o) := by
+  sorry
+
+private lemma jordan_case_off02 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c))
+    (o : Octonion R a b c) :
+    x * x * (x * offPiece02 o) = x * (x * x * offPiece02 o) := by
+  sorry
+
+private lemma jordan_case_off12 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c))
+    (o : Octonion R a b c) :
+    x * x * (x * offPiece12 o) = x * (x * x * offPiece12 o) := by
+  sorry
+
 instance ofAlbert : JordanAlgebra R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) where
   jordan_mul_comm := by
     intro x y
@@ -1160,7 +1618,14 @@ instance ofAlbert : JordanAlgebra R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) 
     change (⅟2 : R) • (x.1 * y.1 + y.1 * x.1) =
       (⅟2 : R) • (y.1 * x.1 + x.1 * y.1)
     rw [add_comm]
-  jordan_identity x y := sorry
+  jordan_identity x y := by
+    rw [HermitianOctonionMatrixThree.eq_buildThreeH y, buildThreeH_eq_sum]
+    simp only [mul_add]
+    rw [jordan_case_diag0 x (HermitianOctonionMatrixThree.diagCoord y 0),
+      jordan_case_diag1 x (HermitianOctonionMatrixThree.diagCoord y 1),
+      jordan_case_diag2 x (HermitianOctonionMatrixThree.diagCoord y 2),
+      jordan_case_off01 x (y.val 0 1), jordan_case_off02 x (y.val 0 2),
+      jordan_case_off12 x (y.val 1 2)]
 
 /-! ### Formal reality
 
