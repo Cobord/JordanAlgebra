@@ -1,6 +1,7 @@
 import Mathlib.Tactic.LinearCombination
 import Jordan.Octonion
 import Jordan.OctonionMatrix
+import Jordan.AlbertAlgebraCross
 
 open scoped Quaternion
 
@@ -830,10 +831,44 @@ private lemma jordan_case_diag2 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) 
       rw [innerProduct_comm (star t * star p) (star q), innerProduct_comm (star q * p) (star t)]
       ring)
 
+set_option maxHeartbeats 8000000 in
 private lemma jordan_case_off01 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c))
     (o : Octonion R a b c) :
     x * x * (x * offPiece01 o) = x * (x * x * offPiece01 o) := by
-  sorry
+  obtain ⟨r0, r1, r2, p, q, t, rfl⟩ : ∃ r0 r1 r2 p q t, x = buildThreeH r0 r1 r2 p q t :=
+    ⟨_, _, _, _, _, _, HermitianOctonionMatrixThree.eq_buildThreeH x⟩
+  simp only [buildThreeH_mul_self, buildThreeH_mul_offPiece01, buildThreeH_mul_general]
+  apply Subtype.ext
+  apply Matrix.ext
+  intro i j
+  fin_cases i <;> fin_cases j <;> simp only [buildThreeH, buildThree] <;>
+    simp [-mul_fst, -mul_snd, -innerProduct_apply]
+  · -- (0,0)
+    simp only [← map_mul, ← map_add]
+    congr 1
+    exact off01_entry00 r0 r1 r2 p q t o
+  · -- (0,1)
+    exact off01_entry01 r0 r1 r2 p q t o
+  · -- (0,2)
+    sorry
+  · -- (1,0)
+    have h := congrArg star (off01_entry01 r0 r1 r2 p q t o)
+    simp only [star_add, star_smul, star_mul, star_star, star_trivial] at h
+    exact h
+  · -- (1,1)
+    simp only [← map_mul, ← map_add]
+    congr 1
+    exact off01_entry11 r0 r1 r2 p q t o
+  · -- (1,2)
+    sorry
+  · -- (2,0)
+    sorry
+  · -- (2,1)
+    sorry
+  · -- (2,2)
+    simp only [← map_mul, ← map_add]
+    congr 1
+    exact off01_entry22 r0 r1 r2 p q t o
 
 private lemma jordan_case_off02 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c))
     (o : Octonion R a b c) :
