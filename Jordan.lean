@@ -1,14 +1,17 @@
 -- This module serves as the root of the `Jordan` library.
 -- Import modules here that should be built as part of the library.
 import Jordan.AlbertAlgebra
-import Jordan.AlbertAlgebraCross
 import Jordan.Alternative
 import Jordan.Basic
 import Jordan.CommNonAssocNF
 import Jordan.ComplexQM
 import Jordan.FormallyReal
+import Jordan.HermitianMatrixAssociator
+import Jordan.HermitianMatrixJordanIdentity
 import Jordan.JordanAlgebra
 import Jordan.JordanTriple
+import Jordan.MatrixAssociator
+import Jordan.NuclearInvolution
 import Jordan.Octonion
 import Jordan.OctonionMatrix
 import Jordan.QuaternionicQM

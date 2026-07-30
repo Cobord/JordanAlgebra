@@ -1,7 +1,7 @@
 import Mathlib.Tactic.LinearCombination
+import Jordan.HermitianMatrixJordanIdentity
 import Jordan.Octonion
 import Jordan.OctonionMatrix
-import Jordan.AlbertAlgebraCross
 
 open scoped Quaternion
 
@@ -534,353 +534,19 @@ private lemma buildThreeH_mul_offPiece12 (r0 r1 r2 : R) (p q t o : Octonion R a 
   simp only [offPiece12, buildThreeH_mul_shape010, mul_zero, map_zero, add_zero, zero_smul,
     smul_zero, star_zero, zero_mul, zero_add]
 
-/-! Each of the following six lemmas is the Jordan identity `x*x*(x*y) = x*(x*x*y)` restricted to
-`y` ranging over one of the six "standard basis" generators of `AlbertAlgebra` (three diagonal,
-three off-diagonal, per `buildThreeH_eq_sum`) -- the cases `jordan_identity` reduces to below. Each
-still quantifies over a fully generic diagonal scalar `r : R` or off-diagonal octonion `x : Octonion
-R a b c`, rather than expanding that parameter over any further `R`-basis (of `R` itself, or of
-`Octonion R a b c`) -- exactly the "module over `Octonion`, not all the way down to `R`" reduction
-described above. This is where the genuinely hard content of the exceptional Jordan algebra
-identity -- using `IsAlternative`/the octonion norm and Artin's theorem that any two elements of an
-alternative algebra generate an associative subalgebra -- has to go; none of that is used yet. -/
-private lemma jordan_case_diag0 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) (r : R) :
-    x * x * (x * diagPiece0 r) = x * (x * x * diagPiece0 r) := by
-  obtain ⟨r0, r1, r2, p, q, t, rfl⟩ : ∃ r0 r1 r2 p q t, x = buildThreeH r0 r1 r2 p q t :=
-    ⟨_, _, _, _, _, _, HermitianOctonionMatrixThree.eq_buildThreeH x⟩
-  simp only [buildThreeH_mul_self, buildThreeH_mul_diagPiece0, buildThreeH_mul_shape001]
-  apply Subtype.ext
-  apply Matrix.ext
-  intro i j
-  fin_cases i <;> fin_cases j <;> simp only [buildThreeH, buildThree] <;>
-    simp [-mul_fst, -mul_snd, -innerProduct_apply]
-  · simp only [← map_mul, ← map_add]
-    congr 1
-    rw [innerProduct_comm (q * star t) p, innerProduct_comm (p * t) q]
-    ring
-  · -- (0,1): mathematically verified correct by hand (the `p`-coefficient identity holds given
-    -- `2 * ⅟2 = 1`), but `module`'s internal `ring` call can't derive that Invertible-2 fact on
-    -- its own -- same root cause as `buildThreeH_mul_shape001`'s `(0,0)` case, which needed an
-    -- explicit `linear_combination (norm := module) key`. Keeping the `simp only` so the leftover
-    -- goal is the clean, already-understood residual, not a re-derivation from scratch.
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_mul_star_eq_center, mul_star_mul_eq_center]
-    rw [show (q * star q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed q),
-      show (t * star t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed t),
-      show (p * star p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed p),
-      show (star p * p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed p)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star p.1 * p.1).re + c * (star p.2 * p.2).re) +
-            (⅟2 : R) * r * ((star q.1 * q.1).re + c * (star q.2 * q.2).re) -
-            (⅟2 : R) * r0 * r * r1) * mul_invOf_self (2 : R)
-    · linear_combination (-(r0 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · -- (0,2): the `(0,1)` argument with `r1 ↦ r2` (and `p ↔ q` roles matching the `(0,2)` slot).
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_star_mul_eq_center, mul_star_mul_eq'_center]
-    rw [show (p * star p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed p),
-      show (q * star q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed q),
-      show (star q * q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed q),
-      show (star t * t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed t)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star p.1 * p.1).re + c * (star p.2 * p.2).re) +
-            (⅟2 : R) * r * ((star q.1 * q.1).re + c * (star q.2 * q.2).re) -
-            (⅟2 : R) * r0 * r * r2) * mul_invOf_self (2 : R)
-    · linear_combination (-(r0 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · -- (1,0): the `star` of the `(0,1)` entry; simplifies to the identical residual.
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_mul_star_eq_center, mul_star_mul_eq_center]
-    rw [show (p * star p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed p),
-      show (q * star q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed q),
-      show (star p * p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed p),
-      show (t * star t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed t)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star p.1 * p.1).re + c * (star p.2 * p.2).re) +
-            (⅟2 : R) * r * ((star q.1 * q.1).re + c * (star q.2 * q.2).re) -
-            (⅟2 : R) * r0 * r * r1) * mul_invOf_self (2 : R)
-    · linear_combination (-(r0 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · simp only [← map_mul, ← map_add]
-    congr 1
-    rw [innerProduct_comm (t * star q) (star p)]
-    ring
-  · simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      star_mul_mul_eq_center, mul_star_mul_eq'_center]
-    module
-  · -- (2,0): the `star` of the `(0,2)` entry; simplifies to the identical residual.
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_mul_star_eq_center, star_mul_mul_eq_center]
-    rw [show (p * star p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed p),
-      show (q * star q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed q),
-      show (star q * q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed q),
-      show (star t * t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed t)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star p.1 * p.1).re + c * (star p.2 * p.2).re) +
-            (⅟2 : R) * r * ((star q.1 * q.1).re + c * (star q.2 * q.2).re) -
-            (⅟2 : R) * r0 * r * r2) * mul_invOf_self (2 : R)
-    · linear_combination (-(r0 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      star_mul_mul_eq_center, mul_star_mul_eq'_center]
-    module
-  · simp only [← map_mul, ← map_add]
-    congr 1
-    rw [innerProduct_comm (star t * star p) (star q)]
-    ring
+section NuclearHyps
 
-private lemma jordan_case_diag1 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) (r : R) :
-    x * x * (x * diagPiece1 r) = x * (x * x * diagPiece1 r) := by
-  obtain ⟨r0, r1, r2, p, q, t, rfl⟩ : ∃ r0 r1 r2 p q t, x = buildThreeH r0 r1 r2 p q t :=
-    ⟨_, _, _, _, _, _, HermitianOctonionMatrixThree.eq_buildThreeH x⟩
-  simp only [buildThreeH_mul_self, buildThreeH_mul_diagPiece1, buildThreeH_mul_shape010]
-  apply Subtype.ext
-  apply Matrix.ext
-  intro i j
-  fin_cases i <;> fin_cases j <;> simp only [buildThreeH, buildThree] <;>
-    simp [-mul_fst, -mul_snd, -innerProduct_apply]
-  · simp only [← map_mul, ← map_add]
-    exact congrArg scalarEmbed (by rw [innerProduct_comm (q * star t) p]; ring)
-  · -- (0,1): the `(0,1)` argument from `jordan_case_diag0`, with `r0 ↦ r1` (the touched index) and
-    -- the surviving norm `Nq ↦ Nt`.
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_mul_star_eq_center, mul_star_mul_eq_center]
-    rw [show (q * star q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed q),
-      show (t * star t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed t),
-      show (p * star p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed p),
-      show (star p * p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed p)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star p.1 * p.1).re + c * (star p.2 * p.2).re) +
-            (⅟2 : R) * r * ((star t.1 * t.1).re + c * (star t.2 * t.2).re) -
-            (⅟2 : R) * r0 * r * r1) * mul_invOf_self (2 : R)
-    · linear_combination (-(r1 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_star_mul_eq_center, mul_star_mul_eq'_center]
-    module
-  · -- (1,0): the `star` of the `(0,1)` entry above; simplifies to the identical residual.
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_mul_star_eq_center, mul_star_mul_eq_center]
-    rw [show (q * star q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed q),
-      show (t * star t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed t),
-      show (p * star p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed p),
-      show (star p * p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed p)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star p.1 * p.1).re + c * (star p.2 * p.2).re) +
-            (⅟2 : R) * r * ((star t.1 * t.1).re + c * (star t.2 * t.2).re) -
-            (⅟2 : R) * r0 * r * r1) * mul_invOf_self (2 : R)
-    · linear_combination (-(r1 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · simp only [← map_mul, ← map_add]
-    exact congrArg scalarEmbed (by
-      rw [innerProduct_comm (t * star q) (star p), innerProduct_comm (star p * q) t]; ring)
-  · -- (1,2): the `(0,2)` argument from `jordan_case_diag0`, with `r0 ↦ r1`/`r2 ↦ r2` shifted (the
-    -- touched index is now `1`) and the surviving norms `Np`/`Nq ↦ Np`/`Nt`.
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      star_mul_mul_eq_center, mul_star_mul_eq'_center]
-    rw [show (star p * p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed p),
-      show (t * star t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed t),
-      show (star q * q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed q),
-      show (star t * t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed t)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star p.1 * p.1).re + c * (star p.2 * p.2).re) +
-            (⅟2 : R) * r * ((star t.1 * t.1).re + c * (star t.2 * t.2).re) -
-            (⅟2 : R) * r1 * r * r2) * mul_invOf_self (2 : R)
-    · linear_combination (-(r1 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_mul_star_eq_center, star_mul_mul_eq_center]
-    module
-  · -- (2,1): the `star` of the `(1,2)` entry above; simplifies to the identical residual.
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      star_mul_mul_eq_center, mul_star_mul_eq'_center]
-    rw [show (star p * p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed p),
-      show (t * star t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed t),
-      show (star q * q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed q),
-      show (star t * t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed t)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star p.1 * p.1).re + c * (star p.2 * p.2).re) +
-            (⅟2 : R) * r * ((star t.1 * t.1).re + c * (star t.2 * t.2).re) -
-            (⅟2 : R) * r1 * r * r2) * mul_invOf_self (2 : R)
-    · linear_combination (-(r1 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · simp only [← map_mul, ← map_add]
-    exact congrArg scalarEmbed (by rw [innerProduct_comm (star q * p) (star t)]; ring)
+variable (ha : ∀ x : R, a * x = 0 → x = 0) (hb : ∀ x : R, b * x = 0 → x = 0)
+  (hc : ∀ x : R, c * x = 0 → x = 0)
 
-private lemma jordan_case_diag2 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) (r : R) :
-    x * x * (x * diagPiece2 r) = x * (x * x * diagPiece2 r) := by
-  obtain ⟨r0, r1, r2, p, q, t, rfl⟩ : ∃ r0 r1 r2 p q t, x = buildThreeH r0 r1 r2 p q t :=
-    ⟨_, _, _, _, _, _, HermitianOctonionMatrixThree.eq_buildThreeH x⟩
-  simp only [buildThreeH_mul_self, buildThreeH_mul_diagPiece2, buildThreeH_mul_shape100]
-  apply Subtype.ext
-  apply Matrix.ext
-  intro i j
-  fin_cases i <;> fin_cases j <;> simp only [buildThreeH, buildThree] <;>
-    simp [-mul_fst, -mul_snd, -innerProduct_apply]
-  · simp only [← map_mul, ← map_add]
-    exact congrArg scalarEmbed (by rw [innerProduct_comm (p * t) q]; ring)
-  · simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_mul_star_eq_center, mul_star_mul_eq_center]
-    module
-  · -- (0,2): `Nq + Nt - r0 * r2` residual (touched index `2`, surviving norms `q`/`t`).
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_star_mul_eq_center, mul_star_mul_eq'_center]
-    rw [show (p * star p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed p),
-      show (q * star q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed q),
-      show (star q * q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed q),
-      show (star t * t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed t)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star q.1 * q.1).re + c * (star q.2 * q.2).re) +
-            (⅟2 : R) * r * ((star t.1 * t.1).re + c * (star t.2 * t.2).re) -
-            (⅟2 : R) * r0 * r * r2) * mul_invOf_self (2 : R)
-    · linear_combination (-(r2 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_mul_star_eq_center, mul_star_mul_eq_center]
-    module
-  · simp only [← map_mul, ← map_add]
-    exact congrArg scalarEmbed (by rw [innerProduct_comm (star p * q) t]; ring)
-  · -- (1,2): `Nq + Nt - r1 * r2` residual.
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      star_mul_mul_eq_center, mul_star_mul_eq'_center]
-    rw [show (star p * p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed p),
-      show (t * star t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed t),
-      show (star q * q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed q),
-      show (star t * t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed t)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star q.1 * q.1).re + c * (star q.2 * q.2).re) +
-            (⅟2 : R) * r * ((star t.1 * t.1).re + c * (star t.2 * t.2).re) -
-            (⅟2 : R) * r1 * r * r2) * mul_invOf_self (2 : R)
-    · linear_combination (-(r2 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · -- (2,0): the `star` of the `(0,2)` entry above; simplifies to the identical residual.
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      mul_mul_star_eq_center, star_mul_mul_eq_center]
-    rw [show (p * star p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed p),
-      show (q * star q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed q),
-      show (star q * q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed q),
-      show (star t * t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed t)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star q.1 * q.1).re + c * (star q.2 * q.2).re) +
-            (⅟2 : R) * r * ((star t.1 * t.1).re + c * (star t.2 * t.2).re) -
-            (⅟2 : R) * r0 * r * r2) * mul_invOf_self (2 : R)
-    · linear_combination (-(r2 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · -- (2,1): the `star` of the `(1,2)` entry above; simplifies to the identical residual.
-    simp only [mul_add, add_mul, smul_add, mul_smul_comm, smul_mul_assoc, smul_smul,
-      star_mul_mul_eq_center, mul_star_mul_eq'_center]
-    rw [show (star p * p).1.re = (star p.1 * p.1).re + c * (star p.2 * p.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed p),
-      show (t * star t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (mul_star_self_eq_scalarEmbed t),
-      show (star q * q).1.re = (star q.1 * q.1).re + c * (star q.2 * q.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed q),
-      show (star t * t).1.re = (star t.1 * t.1).re + c * (star t.2 * t.2).re from
-        diag_just_11 _ _ (star_mul_self_eq_scalarEmbed t)]
-    match_scalars
-    · linear_combination
-        ((⅟2 : R) * r * ((star q.1 * q.1).re + c * (star q.2 * q.2).re) +
-            (⅟2 : R) * r * ((star t.1 * t.1).re + c * (star t.2 * t.2).re) -
-            (⅟2 : R) * r1 * r * r2) * mul_invOf_self (2 : R)
-    · linear_combination (-(r2 * r * (⅟2 : R))) * mul_invOf_self (2 : R)
-  · simp only [← map_mul, ← map_add]
-    exact congrArg scalarEmbed (by
-      rw [innerProduct_comm (star t * star p) (star q), innerProduct_comm (star q * p) (star t)]
-      ring)
-
-set_option maxHeartbeats 8000000 in
-private lemma jordan_case_off01 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c))
-    (o : Octonion R a b c) :
-    x * x * (x * offPiece01 o) = x * (x * x * offPiece01 o) := by
-  obtain ⟨r0, r1, r2, p, q, t, rfl⟩ : ∃ r0 r1 r2 p q t, x = buildThreeH r0 r1 r2 p q t :=
-    ⟨_, _, _, _, _, _, HermitianOctonionMatrixThree.eq_buildThreeH x⟩
-  simp only [buildThreeH_mul_self, buildThreeH_mul_offPiece01, buildThreeH_mul_general]
-  apply Subtype.ext
-  apply Matrix.ext
-  intro i j
-  fin_cases i <;> fin_cases j <;> simp only [buildThreeH, buildThree] <;>
-    simp [-mul_fst, -mul_snd, -innerProduct_apply]
-  · -- (0,0)
-    simp only [← map_mul, ← map_add]
-    congr 1
-    exact off01_entry00 r0 r1 r2 p q t o
-  · -- (0,1)
-    exact off01_entry01 r0 r1 r2 p q t o
-  · -- (0,2)
-    sorry
-  · -- (1,0)
-    have h := congrArg star (off01_entry01 r0 r1 r2 p q t o)
-    simp only [star_add, star_smul, star_mul, star_star, star_trivial] at h
-    exact h
-  · -- (1,1)
-    simp only [← map_mul, ← map_add]
-    congr 1
-    exact off01_entry11 r0 r1 r2 p q t o
-  · -- (1,2)
-    sorry
-  · -- (2,0)
-    sorry
-  · -- (2,1)
-    sorry
-  · -- (2,2)
-    simp only [← map_mul, ← map_add]
-    congr 1
-    exact off01_entry22 r0 r1 r2 p q t o
-
-private lemma jordan_case_off02 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c))
-    (o : Octonion R a b c) :
-    x * x * (x * offPiece02 o) = x * (x * x * offPiece02 o) := by
-  sorry
-
-private lemma jordan_case_off12 (x : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c))
-    (o : Octonion R a b c) :
-    x * x * (x * offPiece12 o) = x * (x * x * offPiece12 o) := by
-  sorry
-
-instance ofAlbert : JordanAlgebra R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) where
+include ha hb hc in
+set_option maxHeartbeats 1000000 in
+/-- `AlbertAlgebra` is a Jordan algebra whenever `a`, `b`, `c` are non-zero-divisors: that
+regularity is exactly what `Octonion.nuclearInvolution` needs to show `Octonion R a b c` is a
+nuclear involution, the hypothesis `hermitian_jordan_identity` needs for `jordan_identity` below.
+Not tagged `instance` since it takes explicit hypotheses beyond the ambient typeclasses -- see
+`JORDAN_IDENTITY_PLAN.md`. -/
+@[reducible] def ofAlbert : JordanAlgebra R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) where
   jordan_mul_comm := by
     intro x y
     apply Subtype.ext
@@ -888,13 +554,32 @@ instance ofAlbert : JordanAlgebra R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) 
       (⅟2 : R) • (y.1 * x.1 + x.1 * y.1)
     rw [add_comm]
   jordan_identity x y := by
-    rw [HermitianOctonionMatrixThree.eq_buildThreeH y, buildThreeH_eq_sum]
-    simp only [mul_add]
-    rw [jordan_case_diag0 x (HermitianOctonionMatrixThree.diagCoord y 0),
-      jordan_case_diag1 x (HermitianOctonionMatrixThree.diagCoord y 1),
-      jordan_case_diag2 x (HermitianOctonionMatrixThree.diagCoord y 2),
-      jordan_case_off01 x (y.val 0 1), jordan_case_off02 x (y.val 0 2),
-      jordan_case_off12 x (y.val 1 2)]
+    apply Subtype.ext
+    have hsq : (x * x).val = x.1 * x.1 := by
+      show (⅟2 : R) • (x.1 * x.1 + x.1 * x.1) = _
+      rw [← two_smul R, smul_smul, invOf_mul_self, one_smul]
+    have hxy : (x * y).val = (⅟2 : R) • (x.1 * y.1 + y.1 * x.1) := rfl
+    have hxxy : (x * x * y).val = (⅟2 : R) • (x.1 * x.1 * y.1 + y.1 * (x.1 * x.1)) := by
+      show (⅟2 : R) • ((x * x).val * y.1 + y.1 * (x * x).val) = _
+      rw [hsq]
+    have hLHS : (x * x * (x * y)).val =
+        ((⅟2 : R) * (⅟2 : R)) •
+          ((x.1 * x.1) * (x.1 * y.1 + y.1 * x.1) + (x.1 * y.1 + y.1 * x.1) * (x.1 * x.1)) := by
+      show (⅟2 : R) • ((x * x).val * (x * y).val + (x * y).val * (x * x).val) = _
+      rw [hsq, hxy, mul_smul_comm, smul_mul_assoc, ← smul_add, smul_smul]
+    have hRHS : (x * (x * x * y)).val =
+        ((⅟2 : R) * (⅟2 : R)) •
+          (x.1 * (x.1 * x.1 * y.1 + y.1 * (x.1 * x.1)) +
+            (x.1 * x.1 * y.1 + y.1 * (x.1 * x.1)) * x.1) := by
+      show (⅟2 : R) • (x.1 * (x * x * y).val + (x * x * y).val * x.1) = _
+      rw [hxxy, mul_smul_comm, smul_mul_assoc, ← smul_add, smul_smul]
+    rw [hLHS, hRHS]
+    congr 1
+    haveI := Octonion.nuclearInvolution ha hb hc
+    have key := hermitian_jordan_identity x.1 y.1 x.2 y.2
+    linear_combination (norm := abel_nf) key
+
+end NuclearHyps
 
 /-! ### Formal reality
 
@@ -1061,15 +746,21 @@ private theorem buildThreeH_zero :
   intro i j
   fin_cases i <;> fin_cases j <;> simp [buildThreeH, buildThree]
 
+variable (hna : ∀ x : R, a * x = 0 → x = 0) (hnb : ∀ x : R, b * x = 0 → x = 0)
+  (hnc : ∀ x : R, c * x = 0 → x = 0)
+
+include hna hnb hnc in
 theorem isFormallyReal (ha : a < 0) (hb : b < 0) (hc : 0 < c) :
-    IsFormallyReal R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) := by
+    @IsFormallyReal R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) _ (ofAlbert hna hnb hnc) := by
+  letI := ofAlbert hna hnb hnc
   refine ⟨fun {ι} _ X hX i => ?_⟩
   have hex : ∀ k, ∃ r0 r1 r2 p q t, X k = buildThreeH r0 r1 r2 p q t :=
     fun k => ⟨_, _, _, _, _, _, HermitianOctonionMatrixThree.eq_buildThreeH (X k)⟩
   choose r0 r1 r2 p q t hXeq using hex
   have hsum : ∑ k, trace (X k * X k) = 0 := by
     have h : traceHom (∑ k, X k * X k) = ∑ k, traceHom (X k * X k) := map_sum traceHom _ _
-    rw [hX, map_zero] at h
+    have hX' : (∑ k, X k * X k) = 0 := hX
+    rw [hX', map_zero] at h
     exact h.symm
   have hnn : ∀ k ∈ (Finset.univ : Finset ι), 0 ≤ trace (X k * X k) := by
     intro k _
@@ -1173,6 +864,7 @@ omit [LinearOrder R] [IsStrictOrderedRing R] in
 private theorem det_one : det (1 : AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) = 1 := by
   simp [det, HermitianOctonionMatrixThree.diagCoord, AlbertAlgebra_one_val]
 
+include hna hnb hnc in
 /-- Rank `3`, matching the classical Albert algebra: both the trace half (`traceₗ`/`trace_one`,
 from `buildThreeH_mul_self`/`Octonion.mul_star_self_eq_scalarEmbed`, exactly as `isFormallyReal`
 was) and the determinant half (`det`/`det_smul`/`det_one`, the Freudenthal cubic-form formula
@@ -1180,9 +872,10 @@ above) are filled in. What isn't proved is that `det` satisfies any further mult
 cubic-form identity beyond the two `IsFormallyRealDetTrace` fields ask for -- those would need
 Artin's theorem/the full Freudenthal machinery, not attempted here. -/
 noncomputable def detTrace (ha : a < 0) (hb : b < 0) (hc : 0 < c) :
-    @IsFormallyRealDetTrace R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) _ _
-      (isFormallyReal ha hb hc) := by
-  letI := isFormallyReal ha hb hc
+    @IsFormallyRealDetTrace R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) _ (ofAlbert hna hnb hnc)
+      (isFormallyReal hna hnb hnc ha hb hc) := by
+  letI := ofAlbert hna hnb hnc
+  letI := isFormallyReal hna hnb hnc ha hb hc
   exact
     { rank := 3
       trace := traceₗ

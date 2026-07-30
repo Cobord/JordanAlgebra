@@ -3,6 +3,7 @@ import Mathlib.LinearAlgebra.Basis.Prod
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.LinearCombination
 import Jordan.Alternative
+import Jordan.NuclearInvolution
 
 /-!
 # Generalized octonion algebras
@@ -451,6 +452,137 @@ theorem smul_scalarEmbed (r K : R) :
     r • (scalarEmbed K : Octonion R a b c) = scalarEmbed (r * K) := by
   rw [← scalarEmbed_mul, map_mul]
 
+section Nuclear
+
+variable (ha : ∀ x : R, a * x = 0 → x = 0) (hb : ∀ x : R, b * x = 0 → x = 0)
+  (hc : ∀ x : R, c * x = 0 → x = 0)
+
+omit ha hb hc [StarRing R] [TrivialStar R] in
+private theorem eq_zero_of_two_mul_eq_zero {v : R} (h : (2 : R) * v = 0) : v = 0 :=
+  (isUnit_of_invertible (2 : R)).mul_right_eq_zero.mp h
+
+omit ha hb hc in
+set_option linter.unusedSectionVars false in
+/-- A quaternion commuting with both `i` and `j` (hence, since `k = i*j`, with everything) is a
+plain scalar. The "commutes with `i`" half already pins the `imI`/`imJ` coordinates to `0`
+(no regularity needed); the `imK` coordinate needs *either* `a` or `b` regular to cancel. -/
+private theorem quaternion_eq_coe_of_comm_i_j
+    (hab : (∀ x : R, a * x = 0 → x = 0) ∨ (∀ x : R, b * x = 0 → x = 0)) (p : ℍ[R, a, 0, b])
+    (hi : p * (⟨0, 1, 0, 0⟩ : ℍ[R, a, 0, b]) = (⟨0, 1, 0, 0⟩ : ℍ[R, a, 0, b]) * p)
+    (hj : p * (⟨0, 0, 1, 0⟩ : ℍ[R, a, 0, b]) = (⟨0, 0, 1, 0⟩ : ℍ[R, a, 0, b]) * p) :
+    p = algebraMap R ℍ[R, a, 0, b] p.re := by
+  obtain ⟨w, x, y, z⟩ := p
+  simp only [QuaternionAlgebra.mk_mul_mk, mul_zero, zero_mul, mul_one, one_mul, add_zero,
+    zero_add, sub_zero, QuaternionAlgebra.ext_iff] at hi hj
+  obtain ⟨-, -, hi3, hi4⟩ := hi
+  obtain ⟨-, hj2, -, hj4⟩ := hj
+  have hy : y = 0 := eq_zero_of_two_mul_eq_zero (v := y) (by linear_combination -hi4)
+  have hx : x = 0 := eq_zero_of_two_mul_eq_zero (v := x) (by linear_combination hj4)
+  have hz : z = 0 := by
+    rcases hab with ha | hb
+    · exact ha z (eq_zero_of_two_mul_eq_zero (v := a * z) (by linear_combination -hi3))
+    · exact hb z (eq_zero_of_two_mul_eq_zero (v := b * z) (by linear_combination hj2))
+  rw [QuaternionAlgebra.algebraMap_eq]
+  exact QuaternionAlgebra.ext rfl hx hy hz
+
+include ha hb hc in
+set_option linter.unusedSectionVars false in
+theorem nuclear_rpart (n : Octonion R a b c) (hn : IsNuclear n) :
+    ∃ r : R, n = scalarEmbed r := by
+  have step1 : ∀ q : ℍ[R, a, 0, b], n.1 * q = q * n.1 := by
+    intro q
+    have h := (hn (mk q 0) (mk 0 1)).1
+    unfold IsAlternative.associator at h
+    have heq := sub_eq_zero.mp h
+    have h2 := congrArg (·.2) heq
+    simp only [mul_fst, mul_snd, mk_fst, mk_snd, star_zero, smul_zero, mul_zero, zero_mul,
+      add_zero, zero_add, sub_zero, one_mul] at h2
+    exact h2
+  have step2 : ∀ q : ℍ[R, a, 0, b], c • (star q * n.2 - n.2 * star q) = 0 := by
+    intro q
+    have h := (hn (mk q 0) (mk 0 1)).1
+    unfold IsAlternative.associator at h
+    have heq := sub_eq_zero.mp h
+    have h1 := congrArg (·.1) heq
+    simp only [mul_fst, mul_snd, mk_fst, mk_snd, star_zero, star_one, smul_zero, mul_zero,
+      zero_mul, add_zero, zero_add, sub_zero, one_mul] at h1
+    rw [zero_sub, zero_sub] at h1
+    have h1' : c • (n.2 * star q) = c • (star q * n.2) := neg_inj.mp h1
+    rw [smul_sub, sub_eq_zero]
+    exact h1'.symm
+  have hcmod : ∀ v : ℍ[R, a, 0, b], c • v = 0 → v = 0 := by
+    intro v hv
+    obtain ⟨w, x, y, z⟩ := v
+    simp [QuaternionAlgebra.ext_iff] at hv
+    obtain ⟨h1, h2, h3, h4⟩ := hv
+    exact QuaternionAlgebra.ext (hc w h1) (hc x h2) (hc y h3) (hc z h4)
+  have step2' : ∀ q : ℍ[R, a, 0, b], n.2 * q = q * n.2 := by
+    intro q
+    have h := hcmod _ (step2 (star q))
+    rw [star_star] at h
+    exact (sub_eq_zero.mp h).symm
+  have n1eq : n.1 = algebraMap R ℍ[R, a, 0, b] n.1.re :=
+    quaternion_eq_coe_of_comm_i_j (Or.inl ha) n.1 (step1 ⟨0, 1, 0, 0⟩) (step1 ⟨0, 0, 1, 0⟩)
+  have n2eq : n.2 = algebraMap R ℍ[R, a, 0, b] n.2.re :=
+    quaternion_eq_coe_of_comm_i_j (Or.inl ha) n.2 (step2' ⟨0, 1, 0, 0⟩) (step2' ⟨0, 0, 1, 0⟩)
+  have step3raw :
+      (n.2 * star (⟨0, 1, 0, 0⟩ : ℍ[R, a, 0, b])) * star (⟨0, 0, 1, 0⟩ : ℍ[R, a, 0, b]) =
+      (n.2 * star (⟨0, 0, 1, 0⟩ : ℍ[R, a, 0, b])) * star (⟨0, 1, 0, 0⟩ : ℍ[R, a, 0, b]) := by
+    have h := (hn (mk (⟨0, 1, 0, 0⟩ : ℍ[R, a, 0, b]) 0) (mk (⟨0, 0, 1, 0⟩ : ℍ[R, a, 0, b]) 0)).1
+    unfold IsAlternative.associator at h
+    have heq := sub_eq_zero.mp h
+    have h2 := congrArg (·.2) heq
+    simp only [mul_fst, mul_snd, mk_fst, mk_snd, star_zero, smul_zero, mul_zero, zero_mul,
+      add_zero, zero_add, sub_zero] at h2
+    rw [h2, star_mul, mul_assoc]
+  have hqiqj : (star (⟨0, 1, 0, 0⟩ : ℍ[R, a, 0, b])) * star (⟨0, 0, 1, 0⟩ : ℍ[R, a, 0, b]) =
+      (⟨0, 0, 0, 1⟩ : ℍ[R, a, 0, b]) := by
+    simp [QuaternionAlgebra.mk_mul_mk]
+  have hqjqi : (star (⟨0, 0, 1, 0⟩ : ℍ[R, a, 0, b])) * star (⟨0, 1, 0, 0⟩ : ℍ[R, a, 0, b]) =
+      -(⟨0, 0, 0, 1⟩ : ℍ[R, a, 0, b]) := by
+    simp [QuaternionAlgebra.mk_mul_mk]
+  have step3 : n.2.re • (⟨0, 0, 0, 1⟩ : ℍ[R, a, 0, b]) =
+      -(n.2.re • (⟨0, 0, 0, 1⟩ : ℍ[R, a, 0, b])) := by
+    have h := step3raw
+    rw [n2eq, ← Algebra.smul_def, ← Algebra.smul_def, smul_mul_assoc, smul_mul_assoc, hqiqj,
+      hqjqi, smul_neg] at h
+    exact h
+  have hn2re : n.2.re = 0 := by
+    have hk0 : n.2.re • (⟨0, 0, 0, 1⟩ : ℍ[R, a, 0, b]) = 0 :=
+      eq_zero_of_neg_eq_self (R := R) step3.symm
+    have := congrArg QuaternionAlgebra.imK hk0
+    simpa using this
+  refine ⟨n.1.re, ?_⟩
+  apply Octonion.ext
+  · rw [scalarEmbed_fst]; exact n1eq
+  · rw [scalarEmbed_snd, n2eq, hn2re, map_zero]
+
+/-- Octonions form a nuclear involution (`Jordan.NuclearInvolution`): every star-fixed (self-
+adjoint) octonion is exactly a `scalarEmbed r` (`isSelfAdjoint_iff`), and scalars associate
+trivially with everything, in any argument slot, via `scalarEmbed_mul`/`mul_scalarEmbed` plus the
+`smul_mul_assoc`/`mul_smul_comm` scalar-tower laws. The `isNuclear_comm` field (the nucleus is
+closed under commutators) needs `nuclear_rpart` (Nuc ⊆ Center), which in turn needs `a`, `b`, `c`
+to be non-zero-divisors -- see `JORDAN_IDENTITY_PLAN.md`. -/
+@[reducible] def nuclearInvolution : IsNuclearInvolution (Octonion R a b c) where
+  isNuclear_of_star_eq x hx := by
+    obtain ⟨r, rfl⟩ := (isSelfAdjoint_iff x).mp hx
+    exact fun y z =>
+      ⟨by unfold IsAlternative.associator
+          rw [scalarEmbed_mul, scalarEmbed_mul, smul_mul_assoc]; abel,
+       by unfold IsAlternative.associator
+          rw [mul_scalarEmbed, scalarEmbed_mul, smul_mul_assoc, mul_smul_comm]; abel,
+       by unfold IsAlternative.associator
+          rw [mul_scalarEmbed, mul_scalarEmbed, mul_smul_comm]; abel⟩
+  isNuclear_comm n x hn := by
+    obtain ⟨r, rfl⟩ := nuclear_rpart ha hb hc n hn
+    rw [scalarEmbed_mul, mul_scalarEmbed, sub_self]
+    exact fun y z =>
+      ⟨by unfold IsAlternative.associator; simp,
+       by unfold IsAlternative.associator; simp,
+       by unfold IsAlternative.associator; simp⟩
+
+end Nuclear
+
 /-- Trading a `star y` sitting to the right of a product for a plain `y`: `(u * y) * star y = (2 *
 Re y) • (u * y) - u * (y * y)`. Needs only the right alternative law `(u * y) * y = u * (y * y)`
 (`alternative_right`) plus `star_eq_scalarEmbed_sub`, not any genuine Moufang identity -- this is
@@ -655,6 +787,87 @@ theorem innerProduct_star_star (x y : Octonion R a b c) :
     rw [h1, h2]
     ring
   rw [hsum]
+
+/-- `innerProduct` is `R`-homogeneous in its right argument -- immediate from `innerProduct` being
+bundled as a `LinearMap.BilinForm`. -/
+theorem innerProduct_smul_right (r : R) (x y : Octonion R a b c) :
+    innerProduct x (r • y) = r * innerProduct x y := by
+  rw [map_smul, smul_eq_mul]
+
+/-- `innerProduct` is "self-adjoint" with respect to left multiplication: `⟨x*y, z⟩ = ⟨x, z*ȳ⟩`.
+Purely a consequence of `re_mul_mul_eq_re_mul_mul` (applied to both cross terms of
+`innerProduct_apply`'s polarization), no brute-force coordinate expansion needed. -/
+theorem innerProduct_mul_right (x y z : Octonion R a b c) :
+    innerProduct (x * y) z = innerProduct x (z * star y) := by
+  simp only [innerProduct_apply, star_mul, star_star]
+  congr 1
+  show ((x * y) * star z).1.re + (z * (star y * star x)).1.re =
+      (x * (y * star z)).1.re + ((z * star y) * star x).1.re
+  rw [re_mul_mul_eq_re_mul_mul x y (star z), re_mul_mul_eq_re_mul_mul z (star y) (star x)]
+
+/-- The mirror of `innerProduct_mul_right`, adjoint with respect to right multiplication instead:
+`⟨x*y, z⟩ = ⟨y, x̄*z⟩`. Needs `re_mul_comm` in addition to `re_mul_mul_eq_re_mul_mul`, since the
+factor being pulled out is on the *outside* of the product rather than matching
+`re_mul_mul_eq_re_mul_mul`'s shape directly. -/
+theorem innerProduct_mul_left (x y z : Octonion R a b c) :
+    innerProduct (x * y) z = innerProduct y (star x * z) := by
+  simp only [innerProduct_apply, star_mul, star_star]
+  congr 1
+  show ((x * y) * star z).1.re + (z * (star y * star x)).1.re =
+      (y * (star z * x)).1.re + ((star x * z) * star y).1.re
+  rw [re_mul_comm (x * y) (star z), ← re_mul_mul_eq_re_mul_mul (star z) x y,
+    re_mul_comm (star z * x) y, re_mul_comm z (star y * star x),
+    re_mul_mul_eq_re_mul_mul (star y) (star x) z, re_mul_comm (star y) (star x * z)]
+
+omit [Invertible (2 : R)] in
+/-- `(x * star x).1.re`, unfolded to the same `(star x.1 * x.1).re + c * (star x.2 * x.2).re` form
+`mul_mul_star_eq_center`/`mul_star_mul_eq_center` already produce, so those two forms can be
+matched up by `rw` without pulling in `OctonionMatrix`'s `diag_just_11`. -/
+theorem re_mul_star_self (x : Octonion R a b c) :
+    (x * star x).1.re = (star x.1 * x.1).re + c * (star x.2 * x.2).re := by
+  rw [mul_star_self_eq_scalarEmbed]
+  simp [scalarEmbed_fst]
+
+omit [Invertible (2 : R)] in
+/-- The `star`-conjugate mirror of `re_mul_star_self`, for `(star x * x).1.re` instead. -/
+theorem re_star_mul_self (x : Octonion R a b c) :
+    (star x * x).1.re = (star x.1 * x.1).re + c * (star x.2 * x.2).re := by
+  rw [star_mul_self_eq_scalarEmbed]
+  simp [scalarEmbed_fst]
+
+/-- `⟨x*y, z*y⟩ = ⟨y*star y⟩ • ⟨x,z⟩` (writing `⟨y*star y⟩` for its real coefficient). Follows from
+`innerProduct_mul_right` (peeling the shared `y` off the left) and `mul_mul_star_eq_center`
+(collapsing the resulting `(z*y)*star y` sandwich), no brute force. -/
+theorem innerProduct_mul_mul_star (x y z : Octonion R a b c) :
+    innerProduct (x * y) (z * y) = (y * star y).1.re * innerProduct x z := by
+  rw [innerProduct_mul_right x y (z * y), mul_mul_star_eq_center, innerProduct_smul_right,
+    re_mul_star_self]
+
+/-- Mirror of `innerProduct_mul_mul_star` for a repeated factor on the *left* instead of the right:
+`⟨y*x, y*z⟩ = ⟨star y*y⟩ • ⟨x,z⟩`. -/
+theorem innerProduct_mul_mul_star_left (x y z : Octonion R a b c) :
+    innerProduct (y * x) (y * z) = (star y * y).1.re * innerProduct x z := by
+  rw [innerProduct_mul_left y x (y * z), star_mul_mul_eq_center, innerProduct_smul_right,
+    re_star_mul_self]
+
+/-- The mirror cross-term fact to `innerProduct_mul_mul_star`, for the other way a repeated factor
+`y` can sandwich a `star x`: `⟨y, z*(star x*y)⟩ = ⟨y*star y⟩ • ⟨x,z⟩`. Follows from
+`innerProduct_comm`/`innerProduct_mul_right` (peeling `y` off, via the right this time) and
+`mul_star_mul_eq_center`. -/
+theorem innerProduct_conj_sandwich (x y z : Octonion R a b c) :
+    innerProduct y (z * (star x * y)) = (y * star y).1.re * innerProduct x z := by
+  rw [innerProduct_comm y (z * (star x * y)), innerProduct_mul_right z (star x * y) y, star_mul,
+    star_star, mul_star_mul_eq_center, innerProduct_smul_right, innerProduct_comm z x,
+    re_mul_star_self]
+
+/-- `⟨t, star o * q⟩` and `⟨q, o * t⟩` are the same value, under two layers of
+`innerProduct_star_star`. -/
+theorem innerProduct_swap_bridge (q t o : Octonion R a b c) :
+    innerProduct t (star o * q) = innerProduct q (o * t) := by
+  rw [innerProduct_comm t (star o * q), innerProduct_mul_right (star o) q t,
+    show t * star q = star (q * star t) from by rw [star_mul, star_star],
+    innerProduct_star_star, innerProduct_comm o (q * star t), innerProduct_mul_right q (star t) o,
+    star_star]
 
 end InnerProduct
 
