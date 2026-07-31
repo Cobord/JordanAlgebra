@@ -23,7 +23,6 @@ three matrix positions (`0/1/2` diagonal, `(0,1)/(0,2)/(1,2)` off-diagonal) rath
 parametrized over `Fin 3` -- `fin_cases`-driven unification hit `Fin.mk`-vs-numeral normalization
 friction that wasn't worth fighting for a three-case split; this also matches the existing
 `jordan_case_diag0/1/2`/`jordan_case_off01/02/12` convention already used in `AlbertAlgebra.lean`.
-See `JORDAN_IDENTITY_PLAN.md`.
 -/
 
 open IsAlternative

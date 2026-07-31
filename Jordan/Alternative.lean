@@ -82,7 +82,7 @@ expressed purely in terms of `M`'s own associator and the ordinary commutator. H
 algebra, alternative or not -- pure distributivity, no alternative law needed (this is where
 `M`'s own Jordan-identity-style computations, e.g. for `AlbertAlgebra`'s symmetrized product,
 could in principle reduce to associator identities of the underlying alternative coordinate
-algebra uniformly, rather than per-entry matrix bashing -- see `JORDAN_IDENTITY_PLAN.md`). -/
+algebra uniformly, rather than per-entry matrix bashing -/
 theorem plus_associator_eq (x y z : M) :
     (x * y + y * x) * z + z * (x * y + y * x) - (x * (y * z + z * y) + (y * z + z * y) * x)
       = (associator x y z - associator z y x) + (associator y x z - associator z x y)
@@ -228,8 +228,7 @@ theorem moufang_left (x y z : M) : (x * (z * x)) * y = x * (z * (x * y)) := by
 `associator_cyclic`: rewriting the last two arguments of `(x,y,zx)` via `associator_swap_last`
 reduces the goal to `moufang_left`'s conclusion, and the final cancellation uses cyclic invariance
 (`(y,z,x) = (z,x,y)`) rather than any new hypothesis. This is the key ingredient McCrimmon's
-Jordan-identity proof of `H_3(D,-)` uses to collapse the "hard" off-diagonal cross-terms -- see
-`JORDAN_IDENTITY_PLAN.md`. -/
+Jordan-identity proof of `H_3(D,-)` uses to collapse the "hard" off-diagonal cross-terms. -/
 theorem left_bumping (x y z : M) : associator x y (z * x) = x * associator y z x := by
   rw [← sub_eq_zero, associator_swap_last x y (z * x)]
   have e1 : associator x (z * x) y = x * (z * (x * y)) - x * ((z * x) * y) := by
@@ -269,7 +268,7 @@ Follows McCrimmon's own proof: rewrite `associator w x (y*z)` and `associator w 
 two of the resulting associators at once; what's left after that cancels using
 `left_bumping_linearized` and one more application of `associator_cyclic`. This is the identity
 that ultimately collapses the "hard" off-diagonal cross-terms in the Albert-algebra Jordan-identity
-proof -- see `JORDAN_IDENTITY_PLAN.md`. -/
+proof. -/
 theorem mccrimmon_key_identity (w x y z : M) :
     w * associator x y z - associator x y z * w
       = associator w x (y * z) + associator w y (z * x) + associator w z (x * y) := by

@@ -562,7 +562,7 @@ adjoint) octonion is exactly a `scalarEmbed r` (`isSelfAdjoint_iff`), and scalar
 trivially with everything, in any argument slot, via `scalarEmbed_mul`/`mul_scalarEmbed` plus the
 `smul_mul_assoc`/`mul_smul_comm` scalar-tower laws. The `isNuclear_comm` field (the nucleus is
 closed under commutators) needs `nuclear_rpart` (Nuc ⊆ Center), which in turn needs `a`, `b`, `c`
-to be non-zero-divisors -- see `JORDAN_IDENTITY_PLAN.md`. -/
+to be non-zero-divisors. -/
 @[reducible] def nuclearInvolution : IsNuclearInvolution (Octonion R a b c) where
   isNuclear_of_star_eq x hx := by
     obtain ⟨r, rfl⟩ := (isSelfAdjoint_iff x).mp hx

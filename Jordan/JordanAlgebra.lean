@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Ring.SumsOfSquares
 import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.LinearCombination
 
 class JordanAlgebra (R : outParam (Type u)) (M : Type v) [CommRing R] extends
     NonAssocRing M, Module R M, IsScalarTower R M M, SMulCommClass R M M where
@@ -287,15 +288,124 @@ theorem commute_lmul_jordanPow_three [Invertible (2 : R)] (x : M) :
   rw [jordanPow_three]
   exact commute_lmul_mul_self_of_commute_sq (Commute.refl (L (x * x)))
 
+private theorem eq_of_add_self_eq_add_self [Invertible (2 : R)] {v w : M}
+    (h : v + v = w + w) : v = w := by
+  have h2 : (2 : R) • v = (2 : R) • w := by rw [two_smul, two_smul]; exact h
+  calc
+    v = (1 : R) • v := (one_smul R v).symm
+    _ = (⅟(2 : R) * 2) • v := by rw [invOf_mul_self]
+    _ = ⅟(2 : R) • ((2 : R) • v) := by rw [smul_smul]
+    _ = ⅟(2 : R) • ((2 : R) • w) := by rw [h2]
+    _ = (⅟(2 : R) * 2) • w := by rw [smul_smul]
+    _ = (1 : R) • w := by rw [invOf_mul_self]
+    _ = w := one_smul R w
+
+private theorem sq_rmul_add_expand (x z y : M) :
+    (x + z) * (x + z) * y * (x + z) - (x + z) * (x + z) * (y * (x + z)) =
+      (x * x * y * x - x * x * (y * x)) + (z * z * y * z - z * z * (y * z))
+        + (x * x * y * z - x * x * (y * z)) + (z * z * y * x - z * z * (y * x))
+        + ((x * z * y * x - x * z * (y * x)) + (x * z * y * x - x * z * (y * x)))
+        + ((x * z * y * z - x * z * (y * z)) + (x * z * y * z - x * z * (y * z))) := by
+  have hxx : (x + z) * (x + z) = x * x + z * z + (x * z + x * z) := by
+    rw [add_mul, mul_add, mul_add, jordan_mul_comm z x]; abel
+  rw [hxx]
+  simp only [add_mul, mul_add]
+  abel
+
+private theorem sq_rmul_sub_expand (x z y : M) :
+    (x - z) * (x - z) * y * (x - z) - (x - z) * (x - z) * (y * (x - z)) =
+      (x * x * y * x - x * x * (y * x)) - (z * z * y * z - z * z * (y * z))
+        - (x * x * y * z - x * x * (y * z)) + (z * z * y * x - z * z * (y * x))
+        - ((x * z * y * x - x * z * (y * x)) + (x * z * y * x - x * z * (y * x)))
+        + ((x * z * y * z - x * z * (y * z)) + (x * z * y * z - x * z * (y * z))) := by
+  have hxx : (x - z) * (x - z) = x * x + z * z - (x * z + x * z) := by
+    rw [sub_mul, mul_sub, mul_sub, jordan_mul_comm z x]; abel
+  rw [hxx]
+  simp only [sub_mul, mul_sub, add_mul]
+  abel
+
+/-- McCrimmon's (JAX2'): the quadratic-in-`x` linearization of the Jordan identity in the form
+`lmul_lmul_comm_rmul` (`[x², y, x] = 0`), obtained by substituting `x ↦ x + z` and `x ↦ x - z`
+and combining (see *A Taste of Jordan Algebras*, Linearization Proposition 1.8.5). -/
+private theorem jax2_prime [Invertible (2 : R)] (x y z : M) :
+    (x * x * y * z - x * x * (y * z)) +
+      ((x * z * y * x - x * z * (y * x)) + (x * z * y * x - x * z * (y * x))) = 0 := by
+  have hx : x * x * y * x - x * x * (y * x) = 0 := sub_eq_zero_of_eq (lmul_lmul_comm_rmul x y).symm
+  have hz : z * z * y * z - z * z * (y * z) = 0 := sub_eq_zero_of_eq (lmul_lmul_comm_rmul z y).symm
+  have hAdd : (x + z) * (x + z) * y * (x + z) - (x + z) * (x + z) * (y * (x + z)) = 0 :=
+    sub_eq_zero_of_eq (lmul_lmul_comm_rmul (x + z) y).symm
+  have hSub : (x - z) * (x - z) * y * (x - z) - (x - z) * (x - z) * (y * (x - z)) = 0 :=
+    sub_eq_zero_of_eq (lmul_lmul_comm_rmul (x - z) y).symm
+  rw [sq_rmul_add_expand] at hAdd
+  rw [sq_rmul_sub_expand] at hSub
+  simp only [hx, hz, zero_add, add_zero, zero_sub, sub_zero] at hAdd hSub
+  apply eq_of_add_self_eq_add_self (w := 0)
+  rw [add_zero]
+  have hcomb : (x * x * y * z - x * x * (y * z)) +
+        ((x * z * y * x - x * z * (y * x)) + (x * z * y * x - x * z * (y * x))) +
+      ((x * x * y * z - x * x * (y * z)) +
+        ((x * z * y * x - x * z * (y * x)) + (x * z * y * x - x * z * (y * x)))) =
+      ((x * x * y * z - x * x * (y * z)) + (z * z * y * x - z * z * (y * x)) +
+          ((x * z * y * x - x * z * (y * x)) + (x * z * y * x - x * z * (y * x))) +
+          ((x * z * y * z - x * z * (y * z)) + (x * z * y * z - x * z * (y * z)))) -
+        (-(x * x * y * z - x * x * (y * z)) + (z * z * y * x - z * z * (y * x)) -
+            ((x * z * y * x - x * z * (y * x)) + (x * z * y * x - x * z * (y * x))) +
+            ((x * z * y * z - x * z * (y * z)) + (x * z * y * z - x * z * (y * z)))) := by
+    abel
+  rw [hcomb, hAdd, hSub, sub_zero]
+
+private theorem jax2_prime_add_expand (x w y z : M) :
+    ((x + w) * (x + w) * y * z - (x + w) * (x + w) * (y * z)) +
+        ((((x + w) * z) * y * (x + w) - (x + w) * z * (y * (x + w))) +
+          (((x + w) * z) * y * (x + w) - (x + w) * z * (y * (x + w)))) =
+      ((x * x * y * z - x * x * (y * z)) +
+          ((x * z * y * x - x * z * (y * x)) + (x * z * y * x - x * z * (y * x))))
+        + ((w * w * y * z - w * w * (y * z)) +
+          ((w * z * y * w - w * z * (y * w)) + (w * z * y * w - w * z * (y * w))))
+        + ((((x * w) * y * z - (x * w) * (y * z)) + ((x * w) * y * z - (x * w) * (y * z)))
+          + (((x * z) * y * w - (x * z) * (y * w)) + ((x * z) * y * w - (x * z) * (y * w)))
+          + (((w * z) * y * x - (w * z) * (y * x)) + ((w * z) * y * x - (w * z) * (y * x)))) := by
+  have hxw : (x + w) * (x + w) = x * x + w * w + (x * w + x * w) := by
+    rw [add_mul, mul_add, mul_add, jordan_mul_comm w x]; abel
+  have hxwz : (x + w) * z = x * z + w * z := add_mul x w z
+  rw [hxw, hxwz]
+  simp only [add_mul, mul_add]
+  abel
+
+/-- McCrimmon's (JAX2''): the fully linearized (multilinear) Jordan identity, obtained by
+linearizing (JAX2') (`jax2_prime`) a second time in `x`, via `x ↦ x + w` (see *A Taste of
+Jordan Algebras*, Linearization Proposition 1.8.5). -/
+private theorem jax2_double_prime [Invertible (2 : R)] (x w y z : M) :
+    ((x * w) * y * z - (x * w) * (y * z)) +
+      (((x * z) * y * w - (x * z) * (y * w)) + ((w * z) * y * x - (w * z) * (y * x))) = 0 := by
+  have h1 := jax2_prime (x + w) y z
+  have h2 := jax2_prime x y z
+  have h3 := jax2_prime w y z
+  have hexp := jax2_prime_add_expand x w y z
+  rw [h1, h2, h3, zero_add, zero_add] at hexp
+  apply eq_of_add_self_eq_add_self (w := 0)
+  rw [add_zero]
+  linear_combination (norm := abel) -hexp
+
 /-- Linearized fundamental formula: left multiplication by the triple product `(b * d) * c`
 expressed as a combination of compositions of `L b`, `L c`, `L d`. -/
-theorem lmul_mul_mul_eq (b c d : M) :
+theorem lmul_mul_mul_eq [Invertible (2 : R)] (b c d : M) :
     L ((b * d) * c) =
       L (b * d) * L c + L (c * d) * L b + L (b * c) * L d
         - L b * L c * L d - L d * L c * L b := by
-  /- TODO: Fill the remaining linearized fundamental-formula proof. This should be proved by
-  expanding the Jordan identity and collecting the resulting endomorphism terms. -/
-  sorry
+  ext z
+  show (b * d) * c * z =
+      (b * d) * (c * z) + (c * d) * (b * z) + (b * c) * (d * z)
+        - b * (c * (d * z)) - d * (c * (b * z))
+  have hjdp := jax2_double_prime b d c z
+  have e1 : b * z * c * d = d * (c * (b * z)) := by
+    rw [jordan_mul_comm (b * z) c, jordan_mul_comm (c * (b * z)) d]
+  have e2 : b * z * (c * d) = c * d * (b * z) := jordan_mul_comm (b * z) (c * d)
+  have e3 : d * z * c * b = b * (c * (d * z)) := by
+    rw [jordan_mul_comm (d * z) c, jordan_mul_comm (c * (d * z)) b]
+  have e4 : d * z * (c * b) = b * c * (d * z) := by
+    rw [jordan_mul_comm c b, jordan_mul_comm (d * z) (b * c)]
+  linear_combination (norm := abel) hjdp - e1 + e2 - e3 + e4
 
 theorem jordanPow_mul_self_eq_succ (a : M) (k : ℕ) :
     jordanPow a k * a = jordanPow a (k + 1) := by
@@ -306,7 +416,7 @@ theorem jordanPow_mul_self_mul_self_eq_succ_succ (a : M) (k : ℕ) :
   rw [jordanPow_mul_self_eq_succ, jordanPow_mul_self_eq_succ]
 
 /-- Specialization of `lmul_mul_mul_eq` at `b := jordanPow a k`, `c := d := a`. -/
-theorem lmul_jordanPow_succ_succ (a : M) (k : ℕ) :
+theorem lmul_jordanPow_succ_succ [Invertible (2 : R)] (a : M) (k : ℕ) :
     L (jordanPow a (k + 2)) =
       L (jordanPow a (k + 1)) * L a + L (a * a) * L (jordanPow a k) +
         L (jordanPow a (k + 1)) * L a
@@ -316,7 +426,7 @@ theorem lmul_jordanPow_succ_succ (a : M) (k : ℕ) :
 
 /-- `L (a ^[k])` lies in the (commutative, since `L a` and `L (a * a)` commute) subring generated
 by `L a` and `L (a * a)` -- i.e. it is a polynomial in those two commuting operators. -/
-theorem lmul_jordanPow_mem_closure (a : M) (k : ℕ) :
+theorem lmul_jordanPow_mem_closure [Invertible (2 : R)] (a : M) (k : ℕ) :
     L (jordanPow a k) ∈ Subring.closure ({L a, L (a * a)} : Set (AddMonoid.End M)) := by
   have hLa : L a ∈ Subring.closure ({L a, L (a * a)} : Set (AddMonoid.End M)) :=
     Subring.subset_closure (Set.mem_insert _ _)
@@ -352,7 +462,7 @@ theorem Subring.commute_of_mem_closure_of_subset_centralizer {N : Type*} [Ring N
     le_trans (Subring.closure_le_centralizer_centralizer s) (Subring.centralizer_le _ _ h1)
   exact (Subring.mem_centralizer_iff.mp (h2 ha) b hb).symm
 
-theorem commute_lmul_jordanPow_mn (x : M) (m n : ℕ) :
+theorem commute_lmul_jordanPow_mn [Invertible (2 : R)] (x : M) (m n : ℕ) :
   Commute (L (jordanPow x m)) (L (jordanPow x n)) := by
   refine Subring.commute_of_mem_closure_of_subset_centralizer ?_
     (lmul_jordanPow_mem_closure x m) (lmul_jordanPow_mem_closure x n)
@@ -362,7 +472,7 @@ theorem commute_lmul_jordanPow_mn (x : M) (m n : ℕ) :
       | exact commute_lmul_lmul_sq x
       | exact (commute_lmul_lmul_sq x).symm
 
-theorem jordanPow_mn (x y : M) (m n : ℕ) :
+theorem jordanPow_mn [Invertible (2 : R)] (x y : M) (m n : ℕ) :
   (jordanPow x m) * ((jordanPow x n) * y) =
   (jordanPow x n) * ((jordanPow x m) * y) := by
   change (L (jordanPow x m)) ((L (jordanPow x n)) y) = (L (jordanPow x n)) ((L (jordanPow x m)) y)

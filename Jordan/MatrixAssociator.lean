@@ -11,7 +11,7 @@ alternativity, no Hermitian symmetry needed -- `Matrix n n D` is automatically a
 associative), the matrix associator `IsAlternative.associator A B C` reduces entrywise to a double
 sum of `D`'s own associator. This is the fully generic ingredient behind McCrimmon's Matrix
 Associator Facts (1.2.1)-(1.2.4), which further specialize this to `n = 3` and Hermitian `A B C`
-(using that diagonal entries are central/nuclear) -- see `JORDAN_IDENTITY_PLAN.md`. Those
+(using that diagonal entries are central/nuclear). Those
 specializations belong with the `AlbertAlgebra` development, not here; this file only has the
 part that's uniform over every coordinate ring `D` and every matrix size `n`.
 -/

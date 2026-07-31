@@ -12,7 +12,7 @@ Facts (*A Taste of Jordan Algebras*, Appendix C.1, Lemma C.1.2) place on the coo
 of `H_3(D,-)`, used there to make associators touching Hermitian-matrix diagonal entries vanish,
 and to replace a lower-triangular entry `star x` by `-x` inside an associator. Both consequences
 are proved here in fully generic form (`assoc_star_first/mid/last`), independent of any particular
-matrix construction -- see `JORDAN_IDENTITY_PLAN.md`.
+matrix construction.
 -/
 
 open IsAlternative
@@ -68,8 +68,7 @@ McCrimmon's own proof "`n[x,y,z] = -n[y,x,z] = -[ny,x,z] = [x,ny,z] = [xn,y,z]`,
 last two gives `[[n,x],y,z]=0`") -- but that derivation is nontrivial, and a specific `D` may have
 a much easier direct argument (e.g. `instOfAssociative` below), so it's kept as its own field
 rather than forced through the general route. This is the ingredient the eventual **Nuclear
-Slipping Formula** (`n` commutes with any associator value, McCrimmon 21.2.1(1)) needs -- see
-`JORDAN_IDENTITY_PLAN.md`. -/
+Slipping Formula** (`n` commutes with any associator value, McCrimmon 21.2.1(1)) needs. -/
 class IsNuclearInvolution (D : Type*) [NonUnitalNonAssocRing D] [IsAlternative D]
     [StarAddMonoid D] : Prop where
   isNuclear_of_star_eq : ∀ x : D, star x = x → IsNuclear x
@@ -129,8 +128,7 @@ last argument) and `nuclear_slip_last_right` (`n` slipped right into the last ar
 y (n*z - z*n)`, which vanishes since `n*z - z*n` is nuclear (`isNuclear_comm`'s conclusion applied
 with `z`) and hence kills any associator with it in the last slot. This is the ingredient
 McCrimmon's `3x3` Coordinate Theorem C.1.3 (the Jordan identity for `H_3(D,-)`) needs to make a
-diagonal (hence nuclear) matrix entry commute with an off-diagonal associator value -- see
-`JORDAN_IDENTITY_PLAN.md`. -/
+diagonal (hence nuclear) matrix entry commute with an off-diagonal associator value. -/
 theorem nuclear_comm_associator {n : D} (hn : IsNuclear n) (x y z : D) :
     n * associator x y z = associator x y z * n := by
   have h4 := nuclear_slip_last hn x y z

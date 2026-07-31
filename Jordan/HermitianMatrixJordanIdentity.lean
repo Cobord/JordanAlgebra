@@ -14,7 +14,7 @@ file proves each of the six matrix positions (`hermitian_jordan_diag0/1/2`,
 three positions not proved directly (`(1,0)`, `(2,0)`, `(2,1)`) follow for free from the other three
 plus the fact that `[A,B,A^2]+` is itself always Hermitian (given `A`, `B` Hermitian) -- so their
 `star`-conjugate (upper-triangular) partners already vanishing forces them to vanish too, via
-`star 0 = 0`. See `JORDAN_IDENTITY_PLAN.md`.
+`star 0 = 0`.
 
 This file needs `[StarRing D]` (`star` an anti-automorphism of multiplication, `star (x*y) = star y
 * star x`) in addition to `[IsNuclearInvolution D]`'s own `[StarAddMonoid D]` -- kept in a separate

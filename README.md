@@ -11,8 +11,8 @@ Built against [Mathlib4](https://github.com/leanprover-community/mathlib4).
 
 | File | Description |
 | --- | --- |
-| [`Jordan/JordanAlgebra.lean`](Jordan/JordanAlgebra.lean) | The `JordanAlgebra` class itself, basic consequences of the Jordan identity, commuting left/right multiplications, and Jordan powers. |
-| [`Jordan/JordanTriple.lean`](Jordan/JordanTriple.lean) | Linear Jordan triple systems (`{x, y, z}`), and the triple product induced by a Jordan algebra. |
+| [`Jordan/JordanAlgebra.lean`](Jordan/JordanAlgebra.lean) | The `JordanAlgebra` class itself, basic consequences of the Jordan identity, commuting left/right multiplications, and Jordan powers. `lmul_mul_mul_eq`, the linearized fundamental formula `L((b*d)*c) = L(b*d)Lc + L(c*d)Lb + L(b*c)Ld - LbLcLd - LdLcLb`, is proved via McCrimmon's two-stage linearization of the Jordan identity (`jax2_prime`, `jax2_double_prime`), requiring `Invertible (2 : R)`. |
+| [`Jordan/JordanTriple.lean`](Jordan/JordanTriple.lean) | Secondary formulation: linear Jordan triple systems (`{x, y, z}`), a genuinely more general structure than `JordanAlgebra` (some triple systems don't come from any algebra product), and the triple product induced by a Jordan algebra. Lower priority here since every example in this repo is a `JordanAlgebra` to begin with -- proving the direct `JordanAlgebra` instance is the substantive, necessary work; the triple system is just an optional extra view on top. |
 | [`Jordan/StructureAlgebra.lean`](Jordan/StructureAlgebra.lean) | `JordanDerivation`: `R`-linear maps satisfying the Leibniz rule for the Jordan product, their module structure, and the commutator Lie algebra structure on derivations (`⁅D₁, D₂⁆`). Also `StructureAlgebra R M := M × JordanDerivation R M` (`L_a + D` acting on `M`), its own Lie algebra structure (via `toEnd` into `Module.End R M`, requiring `Invertible (2 : R)`), and `derivationSubalgebra`, the distinguished Lie subalgebra of derivations `(0, D)`. |
 | [`Jordan/FormallyReal.lean`](Jordan/FormallyReal.lean) | Formal reality (`IsFormallyReal`): a sum of squares vanishes only trivially. `IsFormallyRealDetTrace`: a generic trace/determinant of rank `n`, its `states` (the cone of squares cut out by `trace x = 1`) and `pureStates` (idempotent states), convexity of the state space, and `expect`, the expectation value `trace (s * a)` of an observable `a` in a state `s`. Separately, consequences for the scalar ring `R`: a nontrivial formally real `M` forces `R` to be Artin-Schreier semireal (`-1` is never a sum of squares) and forces both `M` and `R` to have characteristic zero. |
 | [`Jordan/RealQM.lean`](Jordan/RealQM.lean) | Symmetric matrices over a base ring `R`, as a Jordan algebra; formal reality; the `n = 1` case; a generic trace/determinant instance (`detTrace`, rank `Fintype.card n`) via the ordinary matrix trace and determinant. |
@@ -34,9 +34,6 @@ Built against [Mathlib4](https://github.com/leanprover-community/mathlib4).
 The [`find_cancel.py`](find_cancel.py) and [`gen_rules.py`](gen_rules.py) scripts are standalone
 helpers used to search for cancellation identities among generated `mul_mul_eq`-style rewrite
 rules, in support of the `CommNonAssocNF` tactic design.
-
-See [`JORDAN_IDENTITY_PLAN.md`](JORDAN_IDENTITY_PLAN.md) for the detailed derivation history behind
-`AlbertAlgebra`'s Jordan identity.
 
 ## Building
 

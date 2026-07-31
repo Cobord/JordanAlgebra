@@ -544,8 +544,7 @@ set_option maxHeartbeats 1000000 in
 /-- `AlbertAlgebra` is a Jordan algebra whenever `a`, `b`, `c` are non-zero-divisors: that
 regularity is exactly what `Octonion.nuclearInvolution` needs to show `Octonion R a b c` is a
 nuclear involution, the hypothesis `hermitian_jordan_identity` needs for `jordan_identity` below.
-Not tagged `instance` since it takes explicit hypotheses beyond the ambient typeclasses -- see
-`JORDAN_IDENTITY_PLAN.md`. -/
+Not tagged `instance` since it takes explicit hypotheses beyond the ambient typeclasses -/
 @[reducible] def ofAlbert : JordanAlgebra R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) where
   jordan_mul_comm := by
     intro x y

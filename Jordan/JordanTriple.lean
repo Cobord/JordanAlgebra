@@ -90,14 +90,14 @@ theorem tripleProduct_comm (x y z : M) : tripleProduct x y z = tripleProduct z y
 /-- Pointwise form of `lmul_mul_mul_eq`, applied at `z`: expands `(b * d) * c * z` as a
 combination of `M`-products rather than of composed endomorphisms. This is the workhorse used to
 expand triple products against an extra factor below. -/
-private theorem mul_mul_eq (b c d z : M) :
+private theorem mul_mul_eq [Invertible (2 : R)] (b c d z : M) :
     (b * d) * c * z = (b * d) * (c * z) + (c * d) * (b * z) + (b * c) * (d * z)
       - b * (c * (d * z)) - d * (c * (b * z)) :=
   congrArg (fun f : AddMonoid.End M => f z) (lmul_mul_mul_eq b c d)
 
 /-- Right-multiplying a triple product by a fourth element, fully expanded via three applications
 of `mul_mul_eq` (one per term of `tripleProduct`). -/
-private theorem tripleProduct_mul (a b c d : M) :
+private theorem tripleProduct_mul [Invertible (2 : R)] (a b c d : M) :
     tripleProduct a b c * d =
       (a * b) * (c * d) + (b * c) * (a * d) + (a * c) * (b * d)
         - a * (c * (b * d)) - b * (c * (a * d)) - c * (a * (b * d)) - b * (a * (c * d))
@@ -109,7 +109,7 @@ private theorem tripleProduct_mul (a b c d : M) :
 
 /-- The Jordan triple system structure on a Jordan algebra, via the triple product
 `{x, y, z} = (x * y) * z + (z * y) * x - (x * z) * y`. -/
-instance : JordanTriple R M where
+instance [Invertible (2 : R)] : JordanTriple R M where
   triple := tripleLinearMap
   triple_comm := tripleProduct_comm
   triple_identity := by
