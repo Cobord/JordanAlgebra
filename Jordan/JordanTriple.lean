@@ -9,9 +9,9 @@ argument is automatic), symmetric in its outer arguments (`triple_comm`), and sa
 Jordan triple identity relating the "box operators" `L(x, y) z = triple x y z`:
 
     {x, y, {u, v, w}} - {u, v, {x, y, w}} = {{x, y, u}, v, w} - {u, {v, y, x}, w} -/
-class JordanTriple (R : outParam (Type u)) (M : Type v) [CommRing R] extends
+class JordanTriple (R : outParam (Type u)) (M : Type v) [CommRing R] [StarRing R] extends
     AddCommGroup M, Module R M where
-  triple : M →ₗ[R] M →ₗ[R] M →ₗ[R] M
+  triple : M →ₗ[R] M →ₛₗ[starRingEnd R] M →ₗ[R] M
   triple_comm : ∀ x y z, triple x y z = triple z y x
   triple_identity : ∀ x y u v w,
       triple x y (triple u v w) - triple u v (triple x y w) =
@@ -19,41 +19,47 @@ class JordanTriple (R : outParam (Type u)) (M : Type v) [CommRing R] extends
 
 namespace JordanAlgebra
 
-variable {R M : Type*} [CommRing R] [JordanAlgebra R M]
+variable {R M : Type*} [CommRing R] [StarRing R] [TrivialStar R] [JordanAlgebra R M]
 
 /-- The Jordan triple product associated to a Jordan algebra:
 `{x, y, z} = (x * y) * z + (z * y) * x - (x * z) * y`. -/
 def tripleProduct (x y z : M) : M := (x * y) * z + (z * y) * x - (x * z) * y
 
+omit [StarRing R] in
 private theorem tripleProduct_add_left (x₁ x₂ y z : M) :
     tripleProduct (x₁ + x₂) y z = tripleProduct x₁ y z + tripleProduct x₂ y z := by
   simp only [tripleProduct, add_mul, mul_add]
   abel
 
+omit [StarRing R] in
 private theorem tripleProduct_smul_left (r : R) (x y z : M) :
     tripleProduct (r • x) y z = r • tripleProduct x y z := by
   simp only [tripleProduct, smul_mul_assoc, mul_smul_comm, smul_add, smul_sub]
 
+omit [StarRing R] in
 private theorem tripleProduct_add_mid (x y₁ y₂ z : M) :
     tripleProduct x (y₁ + y₂) z = tripleProduct x y₁ z + tripleProduct x y₂ z := by
   simp only [tripleProduct, mul_add, add_mul]
   abel
 
+omit [StarRing R] in
 private theorem tripleProduct_smul_mid (r : R) (x y z : M) :
     tripleProduct x (r • y) z = r • tripleProduct x y z := by
   simp only [tripleProduct, mul_smul_comm, smul_mul_assoc, smul_add, smul_sub]
 
+omit [StarRing R] in
 private theorem tripleProduct_add_right (x y z₁ z₂ : M) :
     tripleProduct x y (z₁ + z₂) = tripleProduct x y z₁ + tripleProduct x y z₂ := by
   simp only [tripleProduct, mul_add, add_mul]
   abel
 
+omit [StarRing R] in
 private theorem tripleProduct_smul_right (r : R) (x y z : M) :
     tripleProduct x y (r • z) = r • tripleProduct x y z := by
   simp only [tripleProduct, mul_smul_comm, smul_mul_assoc, smul_add, smul_sub]
 
 /-- `tripleProduct`, bundled as the trilinear map required by `JordanTriple`. -/
-def tripleLinearMap : M →ₗ[R] M →ₗ[R] M →ₗ[R] M where
+def tripleLinearMap : M →ₗ[R] M →ₛₗ[starRingEnd R] M →ₗ[R] M where
   toFun x :=
     { toFun := fun y =>
         { toFun := tripleProduct x y
@@ -65,7 +71,7 @@ def tripleLinearMap : M →ₗ[R] M →ₗ[R] M →ₗ[R] M where
         exact tripleProduct_add_mid x y₁ y₂ z
       map_smul' := fun r y => by
         ext z
-        rw [RingHom.id_apply]
+        simp only [LinearMap.smul_apply, conj_trivial]
         exact tripleProduct_smul_mid r x y z }
   map_add' x₁ x₂ := by
     ext y z
@@ -79,6 +85,7 @@ def tripleLinearMap : M →ₗ[R] M →ₗ[R] M →ₗ[R] M where
 theorem tripleLinearMap_apply (x y z : M) : tripleLinearMap (R := R) x y z = tripleProduct x y z :=
   rfl
 
+omit [StarRing R] in
 /-- The triple product is symmetric in its outer arguments: `{x, y, z} = {z, y, x}`. This holds
 because the underlying Jordan product is fully commutative (`jordan_mul_comm`), so it does not yet
 need the Jordan identity. -/
@@ -87,6 +94,7 @@ theorem tripleProduct_comm (x y z : M) : tripleProduct x y z = tripleProduct z y
   rw [jordan_mul_comm x z]
   abel
 
+omit [StarRing R] in
 /-- Pointwise form of `lmul_mul_mul_eq`, applied at `z`: expands `(b * d) * c * z` as a
 combination of `M`-products rather than of composed endomorphisms. This is the workhorse used to
 expand triple products against an extra factor below. -/
@@ -95,6 +103,7 @@ private theorem mul_mul_eq [Invertible (2 : R)] (b c d z : M) :
       - b * (c * (d * z)) - d * (c * (b * z)) :=
   congrArg (fun f : AddMonoid.End M => f z) (lmul_mul_mul_eq b c d)
 
+omit [StarRing R] in
 /-- Right-multiplying a triple product by a fourth element, fully expanded via three applications
 of `mul_mul_eq` (one per term of `tripleProduct`). -/
 private theorem tripleProduct_mul [Invertible (2 : R)] (a b c d : M) :
