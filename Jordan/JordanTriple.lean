@@ -4,11 +4,17 @@ import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-- A (linear) Jordan triple system: an `R`-module `M` equipped with a triple product
-`{x, y, z}`, bundled as a trilinear map `M →ₗ[R] M →ₗ[R] M →ₗ[R] M` (so linearity in each
-argument is automatic), symmetric in its outer arguments (`triple_comm`), and satisfying the
-Jordan triple identity relating the "box operators" `L(x, y) z = triple x y z`:
+`{x, y, z}`, bundled as a tri"linear" (antilinear in the second argument) map
+`M →ₗ[R] M →ₛₗ[starRingEnd R] M →ₗ[R] M`
+(so (anti)linearity in each argument is from the type),
+symmetric in its outer arguments (`triple_comm`),
+and satisfying the
+Jordan triple identity relating the "box operators"
+`L(x, y) z = triple x y z`:
 
-    {x, y, {u, v, w}} - {u, v, {x, y, w}} = {{x, y, u}, v, w} - {u, {v, y, x}, w} -/
+  `{x, y, {u, v, w}} - {u, v, {x, y, w}}` =
+  `{{x, y, u}, v, w} - {u, {v, y, x}, w}`
+-/
 class JordanTriple (R : outParam (Type u)) (M : Type v) [CommRing R] [StarRing R] extends
     AddCommGroup M, Module R M where
   triple : M →ₗ[R] M →ₛₗ[starRingEnd R] M →ₗ[R] M
@@ -22,7 +28,10 @@ namespace JordanAlgebra
 variable {R M : Type*} [CommRing R] [StarRing R] [TrivialStar R] [JordanAlgebra R M]
 
 /-- The Jordan triple product associated to a Jordan algebra:
-`{x, y, z} = (x * y) * z + (z * y) * x - (x * z) * y`. -/
+`{x, y, z} = (x * y) * z + (z * y) * x - (x * z) * y`.
+This is R trilinear so is for the case
+when antilinear and linear are the same.
+-/
 def tripleProduct (x y z : M) : M := (x * y) * z + (z * y) * x - (x * z) * y
 
 omit [StarRing R] in
