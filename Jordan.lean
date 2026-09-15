@@ -5,6 +5,7 @@ import Jordan.Alternative
 import Jordan.Basic
 import Jordan.CommNonAssocNF
 import Jordan.ComplexQM
+import Jordan.DivisionAlgebra
 import Jordan.FormallyReal
 import Jordan.HermitianMatrixAssociator
 import Jordan.HermitianMatrixJordanIdentity
@@ -18,3 +19,9 @@ import Jordan.QuaternionicQM
 import Jordan.RealQM
 import Jordan.SpinFactor
 import Jordan.StructureAlgebra
+import Jordan.Triality.Basic
+import Jordan.Triality.Corner
+import Jordan.Triality.DivisionAlgebra
+import Jordan.Triality.Field
+import Jordan.Triality.Gauged
+import Jordan.Triality.Octonion
