@@ -134,17 +134,14 @@ class Lattice:
 
 def fano_planes():
     """All 30 Fano planes on {1..7} (as sets of 7 triples)."""
-    pts = range(1, 8)
-    triples = list(combinations(pts, 3))
+    # every Fano plane on {1..7} is a relabelling of a fixed one
+    base = [(1, 2, 3), (1, 4, 5), (1, 6, 7), (2, 4, 6), (2, 5, 7), (3, 4, 7), (3, 5, 6)]
+    found = {tuple(sorted(tuple(sorted(s[x - 1] for x in t)) for t in base)) for s in permutations(range(1, 8))}
+    # insert in lexicographic order, the order a search over combinations(triples, 7) meets them,
+    # so the set (and hence the returned list) iterates in a fixed, reproducible order
     planes = set()
-    for S in combinations(triples, 7):
-        ok = True
-        for p, q in combinations(pts, 2):
-            if sum(1 for t in S if p in t and q in t) != 1:
-                ok = False
-                break
-        if ok:
-            planes.add(frozenset(S))
+    for S in sorted(found):
+        planes.add(frozenset(S))
     return [sorted(P) for P in planes]
 
 

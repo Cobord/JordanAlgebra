@@ -5,11 +5,12 @@ import pickle, itertools
 import numpy as np
 from albert import *
 
-def keyf(w):
-    return tuple(int(round(4 * x)) for x in w)
+def keys(X):
+    """Exact key for each row of X (coordinates lie in (1/4)Z)."""
+    return [r.tobytes() for r in np.rint(4 * X).astype(np.int8)]
 
-U8 = [f(v) for v in UNITS]
-iU = {keyf(w): n for n, w in enumerate(U8)}
+U8 = np.array([f(v) for v in UNITS])
+iU = {k: n for n, k in enumerate(keys(U8))}
 S = []
 for p in ('12', '23', '31'):
     for v in UNITS:
@@ -17,10 +18,11 @@ for p in ('12', '23', '31'):
 for i, j in itertools.combinations(range(3), 2):
     for si, sj in itertools.product((1, -1), repeat=2):
         w = np.zeros(27); w[i] = si; w[j] = sj; S.append(w)
-iS = {keyf(w): n for n, w in enumerate(S)}
+S = np.array(S)
+iS = {k: n for n, k in enumerate(keys(S))}
 
 def gap_perm(M, vecs, idx):
-    imgs = [idx[keyf(M @ w)] + 1 for w in vecs]
+    imgs = [idx[k] + 1 for k in keys(vecs @ M.T)]   # row n is M @ vecs[n]
     return "PermList([" + ",".join(map(str, imgs)) + "])"
 
 for which in ('gauss', 'eis'):

@@ -68,29 +68,13 @@ def eps(g):
 
 # enumerate the group as matrices (cosets lift * K) to split by component
 mats = [m @ k for _, m in lifts for k in K]
-E = collections.Counter(eps(g) for g in mats)
-print("components (eps=+1 identity component of Stab(B)):", dict(E))
-pos = [g for g in mats if eps(g) == 1]
+signs = [eps(g) for g in mats]
+print("components (eps=+1 identity component of Stab(B)):", dict(collections.Counter(signs)))
+pos = [g for g, s in zip(mats, signs) if s == 1]
 rng2 = np.random.default_rng(7)
 G0 = PermutationGroup([perm(pos[i]) for i in rng2.choice(len(pos), 40, replace=False)])
 print("|G_Lambda cap Stab(B)^0| =", G0.order())
 
-
-def describe(H, name):
-    o = H.order()
-    Z = H.center().order()
-    D1 = H.derived_subgroup()
-    D2 = D1.derived_subgroup()
-    D3 = D2.derived_subgroup()
-    elems = list(H.generate_schreier_sims()) if o <= 7000 else None
-    orders = collections.Counter(x.order() for x in elems) if elems else None
-    print(f"{name}: order {o}, center {Z}, derived series {o} > {D1.order()} > {D2.order()} > {D3.order()}, solvable {H.is_solvable}")
-    if orders:
-        print("   element orders:", dict(sorted(orders.items())))
-    return H
-
-
-describe(Kp, "K_Lambda (pointwise stabilizer of B)")
 if which == 'gauss':
     # complex 3-dim representation of K_Lambda on the orthogonal complement of C in O (complex structure: left mult by iC)
     def Lmul(a):
@@ -168,7 +152,3 @@ if which == 'gauss':
     print(f"   explicit monomial group with mu_{nth} entries and det 1: order {len(std)};  K_Lambda equals it after conjugation: {Sset == Kset}")
     print(f"   in the eigenbasis of the abelian normal subgroup: all monomial {all(is_monomial(A) for A in mono)}, "
           f"nonzero entries are {nth}th roots of unity: {all(entries_ok(A) for A in mono)}")
-
-describe(Gp, "G_Lambda")
-describe(G0, "G_Lambda cap gauge group")
-pickle.dump({'mats': mats}, open(which + '_group.pkl', 'wb'))

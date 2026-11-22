@@ -1,0 +1,10 @@
+[project]
+name = "computations"
+version = "0.1.0"
+description = "Computations for the Jordan algebra diagrams paper"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.5.5",
+    "sympy",
+]
