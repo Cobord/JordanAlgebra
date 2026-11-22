@@ -1,0 +1,5 @@
+*.pkl
+__pycache__/
+autO.g
+gauss.g
+eis.g

@@ -10,6 +10,10 @@ finite fields as examples.
 
 Built against [Mathlib4](https://github.com/leanprover-community/mathlib4).
 
+## Computations for the paper
+
+[`computations/`](computations/) holds the Python and GAP code for the computations in *Symmetries of Jordan Algebra Diagrams over Varying Base Rings* (spin-factor diagrams over `Z[1/2]` and integral points of the Baez–Schwahn chain). It is independent of the Lean build; see [`computations/README.md`](computations/README.md).
+
 ## Contents
 
 | File | Description |
