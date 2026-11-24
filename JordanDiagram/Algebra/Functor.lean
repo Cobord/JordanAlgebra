@@ -218,6 +218,11 @@ noncomputable def mapAut : jordanAut S (S ⊗[R] A) →* jordanAut T (T ⊗[R] A
 theorem mapAut_apply (g : jordanAut S (S ⊗[R] A)) (x : T ⊗[R] A) :
     mapAut φ g x = mapLin φ (g : S ⊗[R] A ≃ₗ[S] S ⊗[R] A).toLinearMap x := rfl
 
+/-- The transport of `g` along `φ` agrees with `g` after `φ ⊗ 1`. -/
+theorem mapAut_tensorMap (g : jordanAut S (S ⊗[R] A)) (x : S ⊗[R] A) :
+    mapAut φ g (tensorMap A φ x) = tensorMap A φ (g x) :=
+  mapLin_tensorMap φ _ x
+
 theorem mapAut_id_alg (g : jordanAut S (S ⊗[R] A)) : mapAut (AlgHom.id R S) g = g :=
   Subtype.ext (LinearEquiv.toLinearMap_injective (mapLin_id_alg _))
 

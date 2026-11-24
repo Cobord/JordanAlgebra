@@ -86,6 +86,25 @@ theorem autMap_functor (φ : S →ₐ[R] T) (χ : T →ₐ[R] U) :
   ⟨JordanDiagram.autMap_id F, JordanDiagram.autMap_comp F φ χ,
     JordanDiagram.autMap_comp_autBaseChange F φ⟩
 
+theorem product_base_rings (S S' : Type u') [CommRing S] [Algebra R S] [CommRing S']
+    [Algebra R S'] :
+    Function.Bijective ((JordanDiagram.autMap F (AlgHom.fst R S S')).prod
+      (JordanDiagram.autMap F (AlgHom.snd R S S'))) :=
+  JordanDiagram.autMap_prod_bijective F S S'
+
+theorem power_series_specialization (S : Type u') [CommRing S] [Algebra R S]
+    [IsAddTorsionFree S] [∀ i, Module.Free R (F.obj i)] [∀ i, Module.Finite R (F.obj i)] :
+    (∀ g : (F.baseChange (PowerSeries S)).autGroup,
+      JordanDiagram.autMap F (JordanDiagram.constCoeffAlg (R := R) S) g = 1 →
+        ∀ k ≠ 0, g ^ k = 1 → g = 1) ∧
+    (∀ H : Subgroup (F.baseChange (PowerSeries S)).autGroup, Finite H →
+      Set.InjOn (JordanDiagram.autMap F (JordanDiagram.constCoeffAlg (R := R) S)) H) ∧
+    (JordanDiagram.autMap F (JordanDiagram.constCoeffAlg (R := R) S)).comp
+      (JordanDiagram.autMap F (JordanDiagram.constAlg S)) = MonoidHom.id _ :=
+  ⟨fun g h0 _ hk hg => JordanDiagram.autMap_const_eq_one S F g h0 hk hg,
+    fun H _ => JordanDiagram.injOn_autMap_const S F H,
+    JordanDiagram.autMap_const_comp_autMap_C S F⟩
+
 theorem derMap_functor (φ : S →ₐ[R] T) (χ : T →ₐ[R] U) :
     JordanDiagram.derMap F (AlgHom.id R S) = LieRingHom.id ∧
       JordanDiagram.derMap F (χ.comp φ) =
@@ -150,6 +169,40 @@ theorem orthogonal_flag {R : Type u} [CommRing R] {V : Type v} [AddCommGroup V] 
       ∀ g j (u : U j), ((e g j : U j ≃ₗ[R] U j) u : V) =
         ((g : orthogonalGroup B) : V ≃ₗ[R] V) u :=
   ⟨stabFlagEquivPi hU hO hN, stabFlagEquivPi_apply hU hO hN⟩
+
+open SpinFactor in
+theorem orthogonal_flag_iso {R : Type u} [CommRing R] {V : Type v} [AddCommGroup V] [Module R V]
+    {V' : Type v} [AddCommGroup V'] [Module R V'] {ι : Type w} [Fintype ι] [DecidableEq ι]
+    [LinearOrder ι] (B : LinearMap.BilinForm R V) (B' : LinearMap.BilinForm R V')
+    (U : ι → Submodule R V) (U' : ι → Submodule R V') (hU : DirectSum.IsInternal U)
+    (hU' : DirectSum.IsInternal U')
+    (hO : ∀ i j, i ≠ j → ∀ u ∈ U i, ∀ w ∈ U j, B u w = 0)
+    (hO' : ∀ i j, i ≠ j → ∀ u ∈ U' i, ∀ w ∈ U' j, B' u w = 0)
+    (hN : ∀ i, ∀ u ∈ U i, (∀ w ∈ U i, B u w = 0) → u = 0)
+    (hN' : ∀ i, ∀ u ∈ U' i, (∀ w ∈ U' i, B' u w = 0) → u = 0) :
+    (∃ g : V ≃ₗ[R] V', (∀ v w, B' (g v) (g w) = B v w) ∧
+        ∀ j v, g v ∈ (⨆ i : {i : ι // i ≤ j}, U' i) ↔ v ∈ ⨆ i : {i : ι // i ≤ j}, U i) ↔
+      ∀ i, ∃ g : U i ≃ₗ[R] U' i, ∀ x y, B' (g x) (g y) = B x y := by
+  have key := nonempty_flagIsometry_iff hU hU' hO hO' hN hN'
+  constructor
+  · rintro ⟨g, hg, hfl⟩ i
+    obtain ⟨e⟩ := key.1 ⟨⟨⟨g, hg⟩, hfl⟩⟩ i
+    exact ⟨e.1, e.2⟩
+  · intro h
+    obtain ⟨⟨⟨g, hg⟩, hfl⟩⟩ := key.2 fun i => (h i).elim fun e he => ⟨⟨e, he⟩⟩
+    exact ⟨g, hg, hfl⟩
+
+open SpinFactor in
+theorem orthogonal_flag_lie {R : Type u} [CommRing R] {V : Type v} [AddCommGroup V] [Module R V]
+    {ι : Type w} [Fintype ι] [DecidableEq ι] [LinearOrder ι]
+    (B : LinearMap.BilinForm R V) (U : ι → Submodule R V) (hU : DirectSum.IsInternal U)
+    (hO : ∀ i j, i ≠ j → ∀ u ∈ U i, ∀ w ∈ U j, B u w = 0)
+    (hN : ∀ i, ∀ u ∈ U i, (∀ w ∈ U i, B u w = 0) → u = 0) :
+    ∃ e : {X : V →ₗ[R] V // (∀ v w, B (X v) w + B v (X w) = 0) ∧
+        ∀ j, ∀ v ∈ (⨆ i : {i : ι // i ≤ j}, U i), X v ∈ ⨆ i : {i : ι // i ≤ j}, U i} ≃
+        ∀ j, {Y : U j →ₗ[R] U j // ∀ x y : U j, B (Y x) y + B x (Y y) = 0},
+      ∀ X j (u : U j), ((e X j).1 u : V) = X.1 u :=
+  ⟨(skewFlagEquivPi hU hO hN).toEquiv, skewFlagEquivPi_apply hU hO hN⟩
 
 theorem twisted_exact_sequence {R : Type u} [CommRing R] {I : Type w} [Preorder I]
     (F : JordanDiagram.{u, v} R I) :

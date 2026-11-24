@@ -50,6 +50,7 @@ The library has three parts:
 | [`Functor.lean`](Algebra/Functor.lean) | Transport along any `φ : S →ₐ[R] T`: `mapLin φ f` is the unique `T`-linear map with `mapLin φ f ∘ (φ ⊗ 1) = (φ ⊗ 1) ∘ f`, and `mapAut φ : Aut(S ⊗ A) →* Aut(T ⊗ A)`. Functor laws `mapAut_id_alg`, `mapAut_comp_alg`, and `mapAut_baseChangeAut` (compatibility with extension from `R`). The same for derivations: `mapDer`, which is additive and bracket-preserving. |
 | [`Orthogonal.lean`](Algebra/Orthogonal.lean) | If `B` is symmetric and nonsingular on `W`, then `V = W ⊕ W⊥` (`isCompl_orthogonal`), and `stabEquivProd : Stab_{O(V,B)}(W) ≃* O(W, B) × O(W⊥, B)`. |
 | [`OrthogonalFlag.lean`](Algebra/OrthogonalFlag.lean) | For an internal direct sum `V = ⨁ Uᵢ` of mutually orthogonal pieces: `stabPiecesEquivPi : Stab_{O(V,B)}(Uᵢ ∀ i) ≃* ∏ᵢ O(Uᵢ, B)`. With `B` nondegenerate on each piece and a linear order on the indices, `stabFlagEquivPi` gives the same for the flag `W_j = ⨆_{i ≤ j} Uᵢ`. |
+| [`OrthogonalFlagIso.lean`](Algebra/OrthogonalFlagIso.lean) | `nonempty_flagIsometry_iff`: two orthogonal flags with nondegenerate pieces are isometric exactly when their pieces are pairwise isometric. `skewFlagEquivPi`: the skew endomorphisms preserving the flag are `⊕ᵢ o(Uᵢ, B)`, by restriction (the Lie algebra analogue). |
 | [`Tower.lean`](Algebra/Tower.lean) | For `R → S → T`: the coherence `cancelJordanEquiv : T ⊗[S] (S ⊗[R] A) ≃ⱼ[T] T ⊗[R] A`, the extension `autTower : Aut(S ⊗ A) →* Aut(T ⊗ A)`, and `autTower_baseChangeAut`: extending from `R` to `S` and then to `T` is extending from `R` to `T`. |
 | [`SpinFactor.lean`](Algebra/SpinFactor.lean) | For `V`, `V'` free, `2` invertible and any symmetric forms, including degenerate ones: `isometryEquiv : Isometry B B' ≃ (J(V, B) ≃ⱼ J(V', B'))` (`g ↦ g ⊕ id`), `autEquivOrthogonal : O(V, B)(R) ≃* Aut J(V, B)`, and `derEquivSkew : o(V, B)(R) ≃ Der J(V, B)` (`X ↦ X ⊕ 0`). |
 
@@ -59,6 +60,7 @@ The library has three parts:
 | --- | --- |
 | [`LieRingCat.lean`](MathlibMissing/LieRingCat.lean) | `LieRingHom L L'` (`L →⁅⁆ L'`): additive maps with bracket preservation as a field, with `id`, `comp`, `ext`, `map_lie`. `LieRingCat`, the category of Lie rings, with the same API as `GrpCat`. |
 | [`PiLie.lean`](MathlibMissing/PiLie.lean) | The componentwise Lie ring and Lie algebra structures on a Pi type. |
+| [`PowerSeriesMatrix.lean`](MathlibMissing/PowerSeriesMatrix.lean) | `Matrix.eq_one_of_pow_eq_one`: over a torsion-free `R`, a matrix over `R⟦X⟧` with constant term `1` and finite order is `1` (the kernel of `GL_n(R⟦X⟧) → GL_n(R)` is torsion-free). |
 
 ### `Diagram/`: the diagram layer
 
@@ -69,6 +71,8 @@ The library has three parts:
 | [`Derivation.lean`](Diagram/Derivation.lean) | The compatible derivations `derAlgebra` as a Lie subalgebra, the Lie homomorphism `evDer`, `evDer_injective`, `range_evDer` (image `{D : D(Aᵢ) ⊆ Aᵢ}`), and `restrictDer`. |
 | [`Wedge.lean`](Diagram/Wedge.lean) | `IsWedge P₁ P₂` and `autGroupEquivWedge : G_F(R) ≃* G_{F₁}(R) ×_{Aut(J)} G_{F₂}(R)`. For derivations, `wedgeDer_injective` and `range_wedgeDer`. |
 | [`Iso.lean`](Diagram/Iso.lean) | `DiagramIso F F'` (isomorphisms in a fiber) and its terminal determination `terminalEquiv` (isomorphisms `↔` `h : J ≃ⱼ J'` with `h(Aᵢ) = A'ᵢ`). `TwistedIso F u = DiagramIso F (u* F)`. `twistedIdEquiv` identifies the twisted isomorphisms over `𝟭` with `G_F(R)`, the kernel of `G̃_F(R) → Aut(I⁺, +)`. `twistedTerminalEquiv` is terminal determination for twisted automorphisms. |
+| [`Product.lean`](Diagram/Product.lean) | `prodAutEquiv : Aut((S × S') ⊗ A) ≃* Aut(S ⊗ A) × Aut(S' ⊗ A)` and **`autGroupProdEquiv : G_F(S × S') ≃* G_F(S) × G_F(S')`**, the map being `(G_F(fst), G_F(snd))` (`autMap_prod_bijective`). |
+| [`PowerSeries.lean`](Diagram/PowerSeries.lean) | The constant-term map `constCoeffAlg : S⟦X⟧ → S`, split by `constAlg`. For finite free nodes and torsion-free `S`: the kernel of `G_F(S⟦X⟧) → G_F(S)` is torsion-free (`autMap_const_eq_one`), finite subgroups embed (`injOn_autMap_const`), and the map is split (`autMap_const_comp_autMap_C`). |
 | [`Twisted.lean`](Diagram/Twisted.lean) | For a shape that is a preorder: `TwistedAut F` (an order automorphism `σ` of the shape with Jordan isomorphisms `F(i) ≃ F(σ i)` compatible with the arrows) and its group structure, **the shape-twisted group `G̃_F(R)`**. `shapeHom : G̃_F(R) →* Aut(I)` and `ofAut : G_F(R) →* G̃_F(R)`, with `ofAut_injective` and `range_ofAut`: `1 → G_F(R) → G̃_F(R) → Aut(I)` is exact. `toTwistedIso`/`ofTwistedIso` relate it to `TwistedIso`. |
 | [`Wreath.lean`](Diagram/Wreath.lean) | `spinTwist`: a shape automorphism `σ` and an isometry with `g(Wᵢ) = W_{σ i}` give a twisted automorphism `g ⊕ id` of a spin-factor diagram. `Disc κ` (discrete order), with `permShape_surjective`: every automorphism of `WithTop (Disc κ)` is a permutation. `wreathDiagram BU κ` (copies of `U` below `κ → U`) and **`wreathEquiv : G̃_F(R) ≃* O(U)^κ ⋊ Perm κ`**, with the shape map the permutation part. |
 | [`Finiteness.lean`](Diagram/Finiteness.lean) | The finite detector criterion: a faithful action on a finite `X` gives `\|G\| ≤ \|X\|!`. `card_autGroup_le`: a finite, stable, Jordan-generating `X ⊆ J` bounds `\|G_F(R)\|` by `\|X\|!`. |
@@ -83,6 +87,5 @@ are no `sorry`s. The headline results use only `propext`, `Classical.choice` and
 
 1. General families `{F_S}` over varying base rings, with arbitrary coherences `β_f` packaged as
    data, and `G_F`, `g_F` for them.
-2. The Lie algebra analogue of the orthogonal flag result (`g_F ≅ ⊕ o(Uⱼ)`), and the shape-twisted
-   group for shapes that are general categories rather than preorders.
+2. The shape-twisted group for shapes that are general categories rather than preorders.
 3. The ordered layer. `IsFormallyReal` already exists separately in `Jordan/`.

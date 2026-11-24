@@ -25,10 +25,14 @@ permitted axioms, and is accepted by the kernel.
 | `scalar_extension` | Commutativity and the Jordan identity on `S ⊗[R] A`, for Mathlib's product |
 | `autMap_functor` | Functor laws for `G_F`, compatibility with `G_F(R) → G_F(S)` |
 | `derMap_functor` | Functor laws for `g_F`, brackets preserved |
+| `product_base_rings` | `(G_F(fst), G_F(snd)) : G_F(S × S') → G_F(S) × G_F(S')` is bijective |
+| `power_series_specialization` | For finite free nodes and torsion-free `S`, the kernel of `G_F(S⟦X⟧) → G_F(S)` is torsion-free, finite subgroups embed, and the map is split by constant series |
 | `comparison_injective`, `comparison_image` | Injectivity and image of `G_F(R) → G_F(S)` when every `a ↦ 1 ⊗ a` is injective |
 | `spinFactor_aut`, `spinFactor_der` | Spin-factor symmetries, stated elementarily: automorphisms are `(v, r) ↦ (g v, r)` with `g` an isometry, derivations are `(v, r) ↦ (X v, 0)` with `X` skew |
 | `orthogonal_splitting` | Orthogonal splitting for one nonsingular member: `Stab_{O(V,B)}(W) ≃* O(W, B) × O(W⊥, B)` |
 | `orthogonal_flag` | Orthogonal flags: for `V = ⨁ Uⱼ` with mutually orthogonal pieces on which `B` is nondegenerate, the stabilizer of the flag `W_j = ⨆_{i ≤ j} Uᵢ` is `∏ⱼ O(Uⱼ, B)`, by restriction |
+| `orthogonal_flag_iso` | Two orthogonal flags with nondegenerate pieces are isometric exactly when their pieces are pairwise isometric |
+| `orthogonal_flag_lie` | The skew endomorphisms preserving an orthogonal flag are the families of skew endomorphisms of the pieces, by restriction |
 | `twisted_exact_sequence` | For a diagram over a preorder, `1 → G_F → G̃_F → Aut(I)` is exact |
 | `wreath_product` | The shape-twisted group of the wreath diagram (copies of a free `U` below `κ → U`) is `O(U)^κ ⋊ Perm κ`, with the shape map the permutation part |
 | `spin_diagram_group` | The automorphism group of a spin-factor diagram is the stabilizer of the `Wᵢ` in the orthogonal group |

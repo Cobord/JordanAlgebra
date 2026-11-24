@@ -93,12 +93,15 @@ end Projections
 section Glue
 
 variable {B : LinearMap.BilinForm R V}
+variable {V' : Type*} [AddCommGroup V'] [Module R V'] {U' : ι → Submodule R V'}
+  (hU' : DirectSum.IsInternal U')
+variable {V'' : Type*} [AddCommGroup V''] [Module R V''] {U'' : ι → Submodule R V''}
 
 /-- Gluing linear maps of the pieces: `v ↦ ∑ₖ gₖ (proj_k v)`. -/
-def glueLin (gs : ∀ i, U i →ₗ[R] U i) : V →ₗ[R] V :=
-  ∑ k, (U k).subtype ∘ₗ gs k ∘ₗ proj hU k
+def glueLin (gs : ∀ i, U i →ₗ[R] U' i) : V →ₗ[R] V' :=
+  ∑ k, (U' k).subtype ∘ₗ gs k ∘ₗ proj hU k
 
-theorem glueLin_of_mem (gs : ∀ i, U i →ₗ[R] U i) {i : ι} {u : V} (hu : u ∈ U i) :
+theorem glueLin_of_mem (gs : ∀ i, U i →ₗ[R] U' i) {i : ι} {u : V} (hu : u ∈ U i) :
     glueLin hU gs u = gs i ⟨u, hu⟩ := by
   simp only [glueLin, LinearMap.sum_apply, LinearMap.comp_apply, Submodule.subtype_apply]
   rw [Finset.sum_eq_single i]
@@ -108,50 +111,50 @@ theorem glueLin_of_mem (gs : ∀ i, U i →ₗ[R] U i) {i : ι} {u : V} (hu : u 
   · intro h
     exact absurd (Finset.mem_univ i) h
 
-theorem glueLin_comp (gs hs : ∀ i, U i →ₗ[R] U i) :
-    glueLin hU gs ∘ₗ glueLin hU hs = glueLin hU (fun i => gs i ∘ₗ hs i) :=
+theorem glueLin_comp (gs : ∀ i, U' i →ₗ[R] U'' i) (hs : ∀ i, U i →ₗ[R] U' i) :
+    glueLin hU' gs ∘ₗ glueLin hU hs = glueLin hU (fun i => gs i ∘ₗ hs i) :=
   linearMap_ext_of_pieces hU fun i u hu => by
-    rw [LinearMap.comp_apply, glueLin_of_mem hU hs hu, glueLin_of_mem hU gs (hs i ⟨u, hu⟩).2,
+    rw [LinearMap.comp_apply, glueLin_of_mem hU hs hu, glueLin_of_mem hU' gs (hs i ⟨u, hu⟩).2,
       glueLin_of_mem hU _ hu]
     rfl
 
 theorem glueLin_id : glueLin hU (fun i => LinearMap.id (R := R) (M := U i)) = LinearMap.id :=
   linearMap_ext_of_pieces hU fun i u hu => by rw [glueLin_of_mem hU _ hu]; rfl
 
-/-- Gluing linear automorphisms of the pieces. -/
-def glueEquivPieces (gs : ∀ i, U i ≃ₗ[R] U i) : V ≃ₗ[R] V :=
+/-- Gluing linear isomorphisms of the pieces of two internal direct sums. -/
+def glueEquivPieces (gs : ∀ i, U i ≃ₗ[R] U' i) : V ≃ₗ[R] V' :=
   LinearEquiv.ofLinearMap (glueLin hU fun i => (gs i).toLinearMap)
-    (glueLin hU fun i => (gs i).symm.toLinearMap)
+    (glueLin hU' fun i => (gs i).symm.toLinearMap)
     (by rw [glueLin_comp]; simp only [LinearEquiv.comp_coe, LinearEquiv.symm_trans_self,
-      LinearEquiv.refl_toLinearMap]; exact glueLin_id hU)
+      LinearEquiv.refl_toLinearMap]; exact glueLin_id hU')
     (by rw [glueLin_comp]; simp only [LinearEquiv.comp_coe, LinearEquiv.self_trans_symm,
       LinearEquiv.refl_toLinearMap]; exact glueLin_id hU)
 
-theorem glueEquivPieces_of_mem (gs : ∀ i, U i ≃ₗ[R] U i) {i : ι} {u : V} (hu : u ∈ U i) :
-    glueEquivPieces hU gs u = gs i ⟨u, hu⟩ :=
+theorem glueEquivPieces_of_mem (gs : ∀ i, U i ≃ₗ[R] U' i) {i : ι} {u : V} (hu : u ∈ U i) :
+    glueEquivPieces hU hU' gs u = gs i ⟨u, hu⟩ :=
   glueLin_of_mem hU _ hu
 
-theorem glueEquivPieces_symm_of_mem (gs : ∀ i, U i ≃ₗ[R] U i) {i : ι} {u : V} (hu : u ∈ U i) :
-    (glueEquivPieces hU gs).symm u = (gs i).symm ⟨u, hu⟩ :=
-  glueLin_of_mem hU _ hu
+theorem glueEquivPieces_symm_of_mem (gs : ∀ i, U i ≃ₗ[R] U' i) {i : ι} {u : V'}
+    (hu : u ∈ U' i) : (glueEquivPieces hU hU' gs).symm u = (gs i).symm ⟨u, hu⟩ :=
+  glueLin_of_mem hU' _ hu
 
-theorem glueEquivPieces_mem_iff (gs : ∀ i, U i ≃ₗ[R] U i) (i : ι) (v : V) :
-    glueEquivPieces hU gs v ∈ U i ↔ v ∈ U i := by
+theorem glueEquivPieces_mem_iff (gs : ∀ i, U i ≃ₗ[R] U' i) (i : ι) (v : V) :
+    glueEquivPieces hU hU' gs v ∈ U' i ↔ v ∈ U i := by
   constructor
   · intro h
-    have := glueEquivPieces_symm_of_mem hU gs h
+    have := glueEquivPieces_symm_of_mem hU hU' gs h
     rw [LinearEquiv.symm_apply_apply] at this
     rw [this]
     exact ((gs i).symm _).2
   · intro h
-    rw [glueEquivPieces_of_mem hU gs h]
+    rw [glueEquivPieces_of_mem hU hU' gs h]
     exact (gs i ⟨v, h⟩).2
 
 /-- Glued isometries of mutually orthogonal pieces form an isometry. -/
-theorem glueEquivPieces_isometry (hO : PairwiseOrthogonal B U)
-    (gs : ∀ i, orthogonalGroup (B.restrict (U i))) (v w : V) :
-    B (glueEquivPieces hU (fun i => (gs i).1) v) (glueEquivPieces hU (fun i => (gs i).1) w) =
-      B v w := by
+theorem glueEquivPieces_isometry {B' : LinearMap.BilinForm R V'} (hO : PairwiseOrthogonal B U)
+    (hO' : PairwiseOrthogonal B' U') (gs : ∀ i, U i ≃ₗ[R] U' i)
+    (hgs : ∀ i x y, B' (gs i x) (gs i y) = B x y) (v w : V) :
+    B' (glueEquivPieces hU hU' gs v) (glueEquivPieces hU hU' gs w) = B v w := by
   induction mem_iSup_of_isInternal hU v using Submodule.iSup_induction' with
   | zero => simp
   | add x y _ _ hx hy => simp only [map_add, LinearMap.add_apply, hx, hy]
@@ -160,11 +163,11 @@ theorem glueEquivPieces_isometry (hO : PairwiseOrthogonal B U)
     | zero => simp
     | add y z _ _ hy hz => simp only [map_add, hy, hz]
     | mem j y hy =>
-      rw [glueEquivPieces_of_mem hU _ hx, glueEquivPieces_of_mem hU _ hy]
+      rw [glueEquivPieces_of_mem hU hU' _ hx, glueEquivPieces_of_mem hU hU' _ hy]
       by_cases hij : i = j
       · subst hij
-        exact (gs i).2 ⟨x, hx⟩ ⟨y, hy⟩
-      · rw [hO i j hij _ ((gs i).1 ⟨x, hx⟩).2 _ ((gs j).1 ⟨y, hy⟩).2, hO i j hij x hx y hy]
+        exact hgs i ⟨x, hx⟩ ⟨y, hy⟩
+      · rw [hO' i j hij _ (gs i ⟨x, hx⟩).2 _ (gs j ⟨y, hy⟩).2, hO i j hij x hx y hy]
 
 end Glue
 
@@ -228,13 +231,14 @@ sum of mutually orthogonal submodules form `∏ᵢ O(Uᵢ, B)`, by restriction t
 def stabPiecesEquivPi (hO : PairwiseOrthogonal B U) :
     stabPieces B U ≃* ∀ i, orthogonalGroup (B.restrict (U i)) :=
   MulEquiv.ofBijective (stabPiecesToPi B U) ⟨stabPiecesToPi_injective hU, fun gs =>
-    ⟨⟨⟨glueEquivPieces hU (fun i => (gs i).1), glueEquivPieces_isometry hU hO gs⟩,
-      glueEquivPieces_mem_iff hU _⟩, by
+    ⟨⟨⟨glueEquivPieces hU hU (fun i => (gs i).1),
+      glueEquivPieces_isometry hU hU hO hO _ fun i => (gs i).2⟩,
+      glueEquivPieces_mem_iff hU hU _⟩, by
       funext i
       apply Subtype.ext
       apply LinearEquiv.ext
       intro u
-      exact Subtype.ext (glueEquivPieces_of_mem hU _ u.2)⟩⟩
+      exact Subtype.ext (glueEquivPieces_of_mem hU hU _ u.2)⟩⟩
 
 end Stabilizers
 
@@ -345,13 +349,12 @@ theorem stabFlag_mem_flagBelow {g : orthogonalGroup B} (hg : g ∈ stabFlag B U)
   | mem i u hu => exact Submodule.mem_iSup_of_mem i ((hg i.1 u).2 hu)
 
 include hU in
-/-- An isometry preserving the flag maps `U_j` into `U_j`: `g u` lies in `W_j`, and its part
-below `j` is orthogonal to all of `⨆_{i<j} Uᵢ`, hence zero. -/
-theorem stabFlag_mem_piece (hO : PairwiseOrthogonal B U) (hN : ∀ i, NondegenerateOn B (U i))
-    {g : orthogonalGroup B} (hg : g ∈ stabFlag B U) (j : ι) {u : V} (hu : u ∈ U j) :
-    (g : V ≃ₗ[R] V) u ∈ U j := by
-  set x := (g : V ≃ₗ[R] V) u with hx_def
-  have hx : x ∈ flagMember U j := (hg j u).2 (mem_flagMember_of_mem le_rfl hu)
+/-- The piece `U_j` is the part of `W_j` orthogonal to everything below `j`: a vector of `W_j`
+orthogonal to `⨆_{i<j} Uᵢ` lies in `U_j`, since its part below `j` is orthogonal to all of
+`⨆_{i<j} Uᵢ`, hence zero. -/
+theorem mem_piece_of_orthogonal (hO : PairwiseOrthogonal B U) (hN : ∀ i, NondegenerateOn B (U i))
+    {j : ι} {x : V} (hx : x ∈ flagMember U j) (hxo : ∀ y ∈ flagBelow U j, B x y = 0) :
+    x ∈ U j := by
   set a := x - (proj hU j x : V)
   have ha : a ∈ flagBelow U j := by
     have hrest : ∑ k ∈ Finset.univ.filter (fun k => ¬ k < j), (proj hU k x : V) =
@@ -374,19 +377,26 @@ theorem stabFlag_mem_piece (hO : PairwiseOrthogonal B U) (hN : ∀ i, Nondegener
       mem_flagBelow_of_mem (Finset.mem_filter.1 hk).2 (proj hU k x).2
   have horth : ∀ y ∈ flagBelow U j, B a y = 0 := by
     intro y hy
-    have hz : ((g⁻¹ : orthogonalGroup B) : V ≃ₗ[R] V) y ∈ flagBelow U j :=
-      stabFlag_mem_flagBelow ((stabFlag B U).inv_mem hg) j hy
-    have hyz : y = (g : V ≃ₗ[R] V) (((g⁻¹ : orthogonalGroup B) : V ≃ₗ[R] V) y) :=
-      ((g.1 : V ≃ₗ[R] V).apply_symm_apply y).symm
-    have h1 : B x y = 0 := by
-      rw [hyz, hx_def, g.2]
-      exact apply_eq_zero_of_mem_flagBelow hO hu hz
-    rw [map_sub, LinearMap.sub_apply, h1,
+    rw [map_sub, LinearMap.sub_apply, hxo y hy,
       apply_eq_zero_of_mem_flagBelow hO (proj hU j x).2 hy, sub_zero]
   have := eq_zero_of_mem_flagBelow hU hO hN ha horth
   rw [sub_eq_zero] at this
   rw [this]
   exact (proj hU j x).2
+
+include hU in
+/-- An isometry preserving the flag maps `U_j` into `U_j`. -/
+theorem stabFlag_mem_piece (hO : PairwiseOrthogonal B U) (hN : ∀ i, NondegenerateOn B (U i))
+    {g : orthogonalGroup B} (hg : g ∈ stabFlag B U) (j : ι) {u : V} (hu : u ∈ U j) :
+    (g : V ≃ₗ[R] V) u ∈ U j := by
+  refine mem_piece_of_orthogonal hU hO hN ((hg j u).2 (mem_flagMember_of_mem le_rfl hu))
+    fun y hy => ?_
+  have hz : ((g⁻¹ : orthogonalGroup B) : V ≃ₗ[R] V) y ∈ flagBelow U j :=
+    stabFlag_mem_flagBelow ((stabFlag B U).inv_mem hg) j hy
+  have hyz : y = (g : V ≃ₗ[R] V) (((g⁻¹ : orthogonalGroup B) : V ≃ₗ[R] V) y) :=
+    ((g.1 : V ≃ₗ[R] V).apply_symm_apply y).symm
+  rw [hyz, g.2]
+  exact apply_eq_zero_of_mem_flagBelow hO hu hz
 
 include hU in
 theorem stabFlag_le_stabPieces (hO : PairwiseOrthogonal B U)
