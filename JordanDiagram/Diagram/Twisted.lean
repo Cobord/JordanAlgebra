@@ -11,6 +11,10 @@ Let `F` be a Jordan diagram whose shape `I` is a preorder. A *twisted automorphi
 `θᵢ : F(i) ≃ F(σ i)` with `θⱼ ∘ F(i ≤ j) = F(σ i ≤ σ j) ∘ θᵢ`. Over a fixed `σ` these are the
 twisted isomorphisms `F ≅ σ* F` of `Diagram/Iso.lean` (`TwistedAut.toTwistedIso`).
 
+This is the preorder case, where parallel arrows are equal and order automorphisms are the shape
+automorphisms; the wreath-product example uses it. `Diagram/TwistedGeneral.lean` treats arbitrary
+terminally pointed shapes.
+
 * `TwistedAut.instGroup`: twisted automorphisms form a group `G̃_F(R)`, with
   `(σ, θ) (τ, η) = (σ τ, θ_τ ∘ η)`.
 * `TwistedAut.shapeHom : G̃_F(R) →* Aut(I)` records the shape automorphism.
