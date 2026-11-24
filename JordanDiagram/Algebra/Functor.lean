@@ -197,7 +197,7 @@ variable (φ : S →ₐ[R] T)
 /-- Transport of Jordan automorphisms along `φ : S →ₐ[R] T`, a group homomorphism
 `Aut_{Jord_S}(S ⊗[R] A) → Aut_{Jord_T}(T ⊗[R] A)` (Proposition 3.3). -/
 noncomputable def mapAut : jordanAut S (S ⊗[R] A) →* jordanAut T (T ⊗[R] A) where
-  toFun g := ⟨LinearEquiv.ofLinear (mapLin φ (g : S ⊗[R] A ≃ₗ[S] S ⊗[R] A).toLinearMap)
+  toFun g := ⟨LinearEquiv.ofLinearMap (mapLin φ (g : S ⊗[R] A ≃ₗ[S] S ⊗[R] A).toLinearMap)
       (mapLin φ ((g⁻¹ : jordanAut S (S ⊗[R] A)) : S ⊗[R] A ≃ₗ[S] S ⊗[R] A).toLinearMap)
       (by
         rw [← mapLin_comp, ← mapLin_id φ]

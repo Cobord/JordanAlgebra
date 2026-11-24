@@ -558,13 +558,14 @@ theorem nuclear_rpart (n : Octonion R a b c) (hn : IsNuclear n) :
   · rw [scalarEmbed_fst]; exact n1eq
   · rw [scalarEmbed_snd, n2eq, hn2re, map_zero]
 
+include ha hb hc in
 /-- Octonions form a nuclear involution (`Jordan.NuclearInvolution`): every star-fixed (self-
 adjoint) octonion is exactly a `scalarEmbed r` (`isSelfAdjoint_iff`), and scalars associate
 trivially with everything, in any argument slot, via `scalarEmbed_mul`/`mul_scalarEmbed` plus the
 `smul_mul_assoc`/`mul_smul_comm` scalar-tower laws. The `isNuclear_comm` field (the nucleus is
 closed under commutators) needs `nuclear_rpart` (Nuc ⊆ Center), which in turn needs `a`, `b`, `c`
 to be non-zero-divisors. -/
-@[reducible] def nuclearInvolution : IsNuclearInvolution (Octonion R a b c) where
+theorem nuclearInvolution : IsNuclearInvolution (Octonion R a b c) where
   isNuclear_of_star_eq x hx := by
     obtain ⟨r, rfl⟩ := (isSelfAdjoint_iff x).mp hx
     exact fun y z =>

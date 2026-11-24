@@ -143,16 +143,16 @@ omit [IsFormallyReal R M] in
 theorem not_of_exists_mul_self_eq_zero {x : M} (hx : x ≠ 0) (hsq : x * x = 0) :
     ¬ IsFormallyReal R M := by
   intro hFR
-  letI : IsFormallyReal R M := hFR
+  let: IsFormallyReal R M := hFR
   exact hx (eq_zero_of_mul_self_eq_zero hsq)
 
 omit [IsFormallyReal R M] in
 theorem not_of_neg_one_eq_sum_squares [Nontrivial M] (hsq : IsSumSq (-1 : R)) :
     ¬ IsFormallyReal R M := by
   obtain ⟨ι, hι, x, hsq⟩ := isSumSq_iff_exists_sum_mul_self.mp hsq
-  letI : Fintype ι := hι
+  let: Fintype ι := hι
   intro hFR
-  letI : IsFormallyReal R M := hFR
+  let: IsFormallyReal R M := hFR
   let y : Option ι → M
     | none => 1
     | some i => x i • (1 : M)
@@ -195,7 +195,7 @@ theorem isAddTorsionFree : IsAddTorsionFree M where
     rw [hxy, sub_self]
 
 theorem charZero_of_nontrivial [Nontrivial M] : CharZero M := by
-  letI : IsAddTorsionFree M := isAddTorsionFree (R := R) (M := M)
+  let: IsAddTorsionFree M := isAddTorsionFree (R := R) (M := M)
   refine charZero_of_inj_zero ?_
   intro n hn
   by_contra hn0
@@ -204,7 +204,7 @@ theorem charZero_of_nontrivial [Nontrivial M] : CharZero M := by
     exact hn))
 
 theorem charZero_of_nontrivial_scalar [Nontrivial M] : CharZero R := by
-  letI : CharZero M := charZero_of_nontrivial (R := R) (M := M)
+  let: CharZero M := charZero_of_nontrivial (R := R) (M := M)
   exact CharZero.of_module M
 
 
@@ -219,9 +219,9 @@ theorem neg_one_not_sum_squares_of_isFormallyReal {R : Type*} [CommRing R]
     (h : ∃ (M : Type*) (_ : JordanAlgebra R M) (_ : Nontrivial M), IsFormallyReal R M) :
     IsSemireal R := by
   obtain ⟨M, hJA, hNT, hFR⟩ := h
-  letI := hJA
-  letI := hNT
-  letI := hFR
+  let:= hJA
+  let:= hNT
+  let:= hFR
   exact IsFormallyReal.neg_one_not_sum_squares (R := R) (M := M)
 
 namespace PadicInt
@@ -252,7 +252,7 @@ private theorem hensel_sq_add_const_of_ne_zero {p : ℕ} [Fact p.Prime] (hp2 : p
     have : a * a + (b * b + 1) = 0 := by linear_combination hab
     simp [f, a0, w, pow_two, this]
   have hderiv : IsUnit (Ideal.Quotient.mk (maximalIdeal ℤ_[p]) (f.derivative.eval a0)) := by
-    letI : Field (ℤ_[p] ⧸ maximalIdeal ℤ_[p]) := Ideal.Quotient.field (maximalIdeal ℤ_[p])
+    let: Field (ℤ_[p] ⧸ maximalIdeal ℤ_[p]) := Ideal.Quotient.field (maximalIdeal ℤ_[p])
     rw [isUnit_iff_ne_zero, ne_eq, Ideal.Quotient.eq_zero_iff_mem]
     intro hmem
     have hker : PadicInt.toZMod (f.derivative.eval a0) = 0 := by

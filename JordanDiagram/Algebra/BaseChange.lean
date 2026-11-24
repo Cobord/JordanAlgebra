@@ -335,7 +335,7 @@ theorem descendLin_inv (g : jordanAut E (E ⊗[R] A)) (hg : PreservesIncl g)
 comes from an automorphism of `A`. -/
 noncomputable def descendAut (g : jordanAut E (E ⊗[R] A)) (hg : PreservesIncl g)
     (hg' : PreservesIncl g⁻¹) : jordanAut R A :=
-  ⟨LinearEquiv.ofLinear (descendLin hι g hg) (descendLin hι g⁻¹ hg')
+  ⟨LinearEquiv.ofLinearMap (descendLin hι g hg) (descendLin hι g⁻¹ hg')
       (LinearMap.ext fun a => descendLin_inv hι g hg hg' a)
       (LinearMap.ext fun a => by
         have := descendLin_inv hι g⁻¹ hg' (by simpa using hg) a

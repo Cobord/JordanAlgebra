@@ -574,7 +574,7 @@ Not tagged `instance` since it takes explicit hypotheses beyond the ambient type
       rw [hxxy, mul_smul_comm, smul_mul_assoc, ← smul_add, smul_smul]
     rw [hLHS, hRHS]
     congr 1
-    haveI := Octonion.nuclearInvolution ha hb hc
+    have := Octonion.nuclearInvolution ha hb hc
     have key := hermitian_jordan_identity x.1 y.1 x.2 y.2
     linear_combination (norm := abel_nf) key
 
@@ -751,7 +751,7 @@ variable (hna : ∀ x : R, a * x = 0 → x = 0) (hnb : ∀ x : R, b * x = 0 → 
 include hna hnb hnc in
 theorem isFormallyReal (ha : a < 0) (hb : b < 0) (hc : 0 < c) :
     @IsFormallyReal R (AlbertAlgebra (R:=R) (a:=a) (b:=b) (c:=c)) _ (ofAlbert hna hnb hnc) := by
-  letI := ofAlbert hna hnb hnc
+  let := ofAlbert hna hnb hnc
   refine ⟨fun {ι} _ X hX i => ?_⟩
   have hex : ∀ k, ∃ r0 r1 r2 p q t, X k = buildThreeH r0 r1 r2 p q t :=
     fun k => ⟨_, _, _, _, _, _, HermitianOctonionMatrixThree.eq_buildThreeH (X k)⟩

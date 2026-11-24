@@ -201,7 +201,7 @@ theorem mooreTermAux_one (σ : Equiv.Perm n) :
     have hstep : mooreTermAux (1 : Matrix n n M) σ S =
         orbitProd (1 : Matrix n n M) σ (orbitFinset σ (S.max' h)) (orbitFinset_nonempty σ _) *
           mooreTermAux (1 : Matrix n n M) σ (S \ orbitFinset σ (S.max' h)) := by
-      rw [mooreTermAux, dif_pos h]
+      rw [mooreTermAux, dite_eq_left h]
     rw [hstep]
     set T := orbitFinset σ (S.max' h) with hTdef
     set m := S.max' h with hmdef
@@ -241,13 +241,13 @@ theorem mooreTermAux_one (σ : Equiv.Perm n) :
       simp only [hiff]
       rfl
     · rw [orbitProd_one_eq_zero_of_moved σ m hTnonempty hge, zero_mul]
-      rw [if_neg]
+      rw [ite_eq_right]
       intro hall
       have hmoved := orbitFinset_max_moved_of_card_ge_two σ m hTnonempty hge
       rw [hTmax] at hmoved
       exact hmoved (hall m (S.max'_mem h))
   · intro S _hlet h _
-    rw [mooreTermAux, dif_neg h]
+    rw [mooreTermAux, dite_eq_right h]
     have h' : ¬S.Nonempty := h
     rw [Finset.not_nonempty_iff_eq_empty.mp h']
     simp
@@ -331,11 +331,11 @@ theorem mooreTermAux_smul (r : R) (A : Matrix n n M) (σ : Equiv.Perm n) :
     have hstep : mooreTermAux (r • A) σ S =
         orbitProd (r • A) σ (orbitFinset σ (S.max' h)) (orbitFinset_nonempty σ _) *
           mooreTermAux (r • A) σ (S \ orbitFinset σ (S.max' h)) := by
-      rw [mooreTermAux, dif_pos h]
+      rw [mooreTermAux, dite_eq_left h]
     have hstep' : mooreTermAux A σ S =
         orbitProd A σ (orbitFinset σ (S.max' h)) (orbitFinset_nonempty σ _) *
           mooreTermAux A σ (S \ orbitFinset σ (S.max' h)) := by
-      rw [mooreTermAux, dif_pos h]
+      rw [mooreTermAux, dite_eq_left h]
     rw [hstep, hstep']
     rw [ih (isOrbitClosed_sdiff σ hclosed h)]
     rw [orbitProd_smul]
@@ -345,8 +345,8 @@ theorem mooreTermAux_smul (r : R) (A : Matrix n n M) (σ : Equiv.Perm n) :
       exact Finset.card_sdiff_add_card_eq_card hsub
     rw [smul_mul_assoc, mul_smul_comm, smul_smul, ← pow_add, hcard]
   · intro S _hlet h _
-    have hstep : mooreTermAux (r • A) σ S = 1 := by rw [mooreTermAux, dif_neg h]
-    have hstep' : mooreTermAux A σ S = 1 := by rw [mooreTermAux, dif_neg h]
+    have hstep : mooreTermAux (r • A) σ S = 1 := by rw [mooreTermAux, dite_eq_right h]
+    have hstep' : mooreTermAux A σ S = 1 := by rw [mooreTermAux, dite_eq_right h]
     have h' : ¬S.Nonempty := h
     rw [hstep, hstep', Finset.not_nonempty_iff_eq_empty.mp h', Finset.card_empty, pow_zero,
       one_smul]

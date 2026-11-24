@@ -168,7 +168,7 @@ theorem glue_refl : glue hB hW (LinearEquiv.refl R W) (LinearEquiv.refl R (B.ort
 /-- The linear automorphism `g₁ ⊕ g₂` of `V`. -/
 noncomputable def glueEquiv (e₁ : W ≃ₗ[R] W) (e₂ : B.orthogonal W ≃ₗ[R] B.orthogonal W) :
     V ≃ₗ[R] V :=
-  LinearEquiv.ofLinear (glue hB hW e₁ e₂) (glue hB hW e₁.symm e₂.symm)
+  LinearEquiv.ofLinearMap (glue hB hW e₁ e₂) (glue hB hW e₁.symm e₂.symm)
     (by rw [glue_comp]; simp only [LinearEquiv.symm_trans_self]; exact glue_refl hB hW)
     (by rw [glue_comp]; simp only [LinearEquiv.self_trans_symm]; exact glue_refl hB hW)
 

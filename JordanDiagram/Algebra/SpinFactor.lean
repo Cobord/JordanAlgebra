@@ -193,7 +193,7 @@ variable [Module.Free R V']
 
 /-- The isometry underlying a Jordan isomorphism. -/
 def isometryOfEquiv (e : SpinFactor R V B ≃ⱼ[R] SpinFactor R V' B') : Isometry B B' :=
-  ⟨LinearEquiv.ofLinear (vecPart e) (vecPart e.symm)
+  ⟨LinearEquiv.ofLinearMap (vecPart e) (vecPart e.symm)
     (LinearMap.ext fun v => by
       have := vecPart_symm_vecPart e.symm v
       rwa [JordanEquiv.symm_symm] at this)

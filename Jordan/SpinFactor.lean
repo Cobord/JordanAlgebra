@@ -155,7 +155,7 @@ section NullVector
 theorem not_isFormallyReal_of_nullVector (hB : B.IsSymm) {v : V} (hv : v ≠ 0)
     (hnull : B v v = 0) :
     ¬ @IsFormallyReal R (SpinFactor R V B) _ (jordanAlgebra B hB) := by
-  letI : JordanAlgebra R (SpinFactor R V B) := jordanAlgebra B hB
+  let : JordanAlgebra R (SpinFactor R V B) := jordanAlgebra B hB
   let z : SpinFactor R V B := mk B v 0
   apply IsFormallyReal.not_of_exists_mul_self_eq_zero (x := z)
   · intro hz
@@ -182,10 +182,10 @@ theorem not_isFormallyReal_of_negVector (hB : B.IsSymm) {v : V} (hv : v ≠ 0)
     (hsq : ∃ ι : Type, ∃ _ : Fintype ι, ∃ x : ι → R, -B v v = ∑ i, x i * x i) :
     ¬ @IsFormallyReal R (SpinFactor R V B) _ (jordanAlgebra B hB) := by
   rcases hsq with ⟨κ, hκ, x, hsq⟩
-  letI : Fintype κ := hκ
+  let : Fintype κ := hκ
   intro hFR
-  letI : JordanAlgebra R (SpinFactor R V B) := jordanAlgebra B hB
-  letI : IsFormallyReal R (SpinFactor R V B) := hFR
+  let : JordanAlgebra R (SpinFactor R V B) := jordanAlgebra B hB
+  let : IsFormallyReal R (SpinFactor R V B) := hFR
   let z : Option κ → SpinFactor R V B
     | none => mk B v 0
     | some i => mk B 0 (x i)
@@ -224,7 +224,7 @@ theorem not_isFormallyReal_int_of_negVector {V : Type*} [AddCommGroup V] [Module
 
 theorem isFormallyRealPos (hB : B.IsSymm) (hPos : B.toQuadraticMap.PosDef) :
     @IsFormallyReal R (SpinFactor R V B) _ (jordanAlgebra B hB) := by
-  letI := jordanAlgebra B hB
+  let := jordanAlgebra B hB
   refine ⟨fun {ι} _ z hz i => ?_⟩
   have hsnd : ∑ j, (z j * z j).2 = 0 := by
     have h := congrArg (sndLinear B) hz
