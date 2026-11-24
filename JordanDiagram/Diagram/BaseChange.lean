@@ -15,7 +15,9 @@ scalar-extension family `F_S = F_R ⊗_R S`, here for one base map `R → S`.
 * `baseChange_ν`: the terminal maps of `S ⊗ F` are the scalar extensions of those of `F`. They
   stay injective when `S` is flat over `R` (`baseChange_ν_injective`).
 * `autBaseChange`: the group homomorphism `G_F(R) → G_F(S)`, `(gᵢ) ↦ (id ⊗ gᵢ)`.
-* `autBaseChange_injective`: if every `F(i) → S ⊗ F(i)` is injective, so is `G_F(R) → G_F(S)`.
+* `autBaseChange_injective`: if every `F(i) → S ⊗ F(i)` is injective, so is `G_F(R) → G_F(S)`;
+  so every subgroup of `G_F(R)`, finite ones in particular, embeds in `G_F(S)` with an image of the
+  same order (`subgroupEquivMap`, `card_map_autBaseChange`).
 * `derBaseChange`: the corresponding map `g_F(R) → g_F(S)` on compatible derivations,
   additive and bracket-preserving.
 -/
@@ -80,6 +82,20 @@ theorem autBaseChange_injective
   apply h i
   have := congrArg (fun k : (F.baseChange S).autGroup => k.1 i ((1 : S) ⊗ₜ a)) hgg'
   exact this
+
+/-- **Subgroups embed under scalar extension**: if every `F(i) → S ⊗[R] F(i)` is injective, every
+subgroup of `G_F(R)`, finite ones in particular, is isomorphic to its image in `G_F(S)`. -/
+noncomputable def subgroupEquivMap
+    (h : ∀ i, Function.Injective (fun a : F.obj i => (1 : S) ⊗ₜ[R] a)) (H : Subgroup F.autGroup) :
+    H ≃* H.map (autBaseChange S F) :=
+  H.equivMapOfInjective _ (autBaseChange_injective h)
+
+/-- Under the same hypothesis, a finite subgroup of `G_F(R)` has an image in `G_F(S)` of the same
+order. -/
+theorem card_map_autBaseChange
+    (h : ∀ i, Function.Injective (fun a : F.obj i => (1 : S) ⊗ₜ[R] a)) (H : Subgroup F.autGroup) :
+    Nat.card (H.map (autBaseChange S F)) = Nat.card H :=
+  Subgroup.card_map_of_injective (autBaseChange_injective h)
 
 /-- **Image of scalar extension**: if every `a ↦ 1 ⊗ a : F(i) → S ⊗[R] F(i)` is injective
 (e.g. `F(i)` free and `R → S` injective), then, identifying `F(i)` with its image `1 ⊗ F(i)`,
