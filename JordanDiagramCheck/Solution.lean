@@ -139,6 +139,32 @@ theorem orthogonal_splitting {R : Type u} [CommRing R] {V : Type v} [AddCommGrou
       orthogonalGroup (B.restrict W) × orthogonalGroup (B.restrict (B.orthogonal W))) :=
   ⟨stabEquivProd hB hW⟩
 
+open SpinFactor in
+theorem orthogonal_flag {R : Type u} [CommRing R] {V : Type v} [AddCommGroup V] [Module R V]
+    {ι : Type w} [Fintype ι] [DecidableEq ι] [LinearOrder ι]
+    (B : LinearMap.BilinForm R V) (U : ι → Submodule R V) (hU : DirectSum.IsInternal U)
+    (hO : ∀ i j, i ≠ j → ∀ u ∈ U i, ∀ w ∈ U j, B u w = 0)
+    (hN : ∀ i, ∀ u ∈ U i, (∀ w ∈ U i, B u w = 0) → u = 0) :
+    ∃ e : stabFamily B (fun j => ⨆ i : {i : ι // i ≤ j}, U i) ≃*
+        ∀ j, orthogonalGroup (B.restrict (U j)),
+      ∀ g j (u : U j), ((e g j : U j ≃ₗ[R] U j) u : V) =
+        ((g : orthogonalGroup B) : V ≃ₗ[R] V) u :=
+  ⟨stabFlagEquivPi hU hO hN, stabFlagEquivPi_apply hU hO hN⟩
+
+theorem twisted_exact_sequence {R : Type u} [CommRing R] {I : Type w} [Preorder I]
+    (F : JordanDiagram.{u, v} R I) :
+    Function.Injective (JordanDiagram.TwistedAut.ofAut F) ∧
+      (JordanDiagram.TwistedAut.ofAut F).range = (JordanDiagram.TwistedAut.shapeHom F).ker :=
+  ⟨JordanDiagram.TwistedAut.ofAut_injective, JordanDiagram.TwistedAut.range_ofAut⟩
+
+theorem wreath_product {R : Type u} [CommRing R] [Invertible (2 : R)] {U : Type u}
+    [AddCommGroup U] [Module R U] [Module.Free R U] (BU : LinearMap.BilinForm R U)
+    [Fact BU.IsSymm] (κ : Type u) [Fintype κ] [DecidableEq κ] :
+    ∃ e : JordanDiagram.TwistedAut (JordanDiagram.wreathDiagram BU κ) ≃*
+        (κ → SpinFactor.orthogonalGroup BU) ⋊[JordanDiagram.permAct BU κ] Equiv.Perm κ,
+      ∀ t, JordanDiagram.TwistedAut.shapeHom _ t = JordanDiagram.permShape (e t).right :=
+  ⟨JordanDiagram.wreathEquiv BU κ, JordanDiagram.shapeHom_eq_permShape⟩
+
 section SpinDiagram
 
 variable {R : Type u} [CommRing R] [Invertible (2 : R)] {V : Type u} [AddCommGroup V]

@@ -10,6 +10,7 @@ public import JordanDiagram.Algebra.Equiv
 public import JordanDiagram.Algebra.Functor
 public import JordanDiagram.Algebra.Generation
 public import JordanDiagram.Algebra.Orthogonal
+public import JordanDiagram.Algebra.OrthogonalFlag
 public import JordanDiagram.Algebra.SpinFactor
 public import JordanDiagram.Algebra.Tower
 
@@ -26,4 +27,6 @@ public import JordanDiagram.Diagram.Functor
 public import JordanDiagram.Diagram.Group
 public import JordanDiagram.Diagram.Iso
 public import JordanDiagram.Diagram.SpinFactor
+public import JordanDiagram.Diagram.Twisted
 public import JordanDiagram.Diagram.Wedge
+public import JordanDiagram.Diagram.Wreath

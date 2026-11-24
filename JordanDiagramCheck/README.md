@@ -28,6 +28,9 @@ permitted axioms, and is accepted by the kernel.
 | `comparison_injective`, `comparison_image` | Injectivity and image of `G_F(R) → G_F(S)` when every `a ↦ 1 ⊗ a` is injective |
 | `spinFactor_aut`, `spinFactor_der` | Spin-factor symmetries, stated elementarily: automorphisms are `(v, r) ↦ (g v, r)` with `g` an isometry, derivations are `(v, r) ↦ (X v, 0)` with `X` skew |
 | `orthogonal_splitting` | Orthogonal splitting for one nonsingular member: `Stab_{O(V,B)}(W) ≃* O(W, B) × O(W⊥, B)` |
+| `orthogonal_flag` | Orthogonal flags: for `V = ⨁ Uⱼ` with mutually orthogonal pieces on which `B` is nondegenerate, the stabilizer of the flag `W_j = ⨆_{i ≤ j} Uᵢ` is `∏ⱼ O(Uⱼ, B)`, by restriction |
+| `twisted_exact_sequence` | For a diagram over a preorder, `1 → G_F → G̃_F → Aut(I)` is exact |
+| `wreath_product` | The shape-twisted group of the wreath diagram (copies of a free `U` below `κ → U`) is `O(U)^κ ⋊ Perm κ`, with the shape map the permutation part |
 | `spin_diagram_group` | The automorphism group of a spin-factor diagram is the stabilizer of the `Wᵢ` in the orthogonal group |
 
 The statements use the library's definitions (`JordanDiagram`, `autGroup`, `ev`, `derAlgebra`,

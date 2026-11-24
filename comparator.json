@@ -30,6 +30,9 @@
         "JordanDiagramCheck.spinFactor_aut",
         "JordanDiagramCheck.spinFactor_der",
         "JordanDiagramCheck.orthogonal_splitting",
+        "JordanDiagramCheck.orthogonal_flag",
+        "JordanDiagramCheck.twisted_exact_sequence",
+        "JordanDiagramCheck.wreath_product",
         "JordanDiagramCheck.spin_diagram_group"
     ],
     "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
