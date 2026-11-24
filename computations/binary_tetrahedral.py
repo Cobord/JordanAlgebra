@@ -1,4 +1,4 @@
-"""The subgroup D_8 x 2T of the Baez-Schwahn chain group (Example ex:bs-binary-tetrahedral).
+"""The subgroup D_8 x 2T of the Baez-Schwahn chain group.
 
 C = span(1, e1), Q = span(1, e1, e2, e4) (a quaternion subalgebra containing C in the Fano basis of
 octo.py), and ell = e3.  D_8 acts by X -> diag(P,1) X diag(P,1)^T with P a signed 2x2 permutation

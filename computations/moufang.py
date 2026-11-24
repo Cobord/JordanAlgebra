@@ -1,4 +1,4 @@
-"""Checks for the Moufang lifts of the diagonal (Lemma lem:moufang-lifts): the three maps are Jordan
+"""Checks for the Moufang lifts of the diagonal: the three maps are Jordan
 automorphisms of H_3(O_Q) for a Gaussian and an Eisenstein unit, and the cubic norm formula in the
 paper's coordinates satisfies the cubic identity."""
 import random, sys
