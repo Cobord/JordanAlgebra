@@ -341,7 +341,7 @@ theorem fraction_field_order (R : Type u) [CommRing R] [LinearOrder R] [IsStrict
     fun o₁ o₂ h₁ h₂ m₁ m₂ x y => (FractionRing.le_iff_of_order o₁ h₁ m₁ x y).trans
       (FractionRing.le_iff_of_order o₂ h₂ m₂ x y).symm⟩
 
-theorem lattice_at_terminal {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
+theorem subgroup_at_terminal {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
     [TerminallyPointed I] (F : JordanDiagram.{u, v} R I) (L : AddSubgroup F.J) :
     (∀ g : F.autGroup, g.1 top '' (L : Set F.J) = L ↔
       ∀ i, g.1 i '' (L.comap (F.ν i : F.obj i →+ F.J) : Set (F.obj i)) =
@@ -350,7 +350,71 @@ theorem lattice_at_terminal {R : Type u} [CommRing R] {I : Type w} [Category.{w'
         ∀ i (x : F.obj i), ∃ k : ℕ, (c ^ k) • x ∈ L.comap (F.ν i : F.obj i →+ F.J)) ∧
       (Module.Finite ℤ L → ∀ i, Function.Injective (F.ν i) →
         Module.Finite ℤ (L.comap (F.ν i : F.obj i →+ F.J))) :=
-  ⟨JordanDiagram.image_top_eq_iff, fun _ hL i x => JordanDiagram.exists_pow_smul_mem_nodeLattice hL i x,
-    fun _ _ hν => JordanDiagram.finite_nodeLattice hν⟩
+  ⟨JordanDiagram.image_top_eq_iff,
+    fun _ hL i x => JordanDiagram.exists_pow_smul_mem_nodePreimage hL i x,
+    fun _ _ hν => JordanDiagram.finite_nodePreimage hν⟩
+
+theorem octonion_nonsingular {R : Type u} [CommRing R] [Invertible (2 : R)] [StarRing R]
+    [TrivialStar R] (a b c : R) :
+    Function.Bijective (Octonion.innerProduct : LinearMap.BilinForm R (Octonion R a b (-c))) ↔
+      IsUnit a ∧ IsUnit b ∧ IsUnit c :=
+  Octonion.bijective_innerProduct_iff
+
+theorem finite_subgroups {M : Type u} [AddCommGroup M] [Module ZHalf M] [Module.Finite ZHalf M]
+    [Module.Free ZHalf M] {G : Type v} [Group G] (ρ : G →* (M ≃ₗ[ZHalf] M))
+    (hρ : Function.Injective ρ) :
+    (∀ H : Subgroup G, Finite H →
+      (∃ L : Submodule ℤ M, L.FG ∧ Submodule.span ZHalf (L : Set M) = ⊤ ∧
+        ∀ g ∈ H, ∀ x, ρ g x ∈ L ↔ x ∈ L) ∧
+      Nat.card H ≤ 3 ^ (Module.finrank ZHalf M * Module.finrank ZHalf M) ∧
+      ∃ K : Subgroup G, H ≤ K ∧ Maximal (fun K : Subgroup G => Finite K) K) ∧
+    ((∀ L : Submodule ℤ M, L.FG → Submodule.span ZHalf (L : Set M) = ⊤ →
+        Finite (ZHalf.stabilizer ρ L)) →
+      ∀ K : Subgroup G, Maximal (fun K : Subgroup G => Finite K) K ↔
+        Maximal (fun K : Subgroup G => ∃ L : Submodule ℤ M, L.FG ∧
+          Submodule.span ZHalf (L : Set M) = ⊤ ∧ K = ZHalf.stabilizer ρ L) K) := by
+  refine ⟨fun H _ => ?_, fun hfin K => ?_⟩
+  · obtain ⟨L, hL, hle⟩ := ZHalf.exists_isFGSpanning_le_stabilizer ρ H
+    exact ⟨⟨L, hL.fg, hL.span_eq_top, fun g hg => hle hg⟩, ZHalf.card_le hρ H,
+      ZHalf.exists_maximal_finite hρ H⟩
+  · have e : (fun K : Subgroup G => ∃ L, ZHalf.IsFGSpanning L ∧ K = ZHalf.stabilizer ρ L) =
+        fun K : Subgroup G => ∃ L : Submodule ℤ M, L.FG ∧
+          Submodule.span ZHalf (L : Set M) = ⊤ ∧ K = ZHalf.stabilizer ρ L := by
+      funext K
+      apply propext
+      constructor
+      · rintro ⟨L, hL, rfl⟩
+        exact ⟨L, hL.fg, hL.span_eq_top, rfl⟩
+      · rintro ⟨L, h1, h2, rfl⟩
+        exact ⟨L, ⟨h1, h2⟩, rfl⟩
+    rw [ZHalf.maximal_finite_iff (fun L hL => hfin L hL.fg hL.span_eq_top) K, e]
+
+theorem diagram_faithful {I : Type w} [Category.{w'} I] [TerminallyPointed I]
+    (F : JordanDiagram.{0, v} ZHalf I) :
+    Function.Injective F.nodesRep ∧
+      ((∀ i, Function.Injective (F.ν i)) → Function.Injective F.terminalRep) :=
+  ⟨F.nodesRep_injective, F.terminalRep_injective⟩
+
+theorem restriction_strict {R : Type u} [CommRing R] [Invertible (2 : R)] {I : Type w}
+    [Category.{w'} I] {I' I'' : Type w} [Category.{w'} I'] [Category.{w'} I''] (p : I'' ⥤ I')
+    (p' : I' ⥤ I) (S : Type u) [CommRing S] [Algebra R S] :
+    (JordanDiagram.restrictFunctor (𝟭 I) : JordanDiagram.{u, v} R I ⥤ _) = 𝟭 _ ∧
+    (JordanDiagram.restrictFunctor (p ⋙ p') : JordanDiagram.{u, v} R I ⥤ _) =
+      JordanDiagram.restrictFunctor p' ⋙ JordanDiagram.restrictFunctor p ∧
+    (JordanDiagram.restrictFunctor p' ⋙ JordanDiagram.baseChangeFunctor I' S :
+        JordanDiagram.{u, u} R I ⥤ _) =
+      JordanDiagram.baseChangeFunctor I S ⋙ JordanDiagram.restrictFunctor p' ∧
+    (Pseudofunctor.CoGrothendieck.forget
+      (JordanDiagram.restrictionFunctor.{u, v, w, w'} R).toPseudofunctor').IsFibered :=
+  ⟨JordanDiagram.restrictFunctor_id I, JordanDiagram.restrictFunctor_comp p p',
+    JordanDiagram.restrictFunctor_comp_baseChangeFunctor S p', inferInstance⟩
+
+theorem diagram_pseudofunctor :
+    (∀ X : TPCat.{w, w'}ᵒᵖ × CommAlgCat.{u} ZHalf,
+      (JordanDiagram.diagramPseudofunctor.obj ⟨X⟩ : Cat.{max u w, max (u + 1) w w'}) =
+        Cat.of (JordanDiagram.{u, u} X.2 X.1.unop.carrier)) ∧
+    ∀ {X Y : TPCat.{w, w'}ᵒᵖ × CommAlgCat.{u} ZHalf} (f : X ⟶ Y),
+      (JordanDiagram.diagramPseudofunctor.map f.toLoc).toFunctor = JordanDiagram.diagramMap f :=
+  ⟨fun _ => rfl, fun _ => rfl⟩
 
 end JordanDiagramCheck

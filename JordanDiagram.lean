@@ -9,6 +9,7 @@ public import JordanDiagram.Algebra.BaseChange
 public import JordanDiagram.Algebra.Dyadic
 public import JordanDiagram.Algebra.Equiv
 public import JordanDiagram.Algebra.Functor
+public import JordanDiagram.Algebra.FiniteSubgroupStabilizer
 public import JordanDiagram.Algebra.Generation
 public import JordanDiagram.Algebra.OctonionNorm
 public import JordanDiagram.Algebra.Orthogonal
@@ -36,10 +37,12 @@ public import JordanDiagram.Diagram.Functor
 public import JordanDiagram.Diagram.Group
 public import JordanDiagram.Diagram.Family
 public import JordanDiagram.Diagram.Iso
-public import JordanDiagram.Diagram.Lattice
+public import JordanDiagram.Diagram.MaximalFinite
+public import JordanDiagram.Diagram.NodePreimage
 public import JordanDiagram.Diagram.Ordered
 public import JordanDiagram.Diagram.OrderedPowerSeries
 public import JordanDiagram.Diagram.PowerSeries
+public import JordanDiagram.Diagram.Pseudofunctor
 public import JordanDiagram.Diagram.Product
 public import JordanDiagram.Diagram.SpinFactor
 public import JordanDiagram.Diagram.Twisted

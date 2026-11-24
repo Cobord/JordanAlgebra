@@ -49,7 +49,12 @@ permitted axioms, and is accepted by the kernel.
 | `minkowski` | For every level `m ≥ 3`, an integer matrix `≡ 1 (mod m)` of finite order is `1`, so finite subgroups of `GL_N(ℤ)` embed in `GL_N(ℤ/m)` |
 | `spinFactor_formallyReal_iff` | Over a real closed field, a spin factor is formally real exactly when its form is positive definite |
 | `fraction_field_order` | A totally ordered ring is a domain, and its fraction field has a unique order extending it |
-| `lattice_at_terminal` | A lattice at the terminal node determines the integral points of the diagram: `g₊(L) = L` iff `gᵢ(νᵢ⁻¹L) = νᵢ⁻¹L` for all `i`; the node lattices span and are finitely generated |
+| `subgroup_at_terminal` | An additive subgroup `L` at the terminal node determines the integral points of the diagram: `g₊(L) = L` iff `gᵢ(νᵢ⁻¹L) = νᵢ⁻¹L` for all `i`; the preimages span when `L` does and are finitely generated when `L` is |
+| `octonion_nonsingular` | The polar form of the generalized octonion norm is nonsingular exactly when `a`, `b`, `c` are units |
+| `finite_subgroups` | For a faithful action on a finite free `Z[1/2]`-module of rank `n`: every finite subgroup preserves a finitely generated additive subgroup `L` with `Z[1/2] L = M`, has order at most `3^(n²)`, and lies in a maximal finite subgroup; if the stabilizers of all such `L` are finite, the maximal finite subgroups are the maximal members among them |
+| `diagram_faithful` | `G_F(Z[1/2])` acts faithfully on `∏ᵢ F(i)`, and on `F(+)` when the terminal maps are injective |
+| `restriction_strict` | Restriction along shapes is strictly functorial and commutes strictly with scalar extension; for a fixed base ring its Grothendieck construction is a fibration over `Cat₊` |
+| `diagram_pseudofunctor` | `D : Cat₊ᵒᵖ × CAlg_{Z[1/2]} → Cat`, `(I, R) ↦ Fun(I, Jord_R)`, acting by restriction then scalar extension, is a pseudofunctor |
 
 The statements use the library's definitions (`JordanDiagram`, `autGroup`, `ev`, `derAlgebra`,
 `autMap`, …), which are part of the trusted import closure. `Challenge.lean` imports the whole

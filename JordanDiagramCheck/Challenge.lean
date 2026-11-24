@@ -416,11 +416,11 @@ theorem fraction_field_order (R : Type u) [CommRing R] [LinearOrder R] [IsStrict
         ∀ x y, o₁.le x y ↔ o₂.le x y := by
   sorry
 
-/-- **A lattice at the terminal node**: for an additive subgroup `L ⊆ J` and `Lᵢ = νᵢ⁻¹(L)`, a
-diagram automorphism preserves `L` at the terminal node exactly when it preserves every `Lᵢ`;
-if `L` spans `J` up to powers of `c`, each `Lᵢ` spans `F(i)` likewise; and if `L` is finitely
-generated and `νᵢ` injective, `Lᵢ` is finitely generated. -/
-theorem lattice_at_terminal {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
+/-- **An additive subgroup at the terminal node**: for an additive subgroup `L ⊆ J` and
+`Lᵢ = νᵢ⁻¹(L)`, a diagram automorphism preserves `L` at the terminal node exactly when it preserves
+every `Lᵢ`; if `L` spans `J` up to powers of `c`, each `Lᵢ` spans `F(i)` likewise; and if `L` is
+finitely generated and `νᵢ` injective, `Lᵢ` is finitely generated. -/
+theorem subgroup_at_terminal {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
     [TerminallyPointed I] (F : JordanDiagram.{u, v} R I) (L : AddSubgroup F.J) :
     (∀ g : F.autGroup, g.1 top '' (L : Set F.J) = L ↔
       ∀ i, g.1 i '' (L.comap (F.ν i : F.obj i →+ F.J) : Set (F.obj i)) =
@@ -429,6 +429,69 @@ theorem lattice_at_terminal {R : Type u} [CommRing R] {I : Type w} [Category.{w'
         ∀ i (x : F.obj i), ∃ k : ℕ, (c ^ k) • x ∈ L.comap (F.ν i : F.obj i →+ F.J)) ∧
       (Module.Finite ℤ L → ∀ i, Function.Injective (F.ν i) →
         Module.Finite ℤ (L.comap (F.ν i : F.obj i →+ F.J))) := by
+  sorry
+
+/-- **Nonsingularity of the octonion norm**: the polar form of the norm of `O_R(a, b, c)` (in the
+library's convention `Octonion R a b (-c)`) identifies the module with its dual exactly when
+`a`, `b`, `c` are units. -/
+theorem octonion_nonsingular {R : Type u} [CommRing R] [Invertible (2 : R)] [StarRing R]
+    [TrivialStar R] (a b c : R) :
+    Function.Bijective (Octonion.innerProduct : LinearMap.BilinForm R (Octonion R a b (-c))) ↔
+      IsUnit a ∧ IsUnit b ∧ IsUnit c := by
+  sorry
+
+/-- **Finite subgroups preserve finitely generated spanning subgroups.** Let a group `G` act
+faithfully on a finite free `Z[1/2]`-module `M` of rank `n`. Every finite subgroup preserves some
+finitely generated additive subgroup `L ⊆ M` with `Z[1/2] L = M`, has order at most `3^(n²)`, and
+lies in a maximal finite subgroup. If the stabilizer of every such `L` is finite, the maximal finite
+subgroups are the maximal members among these stabilizers. -/
+theorem finite_subgroups {M : Type u} [AddCommGroup M] [Module ZHalf M] [Module.Finite ZHalf M]
+    [Module.Free ZHalf M] {G : Type v} [Group G] (ρ : G →* (M ≃ₗ[ZHalf] M))
+    (hρ : Function.Injective ρ) :
+    (∀ H : Subgroup G, Finite H →
+      (∃ L : Submodule ℤ M, L.FG ∧ Submodule.span ZHalf (L : Set M) = ⊤ ∧
+        ∀ g ∈ H, ∀ x, ρ g x ∈ L ↔ x ∈ L) ∧
+      Nat.card H ≤ 3 ^ (Module.finrank ZHalf M * Module.finrank ZHalf M) ∧
+      ∃ K : Subgroup G, H ≤ K ∧ Maximal (fun K : Subgroup G => Finite K) K) ∧
+    ((∀ L : Submodule ℤ M, L.FG → Submodule.span ZHalf (L : Set M) = ⊤ →
+        Finite (ZHalf.stabilizer ρ L)) →
+      ∀ K : Subgroup G, Maximal (fun K : Subgroup G => Finite K) K ↔
+        Maximal (fun K : Subgroup G => ∃ L : Submodule ℤ M, L.FG ∧
+          Submodule.span ZHalf (L : Set M) = ⊤ ∧ K = ZHalf.stabilizer ρ L) K) := by
+  sorry
+
+/-- **The diagram group acts faithfully** on the product of the nodes, and on the terminal algebra
+when the terminal maps are injective; so `finite_subgroups` applies to it. -/
+theorem diagram_faithful {I : Type w} [Category.{w'} I] [TerminallyPointed I]
+    (F : JordanDiagram.{0, v} ZHalf I) :
+    Function.Injective F.nodesRep ∧
+      ((∀ i, Function.Injective (F.ν i)) → Function.Injective F.terminalRep) := by
+  sorry
+
+/-- **Restriction along shapes is strictly functorial and commutes strictly with scalar
+extension**, and for a fixed base ring its Grothendieck construction is a fibration over `Cat₊`. -/
+theorem restriction_strict {R : Type u} [CommRing R] [Invertible (2 : R)] {I : Type w}
+    [Category.{w'} I] {I' I'' : Type w} [Category.{w'} I'] [Category.{w'} I''] (p : I'' ⥤ I')
+    (p' : I' ⥤ I) (S : Type u) [CommRing S] [Algebra R S] :
+    (JordanDiagram.restrictFunctor (𝟭 I) : JordanDiagram.{u, v} R I ⥤ _) = 𝟭 _ ∧
+    (JordanDiagram.restrictFunctor (p ⋙ p') : JordanDiagram.{u, v} R I ⥤ _) =
+      JordanDiagram.restrictFunctor p' ⋙ JordanDiagram.restrictFunctor p ∧
+    (JordanDiagram.restrictFunctor p' ⋙ JordanDiagram.baseChangeFunctor I' S :
+        JordanDiagram.{u, u} R I ⥤ _) =
+      JordanDiagram.baseChangeFunctor I S ⋙ JordanDiagram.restrictFunctor p' ∧
+    (Pseudofunctor.CoGrothendieck.forget
+      (JordanDiagram.restrictionFunctor.{u, v, w, w'} R).toPseudofunctor').IsFibered := by
+  sorry
+
+/-- **Diagrams over varying shapes and base rings form a pseudofunctor**
+`D : Cat₊ᵒᵖ × CAlg_{Z[1/2]} → Cat`, `(I, R) ↦ Fun(I, Jord_R)`, acting on a morphism `(u, f)` by
+`diagramMap`: restriction along `u` followed by scalar extension along `f`. -/
+theorem diagram_pseudofunctor :
+    (∀ X : TPCat.{w, w'}ᵒᵖ × CommAlgCat.{u} ZHalf,
+      (JordanDiagram.diagramPseudofunctor.obj ⟨X⟩ : Cat.{max u w, max (u + 1) w w'}) =
+        Cat.of (JordanDiagram.{u, u} X.2 X.1.unop.carrier)) ∧
+    ∀ {X Y : TPCat.{w, w'}ᵒᵖ × CommAlgCat.{u} ZHalf} (f : X ⟶ Y),
+      (JordanDiagram.diagramPseudofunctor.map f.toLoc).toFunctor = JordanDiagram.diagramMap f := by
   sorry
 
 end JordanDiagramCheck

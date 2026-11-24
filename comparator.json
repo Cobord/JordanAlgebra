@@ -40,7 +40,7 @@
         "JordanDiagramCheck.minkowski",
         "JordanDiagramCheck.spinFactor_formallyReal_iff",
         "JordanDiagramCheck.fraction_field_order",
-        "JordanDiagramCheck.lattice_at_terminal",
+        "JordanDiagramCheck.subgroup_at_terminal",
         "JordanDiagramCheck.comparison_injective",
         "JordanDiagramCheck.comparison_image",
         "JordanDiagramCheck.spinFactor_aut",
@@ -51,7 +51,12 @@
         "JordanDiagramCheck.orthogonal_flag_lie",
         "JordanDiagramCheck.twisted_exact_sequence",
         "JordanDiagramCheck.wreath_product",
-        "JordanDiagramCheck.spin_diagram_group"
+        "JordanDiagramCheck.spin_diagram_group",
+        "JordanDiagramCheck.octonion_nonsingular",
+        "JordanDiagramCheck.finite_subgroups",
+        "JordanDiagramCheck.diagram_faithful",
+        "JordanDiagramCheck.restriction_strict",
+        "JordanDiagramCheck.diagram_pseudofunctor"
     ],
     "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
 }
