@@ -1,9 +1,11 @@
-import Jordan.StructureAlgebra
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.Submodule.Equiv
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Module.Submodule.Range
+module
+
+public import Jordan.StructureAlgebra
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Module.Submodule.Range
 
 /-!
 # Jordan automorphisms, stabilizers, and lifting along injective homomorphisms
@@ -19,6 +21,8 @@ injective homomorphism `ν : A →ₙₐ[R] J`: an automorphism `h` of `J` prese
 transports to a unique automorphism `g` of `A` with `ν ∘ g = h ∘ ν` (`liftAut`), and a derivation
 of `J` preserving `range ν` transports to a derivation of `A` (`liftDer`).
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 

@@ -1,4 +1,6 @@
-import JordanDiagram.Diagram.Basic
+module
+
+public import JordanDiagram.Diagram.Basic
 
 /-!
 # The diagram automorphism group (Section 3.1)
@@ -15,6 +17,8 @@ the product `∀ i, jordanAut R (F.obj i)`.
 The paper's hypothesis is that each `νᵢ` is a monomorphism of `Jord_R`; the paper's first step
 shows monomorphisms are injective, and here injectivity is taken as the hypothesis directly.
 -/
+
+@[expose] public section
 
 universe u v w w'
 

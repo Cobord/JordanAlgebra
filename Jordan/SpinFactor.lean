@@ -1,10 +1,12 @@
-import Jordan.JordanAlgebra
-import Jordan.FormallyReal
-import Mathlib.LinearAlgebra.BilinearForm.Properties
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
-import Mathlib.Algebra.BigOperators.Option
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.NumberTheory.SumFourSquares
+module
+
+public import Jordan.JordanAlgebra
+public import Jordan.FormallyReal
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+public import Mathlib.Algebra.BigOperators.Option
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.NumberTheory.SumFourSquares
 
 /-!
 # Spin factor Jordan algebras
@@ -19,6 +21,8 @@ definite) Jordan algebras, alongside the Hermitian-matrix examples in `RealQM`, 
 `QuaternionicQM`. Unlike those, it needs no hypothesis like `2` invertible: the construction and
 the Jordan identity both hold over any commutative ring.
 -/
+
+@[expose] public section
 
 variable (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
 

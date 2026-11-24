@@ -1,5 +1,7 @@
-import JordanDiagram.Algebra.BaseChange
-import JordanDiagram.Algebra.Equiv
+module
+
+public import JordanDiagram.Algebra.BaseChange
+public import JordanDiagram.Algebra.Equiv
 
 /-!
 # Scalar extension in towers (the coherences `β_f` of Definition 2.8)
@@ -16,6 +18,8 @@ diagrams; `JordanDiagram.autTowerDiagram` does the same for diagrams.
 `[Invertible (2 : S)]` is taken as a separate hypothesis. It follows from `Invertible (2 : R)`,
 and since `Invertible` is a subsingleton nothing depends on the choice.
 -/
+
+@[expose] public section
 
 open TensorProduct
 

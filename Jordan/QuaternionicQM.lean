@@ -1,13 +1,15 @@
-import Jordan.JordanAlgebra
-import Jordan.FormallyReal
-import Jordan.MooreDeterminant
-import Mathlib.Algebra.Quaternion
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.ConjTranspose
-import Mathlib.LinearAlgebra.Matrix.Trace
-import Mathlib.Algebra.Star.UnitaryStarAlgAut
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Jordan.JordanAlgebra
+public import Jordan.FormallyReal
+public import Jordan.MooreDeterminant
+public import Mathlib.Algebra.Quaternion
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
+public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.Algebra.Star.UnitaryStarAlgAut
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # The Jordan algebra of quaternionic Hermitian matrices over a general base ring
@@ -36,6 +38,8 @@ quaternion conjugation, and could be a proper subring such as `ℚ`). Mathlib's
 `Star R` instance; `star_eq_conj_components` records that it agrees with the "conjugate every
 component via `R`'s own star" formula precisely because that star is trivial.
 -/
+
+@[expose] public section
 
 open scoped Quaternion
 

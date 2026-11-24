@@ -1,5 +1,7 @@
-import Jordan.JordanAlgebra
-import Mathlib.Algebra.Lie.Subalgebra
+module
+
+public import Jordan.JordanAlgebra
+public import Mathlib.Algebra.Lie.Subalgebra
 
 /-!
 # Structure Algebra
@@ -13,6 +15,8 @@ with respect to the Jordan product.  Because a Jordan algebra is not in general 
 `R`-algebra, the Mathlib type `Derivation R A M` (which requires `Algebra R A`) cannot be reused
 here; we introduce `JordanDerivation R M` instead.
 -/
+
+@[expose] public section
 
 namespace JordanAlgebra
 

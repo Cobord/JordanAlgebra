@@ -1,10 +1,12 @@
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Algebra.Quaternion
-import Mathlib.LinearAlgebra.Basis.Prod
-import Mathlib.Tactic.NoncommRing
-import Mathlib.Tactic.LinearCombination
-import Jordan.Alternative
-import Jordan.NuclearInvolution
+module
+
+public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Algebra.Quaternion
+public import Mathlib.LinearAlgebra.Basis.Prod
+public import Mathlib.Tactic.NoncommRing
+public import Mathlib.Tactic.LinearCombination
+public import Jordan.Alternative
+public import Jordan.NuclearInvolution
 
 /-!
 # Generalized octonion algebras
@@ -27,6 +29,8 @@ isomorphism (as in `QuaternionicQM`/`ComplexQM`).
 associativity that makes octonion algebras well-behaved (e.g. it is what eventually lets the `3x3`
 Hermitian-matrix Albert algebra construction work, unlike for a generic non-associative algebra).
 -/
+
+@[expose] public section
 
 open scoped Quaternion
 
@@ -168,25 +172,25 @@ instance : StarModule R (Octonion R a b c) where
 
 omit [StarRing R] [TrivialStar R] in
 /-- The trace `p + star p` of a quaternion is a central scalar. -/
-private theorem add_star_eq_coe (p : ℍ[R, a, 0, b]) : p + star p = ((2 * p.re : R) : ℍ[R, a, 0, b]) := by
+theorem add_star_eq_coe (p : ℍ[R, a, 0, b]) : p + star p = ((2 * p.re : R) : ℍ[R, a, 0, b]) := by
   simpa using QuaternionAlgebra.self_add_star (c₂ := (0 : R)) p
 
 omit [StarRing R] [TrivialStar R] in
-private theorem add_star_mul_comm (p q : ℍ[R, a, 0, b]) : (p + star p) * q = q * (p + star p) := by
+theorem add_star_mul_comm (p q : ℍ[R, a, 0, b]) : (p + star p) * q = q * (p + star p) := by
   rw [add_star_eq_coe]; exact QuaternionAlgebra.coe_commutes _ q
 
 omit [StarRing R] [TrivialStar R] in
 /-- The norm `star q * q` of a quaternion is a central scalar, and agrees with `q * star q`. -/
-private theorem star_mul_self_eq_coe (q : ℍ[R, a, 0, b]) :
+theorem star_mul_self_eq_coe (q : ℍ[R, a, 0, b]) :
     star q * q = ((star q * q).re : R) := QuaternionAlgebra.star_mul_eq_coe q
 
 omit [StarRing R] [TrivialStar R] in
-private theorem star_mul_self_mul_comm (p q : ℍ[R, a, 0, b]) :
+theorem star_mul_self_mul_comm (p q : ℍ[R, a, 0, b]) :
     (star q * q) * p = p * (star q * q) := by
   rw [star_mul_self_eq_coe]; exact QuaternionAlgebra.coe_commutes _ p
 
 omit [StarRing R] [TrivialStar R] in
-private theorem mul_star_self_eq_star_mul_self (q : ℍ[R, a, 0, b]) : q * star q = star q * q :=
+theorem mul_star_self_eq_star_mul_self (q : ℍ[R, a, 0, b]) : q * star q = star q * q :=
   (star_comm_self' q).symm
 
 /-! ### Alternativity
@@ -200,7 +204,7 @@ is what survives associativity getting lost in the doubling. -/
 section Alternative
 
 set_option linter.unusedSectionVars false in
-private theorem alternative_left (x y : Octonion R a b c) : x * (x * y) = (x * x) * y := by
+theorem alternative_left (x y : Octonion R a b c) : x * (x * y) = (x * x) * y := by
   apply Octonion.ext
   · show x.1 * (x * y).1 - c • (star (x * y).2 * x.2) =
       (x * x).1 * y.1 - c • (star y.2 * (x * x).2)
@@ -243,7 +247,7 @@ involutive anti-automorphism: applying `star` to `alternative_left (star x) (sta
 star x * (star x * star y) = star x * star x * star y` and simplifying both sides via
 `star (a * b) = star b * star a` and `star (star a) = a` turns it exactly into
 `(y * x) * x = y * (x * x)`. -/
-private theorem alternative_right (x y : Octonion R a b c) : (y * x) * x = y * (x * x) := by
+theorem alternative_right (x y : Octonion R a b c) : (y * x) * x = y * (x * x) := by
   have h := congrArg star (alternative_left (star x) (star y))
   simpa [star_mul, star_star] using h
 
@@ -268,7 +272,7 @@ section ScalarEmbeddings
 variable [Invertible (2 : R)] [StarRing R] [TrivialStar R]
 
 omit [StarRing R] [TrivialStar R] in
-private theorem eq_zero_of_neg_eq_self {N : Type*} [AddCommGroup N] [Module R N] {z : N} (hz : -z = z) :
+theorem eq_zero_of_neg_eq_self {N : Type*} [AddCommGroup N] [Module R N] {z : N} (hz : -z = z) :
     z = 0 := by
   have h2 : (2 : R) • z = 0 := by
     rw [two_smul, add_eq_zero_iff_eq_neg]; exact hz.symm
@@ -429,7 +433,7 @@ theorem re_mul_mul_eq_re_mul_mul (x y z : Octonion R a b c) :
   ring
 
 set_option linter.unusedSectionVars false in
-private theorem star_algebraMap (r : R) :
+theorem star_algebraMap (r : R) :
     star (algebraMap R ℍ[R, a, 0, b] r) = algebraMap R ℍ[R, a, 0, b] r := by
   rw [QuaternionAlgebra.algebraMap_eq]
   apply QuaternionAlgebra.ext <;> simp
@@ -459,7 +463,7 @@ variable (ha : ∀ x : R, a * x = 0 → x = 0) (hb : ∀ x : R, b * x = 0 → x 
   (hc : ∀ x : R, c * x = 0 → x = 0)
 
 omit ha hb hc [StarRing R] [TrivialStar R] in
-private theorem eq_zero_of_two_mul_eq_zero {v : R} (h : (2 : R) * v = 0) : v = 0 :=
+theorem eq_zero_of_two_mul_eq_zero {v : R} (h : (2 : R) * v = 0) : v = 0 :=
   (isUnit_of_invertible (2 : R)).mul_right_eq_zero.mp h
 
 omit ha hb hc in
@@ -467,7 +471,7 @@ set_option linter.unusedSectionVars false in
 /-- A quaternion commuting with both `i` and `j` (hence, since `k = i*j`, with everything) is a
 plain scalar. The "commutes with `i`" half already pins the `imI`/`imJ` coordinates to `0`
 (no regularity needed); the `imK` coordinate needs *either* `a` or `b` regular to cancel. -/
-private theorem quaternion_eq_coe_of_comm_i_j
+theorem quaternion_eq_coe_of_comm_i_j
     (hab : (∀ x : R, a * x = 0 → x = 0) ∨ (∀ x : R, b * x = 0 → x = 0)) (p : ℍ[R, a, 0, b])
     (hi : p * (⟨0, 1, 0, 0⟩ : ℍ[R, a, 0, b]) = (⟨0, 1, 0, 0⟩ : ℍ[R, a, 0, b]) * p)
     (hj : p * (⟨0, 0, 1, 0⟩ : ℍ[R, a, 0, b]) = (⟨0, 0, 1, 0⟩ : ℍ[R, a, 0, b]) * p) :
@@ -684,11 +688,11 @@ variable {a b c : R}
 of the octonion norm form, which is self-adjoint for any `x y` (hence a scalar, read off via
 `.1.re`). Kept separate from the bundled `innerProduct` so the bilinearity proofs below can be
 named lemmas about it rather than inlined terms in a `LinearMap.mk₂` call. -/
-private def innerProductFun (x y : Octonion R a b c) : R :=
+def innerProductFun (x y : Octonion R a b c) : R :=
   ⅟(2 : R) * (x * star y + y * star x).1.re
 
 omit [StarRing R] [TrivialStar R] in
-private theorem innerProductFun_add_left (x₁ x₂ y : Octonion R a b c) :
+theorem innerProductFun_add_left (x₁ x₂ y : Octonion R a b c) :
     innerProductFun (x₁ + x₂) y = innerProductFun x₁ y + innerProductFun x₂ y := by
   unfold innerProductFun
   have h : (x₁ + x₂) * star y + y * star (x₁ + x₂) =
@@ -701,7 +705,7 @@ private theorem innerProductFun_add_left (x₁ x₂ y : Octonion R a b c) :
   show ⅟(2 : R) * ((x₁ * star y + y * star x₁).1.re + (x₂ * star y + y * star x₂).1.re) = _
   rw [mul_add]
 
-private theorem innerProductFun_smul_left (r : R) (x y : Octonion R a b c) :
+theorem innerProductFun_smul_left (r : R) (x y : Octonion R a b c) :
     innerProductFun (r • x) y = r * innerProductFun x y := by
   unfold innerProductFun
   have h : r • x * star y + y * star (r • x) = r • (x * star y + y * star x) := by
@@ -716,7 +720,7 @@ private theorem innerProductFun_smul_left (r : R) (x y : Octonion R a b c) :
   rw [mul_left_comm]
 
 omit [StarRing R] [TrivialStar R] in
-private theorem innerProductFun_add_right (x y₁ y₂ : Octonion R a b c) :
+theorem innerProductFun_add_right (x y₁ y₂ : Octonion R a b c) :
     innerProductFun x (y₁ + y₂) = innerProductFun x y₁ + innerProductFun x y₂ := by
   unfold innerProductFun
   have h : x * star (y₁ + y₂) + (y₁ + y₂) * star x =
@@ -726,7 +730,7 @@ private theorem innerProductFun_add_right (x y₁ y₂ : Octonion R a b c) :
   show ⅟(2 : R) * ((x * star y₁ + y₁ * star x).1.re + (x * star y₂ + y₂ * star x).1.re) = _
   rw [mul_add]
 
-private theorem innerProductFun_smul_right (r : R) (x y : Octonion R a b c) :
+theorem innerProductFun_smul_right (r : R) (x y : Octonion R a b c) :
     innerProductFun x (r • y) = r * innerProductFun x y := by
   unfold innerProductFun
   have h : x * star (r • y) + r • y * star x = r • (x * star y + y * star x) := by

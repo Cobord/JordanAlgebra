@@ -1,8 +1,10 @@
-import JordanDiagram.Diagram.BaseChange
-import JordanDiagram.Algebra.Functor
-import Mathlib.Algebra.Category.CommAlgCat.Basic
-import Mathlib.Algebra.Category.Grp.Basic
-import JordanDiagram.MathlibMissing.LieRingCat
+module
+
+public import JordanDiagram.Diagram.BaseChange
+public import JordanDiagram.Algebra.Functor
+public import Mathlib.Algebra.Category.CommAlgCat.Basic
+public import Mathlib.Algebra.Category.Grp.Basic
+public import JordanDiagram.MathlibMissing.LieRingCat
 
 /-!
 # The diagram group functor `G_F : CAlg_R → Grp` (Proposition 3.3)
@@ -20,6 +22,8 @@ For `R = Z[1/2]` the category `CommAlgCat R` is `CAlg_{Z[1/2]}` of the paper (Le
 `autFunctor F` is the group-valued functor of Proposition 3.3 for the family `F_S = S ⊗ F`
 (Lemma 2.11).
 -/
+
+@[expose] public section
 
 universe u u' v w w'
 

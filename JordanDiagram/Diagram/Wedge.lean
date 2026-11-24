@@ -1,6 +1,8 @@
-import JordanDiagram.Diagram.Group
-import JordanDiagram.Diagram.Derivation
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+module
+
+public import JordanDiagram.Diagram.Group
+public import JordanDiagram.Diagram.Derivation
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Wedges (Proposition 3.12)
@@ -14,6 +16,8 @@ Then restriction identifies `G_F(R)` with the fiber product
 `G_{F₁}(R) ×_{Aut(J)} G_{F₂}(R)` (`wedgeHom_injective`, `range_wedgeHom`, `autGroupEquivWedge`),
 and likewise for compatible derivations (`wedgeDer_injective`, `range_wedgeDer`).
 -/
+
+@[expose] public section
 
 universe u v w w'
 

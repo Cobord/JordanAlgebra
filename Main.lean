@@ -1,5 +1,7 @@
-import Jordan
-import JordanDiagram
+module
 
-def main : IO Unit :=
+public import Jordan
+public import JordanDiagram
+
+public def main : IO Unit :=
   IO.println s!"Hello, {hello}!"

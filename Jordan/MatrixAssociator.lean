@@ -1,5 +1,7 @@
-import Jordan.Alternative
-import Mathlib.Data.Matrix.Mul
+module
+
+public import Jordan.Alternative
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # The matrix associator, entrywise
@@ -15,6 +17,8 @@ Associator Facts (1.2.1)-(1.2.4), which further specialize this to `n = 3` and H
 specializations belong with the `AlbertAlgebra` development, not here; this file only has the
 part that's uniform over every coordinate ring `D` and every matrix size `n`.
 -/
+
+@[expose] public section
 
 open IsAlternative
 

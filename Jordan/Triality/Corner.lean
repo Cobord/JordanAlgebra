@@ -1,6 +1,8 @@
-import Mathlib.RingTheory.Idempotents
-import Mathlib.Tactic.LinearCombination
-import Jordan.Triality.Basic
+module
+
+public import Mathlib.RingTheory.Idempotents
+public import Mathlib.Tactic.LinearCombination
+public import Jordan.Triality.Basic
 
 /-!
 # Trialities and idempotents: reduction to a corner ring
@@ -22,6 +24,8 @@ all three modules simultaneously, with the same idempotent, and the triality is 
 corner. The proof is the Peirce argument of `Triality.Basic` applied to each module, plus the
 observation that mixed components (`M1 = eM1` but `M2 = (1 - e)M2`, say) force `t = 0`.
 -/
+
+@[expose] public section
 
 universe u v
 

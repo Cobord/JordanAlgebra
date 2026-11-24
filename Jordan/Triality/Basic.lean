@@ -1,9 +1,13 @@
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Algebra.Star.Basic
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.RingTheory.Ideal.Span
+
+@[expose] public section
 
 /-- A triality: a trilinear form `t : M1 × M2 × M3 → R`, antilinear in the `M2` slot,
 on nontrivial modules, such that for a nonzero element fixed in any one slot the other

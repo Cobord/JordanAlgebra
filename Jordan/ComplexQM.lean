@@ -1,9 +1,11 @@
-import Jordan.JordanAlgebra
-import Jordan.FormallyReal
-import Mathlib.Algebra.QuadraticAlgebra.Basic
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.ConjTranspose
-import Mathlib.LinearAlgebra.Matrix.Trace
+module
+
+public import Jordan.JordanAlgebra
+public import Jordan.FormallyReal
+public import Mathlib.Algebra.QuadraticAlgebra.Basic
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
+public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # The Jordan algebra of "complex" Hermitian matrices over a general base ring
@@ -28,6 +30,8 @@ component too, `⟨star re + b * star im, -star im⟩` -- only agrees with Mathl
 we assume `TrivialStar R`, i.e. `star = id` on `R`. `star_eq_conj_components` records this
 explicitly, so nothing about `R`'s star is silently being discarded here.
 -/
+
+@[expose] public section
 
 /-- Shorthand for `QuadraticAlgebra R a b`, "the complex numbers over `R`" determined by
 `i ^ 2 = a + b * i`. -/

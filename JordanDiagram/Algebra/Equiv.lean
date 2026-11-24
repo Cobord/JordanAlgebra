@@ -1,4 +1,6 @@
-import JordanDiagram.Algebra.Automorphism
+module
+
+public import JordanDiagram.Algebra.Automorphism
 
 /-!
 # Jordan isomorphisms between different algebras
@@ -11,6 +13,8 @@ Jordan isomorphism `h : J ≃ⱼ J'` with `h(range ν) = range ν'` transports t
 `g : A ≃ⱼ A'` with `ν' ∘ g = h ∘ ν`. This is the input for terminal determination of diagram
 isomorphisms and of shape-twisted automorphisms (Propositions 3.14 and 5.7).
 -/
+
+@[expose] public section
 
 namespace JordanAlgebra
 

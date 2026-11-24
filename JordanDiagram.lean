@@ -1,27 +1,29 @@
+module
+
 -- This module serves as the root of the `JordanDiagram` library: the formalization of
 -- *Symmetries of Jordan Algebra Diagrams over Varying Base Rings*, built on the `Jordan` library.
 
 -- Symmetries of a single, already-formalized Jordan algebra (no diagrams).
-import JordanDiagram.Algebra.Automorphism
-import JordanDiagram.Algebra.BaseChange
-import JordanDiagram.Algebra.Equiv
-import JordanDiagram.Algebra.Functor
-import JordanDiagram.Algebra.Generation
-import JordanDiagram.Algebra.Orthogonal
-import JordanDiagram.Algebra.SpinFactor
-import JordanDiagram.Algebra.Tower
+public import JordanDiagram.Algebra.Automorphism
+public import JordanDiagram.Algebra.BaseChange
+public import JordanDiagram.Algebra.Equiv
+public import JordanDiagram.Algebra.Functor
+public import JordanDiagram.Algebra.Generation
+public import JordanDiagram.Algebra.Orthogonal
+public import JordanDiagram.Algebra.SpinFactor
+public import JordanDiagram.Algebra.Tower
 
 -- General constructions missing from Mathlib (candidates for upstreaming).
-import JordanDiagram.MathlibMissing.LieRingCat
-import JordanDiagram.MathlibMissing.PiLie
+public import JordanDiagram.MathlibMissing.LieRingCat
+public import JordanDiagram.MathlibMissing.PiLie
 
 -- The diagram layer: terminally pointed diagrams and their symmetry groups.
-import JordanDiagram.Diagram.BaseChange
-import JordanDiagram.Diagram.Basic
-import JordanDiagram.Diagram.Derivation
-import JordanDiagram.Diagram.Finiteness
-import JordanDiagram.Diagram.Functor
-import JordanDiagram.Diagram.Group
-import JordanDiagram.Diagram.Iso
-import JordanDiagram.Diagram.SpinFactor
-import JordanDiagram.Diagram.Wedge
+public import JordanDiagram.Diagram.BaseChange
+public import JordanDiagram.Diagram.Basic
+public import JordanDiagram.Diagram.Derivation
+public import JordanDiagram.Diagram.Finiteness
+public import JordanDiagram.Diagram.Functor
+public import JordanDiagram.Diagram.Group
+public import JordanDiagram.Diagram.Iso
+public import JordanDiagram.Diagram.SpinFactor
+public import JordanDiagram.Diagram.Wedge

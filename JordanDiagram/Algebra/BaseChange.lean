@@ -1,6 +1,8 @@
-import JordanDiagram.Algebra.Automorphism
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.RingTheory.Flat.Basic
+module
+
+public import JordanDiagram.Algebra.Automorphism
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Scalar extension of Jordan algebras (Lemma 2.4)
@@ -18,6 +20,8 @@ in `x`, and `jordanExpr (x + z) = jordanExpr x + jordanExpr z + lin x x z + lin 
 Scalar extension is functorial (`baseChangeHom`), and transports automorphisms and derivations
 (`baseChangeAut`, `baseChangeDer`).
 -/
+
+@[expose] public section
 
 open TensorProduct
 

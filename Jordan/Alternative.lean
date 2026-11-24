@@ -1,6 +1,8 @@
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Alternative magmas
@@ -21,6 +23,8 @@ adjacent transpositions built in by definition).
 
 Octonion-specific consequences (e.g. anything using `star`) belong in `Jordan.Octonion`, not here.
 -/
+
+@[expose] public section
 
 /-- An *alternative* magma: multiplication need not be associative, but it satisfies the two
 weaker laws that survive Cayley-Dickson doubling of an associative algebra (such as the octonions,

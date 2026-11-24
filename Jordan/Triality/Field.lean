@@ -1,7 +1,9 @@
-import Mathlib.RingTheory.Trace.Basic
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Perfect
-import Jordan.Triality.Basic
+module
+
+public import Mathlib.RingTheory.Trace.Basic
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Perfect
+public import Jordan.Triality.Basic
 
 /-!
 # Fields with involution as trialities
@@ -27,6 +29,8 @@ Instances:
   any finite extension of `Fq2`, with `τ` the `q`-Frobenius `y ↦ y ^ q` of `Fqn`. Separability is
   automatic (finite fields are perfect).
 -/
+
+@[expose] public section
 
 open LinearMap (BilinForm)
 

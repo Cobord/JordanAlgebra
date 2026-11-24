@@ -1,7 +1,9 @@
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.GroupTheory.Perm.Cycle.Basic
-import Mathlib.GroupTheory.Perm.Sign
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
+public import Mathlib.GroupTheory.Perm.Sign
 
 /-!
 # The Moore determinant of a matrix over a non-commutative ring
@@ -21,6 +23,8 @@ the deeper classical theorem (specific to genuine quaternion algebras) that this
 central; that's a separate, nontrivial fact about the formula's well-definedness on Hermitian
 input, not needed for the algebraic properties above.
 -/
+
+@[expose] public section
 
 open scoped Classical
 

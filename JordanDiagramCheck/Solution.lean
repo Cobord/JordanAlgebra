@@ -1,4 +1,6 @@
-import JordanDiagram
+module
+
+public import JordanDiagram
 
 /-!
 # Solution: proofs of the statements in `Challenge.lean`
@@ -7,6 +9,8 @@ Each theorem restates the corresponding one in `JordanDiagramCheck/Challenge.lea
 proves it from the `JordanDiagram` library. `comparator` checks that the statements agree and that
 only `propext`, `Quot.sound`, `Classical.choice` are used.
 -/
+
+@[expose] public section
 
 universe u u' v w w'
 

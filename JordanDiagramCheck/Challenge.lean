@@ -1,4 +1,6 @@
-import JordanDiagram
+module
+
+public import JordanDiagram
 
 /-!
 # Challenge: trusted statements of the main results of `JordanDiagram`
@@ -16,6 +18,8 @@ does not depend on how `autEquivOrthogonal` is built.
 Review this file, not `Solution.lean`: if these statements say what the paper says, a passing
 `comparator` run certifies the formalization of them.
 -/
+
+@[expose] public section
 
 universe u u' v w w'
 

@@ -1,7 +1,9 @@
-import Mathlib.LinearAlgebra.Matrix.Unique
-import Jordan.RealQM
-import Jordan.SpinFactor
-import Jordan.Octonion
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Unique
+public import Jordan.RealQM
+public import Jordan.SpinFactor
+public import Jordan.Octonion
 
 /-!
 # Hermitian octonionic matrices
@@ -13,6 +15,8 @@ BA)`, plus the `1 x 1` and `2 x 2` cases: the `1 x 1` case collapses to plain `R
 `Jordan.AlbertAlgebra`, since octonion non-associativity makes it a substantially different, much
 harder argument than these two.
 -/
+
+@[expose] public section
 
 section OctonionMatrices
 
@@ -104,27 +108,27 @@ lemma diag_just_11 (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -
   simp [h]
 omit i2 in
 set_option linter.unusedSectionVars false in
-private lemma diag_no_1i (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imI = 0 := by
+lemma diag_no_1i (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imI = 0 := by
   intro h
   simp [h]
 omit i2 in
 set_option linter.unusedSectionVars false in
-private lemma diag_no_1j (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imJ = 0 := by
+lemma diag_no_1j (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imJ = 0 := by
   intro h
   simp [h]
 omit i2 in
 set_option linter.unusedSectionVars false in
-private lemma diag_no_1k (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imK = 0 := by
+lemma diag_no_1k (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.1.imK = 0 := by
   intro h
   simp [h]
 omit i2 in
 set_option linter.unusedSectionVars false in
-private lemma diag_no_2 (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.2 = 0 := by
+lemma diag_no_2 (x : Octonion R a b c) (r : R) : x = Octonion.scalarEmbed r -> x.2 = 0 := by
   intro h
   simp [h]
 
 omit i2 [StarRing R] [TrivialStar R] in
-private lemma transpose_trivial (x: OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 1)): x.transpose = x := by
+lemma transpose_trivial (x: OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 1)): x.transpose = x := by
   have subsing : Subsingleton (Fin 1) := by infer_instance
   apply Matrix.ext
   intro i j
@@ -232,7 +236,7 @@ variable {R : Type*}
 variable [CommRing R] [i2: Invertible (2 : R)] [StarRing R] [TrivialStar R]
 variable {a b c : R}
 
-private lemma HermitianOctonionMatrixOne.ext_re
+lemma HermitianOctonionMatrixOne.ext_re
     {M N : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 1)}
     (h : (M.val 0 0).1.re = (N.val 0 0).1.re) : M = N := by
   apply Subtype.ext
@@ -252,12 +256,12 @@ private lemma HermitianOctonionMatrixOne.ext_re
   rw [hM, hN, hrM, hrN, h]
 
 omit i2 in
-private lemma HermitianOctonionMatrixOne.add_re
+lemma HermitianOctonionMatrixOne.add_re
     (M N : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 1)) :
     (((M + N).val 0 0).1.re : R) = (M.val 0 0).1.re + (N.val 0 0).1.re := by
   rfl
 
-private lemma HermitianOctonionMatrixOne.mul_re
+lemma HermitianOctonionMatrixOne.mul_re
     (M N : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 1)) :
     ⅟(2 : R) * (((M.val * N.val) 0 0).1.re) +
         ⅟(2 : R) * (((N.val * M.val) 0 0).1.re) =
@@ -337,7 +341,7 @@ omit i2 in
 /-- The off-diagonal Hermitian-symmetry condition, the `2 x 2` analogue of `diag_real` for the
 diagonal: in a Hermitian `2 x 2` octonionic matrix, the `(1,0)` entry is forced to be the
 conjugate of the `(0,1)` entry. -/
-private lemma HermitianOctonionMatrixTwo.off_diag
+lemma HermitianOctonionMatrixTwo.off_diag
     (M : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2)) :
     M.val 1 0 = star (M.val 0 1) := by
   have h : star (M.val 1 0) = M.val 0 1 := congrFun (congrFun M.property 0) 1
@@ -349,14 +353,14 @@ private lemma HermitianOctonionMatrixTwo.off_diag
 coordinate of the intended `SpinFactor` identification; the division by `2` is genuinely needed
 here (unlike `off_diag` above), since it must match `SpinFactor`'s fixed `a • y + b • x`
 multiplication -- see the discussion above `TwoByTwo`. -/
-private def HermitianOctonionMatrixTwo.traceHalf
+def HermitianOctonionMatrixTwo.traceHalf
     (M : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2)) : R :=
   ⅟(2 : R) * ((M.val 0 0).1.re + (M.val 1 1).1.re)
 
 /-- The half-difference of the diagonal entries of a Hermitian `2 x 2` octonionic matrix,
 `p = (r - s) / 2`. Together with the off-diagonal octonion `M.val 0 1`, this is the trace-free
 "vector" coordinate of the intended `SpinFactor` identification. -/
-private def HermitianOctonionMatrixTwo.diffHalf
+def HermitianOctonionMatrixTwo.diffHalf
     (M : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2)) : R :=
   ⅟(2 : R) * ((M.val 0 0).1.re - (M.val 1 1).1.re)
 
@@ -364,7 +368,7 @@ private def HermitianOctonionMatrixTwo.diffHalf
 `r, s` produced by `diag_real`, the half-sum/half-difference `traceHalf`/`diffHalf` recover them
 back via `r = t + p`, `s = t - p`. This is what makes the trace/trace-free decomposition a genuine
 reparametrization of the diagonal data, not merely a one-way projection. -/
-private lemma HermitianOctonionMatrixTwo.diag_eq_traceHalf_add_sub_diffHalf
+lemma HermitianOctonionMatrixTwo.diag_eq_traceHalf_add_sub_diffHalf
     (M : HermitianOctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2)) :
     ∃ r s : R, M.val 0 0 = Octonion.scalarEmbed r ∧ M.val 1 1 = Octonion.scalarEmbed s ∧
       r = traceHalf M + diffHalf M ∧ s = traceHalf M - diffHalf M := by
@@ -385,53 +389,53 @@ private lemma HermitianOctonionMatrixTwo.diag_eq_traceHalf_add_sub_diffHalf
 /-- The underlying function of `hermitianTwoBilin`: the octonion polarization form
 `Octonion.innerProduct` on the octonion part, plus plain multiplication on the `R` part. Kept
 separate so the bilinearity proofs below can be named lemmas, as with `innerProductFun` above. -/
-private noncomputable def hermitianTwoBilinFun (z w : Octonion R a b c × R) : R :=
+noncomputable def hermitianTwoBilinFun (z w : Octonion R a b c × R) : R :=
   Octonion.innerProduct z.1 w.1 + z.2 * w.2
 
-private theorem hermitianTwoBilinFun_add_left (z₁ z₂ w : Octonion R a b c × R) :
+theorem hermitianTwoBilinFun_add_left (z₁ z₂ w : Octonion R a b c × R) :
     hermitianTwoBilinFun (z₁ + z₂) w = hermitianTwoBilinFun z₁ w + hermitianTwoBilinFun z₂ w := by
   unfold hermitianTwoBilinFun
   simp only [Prod.fst_add, Prod.snd_add, map_add, LinearMap.add_apply, add_mul]
   abel
 
-private theorem hermitianTwoBilinFun_smul_left (r : R) (z w : Octonion R a b c × R) :
+theorem hermitianTwoBilinFun_smul_left (r : R) (z w : Octonion R a b c × R) :
     hermitianTwoBilinFun (r • z) w = r * hermitianTwoBilinFun z w := by
   unfold hermitianTwoBilinFun
   simp only [Prod.smul_fst, Prod.smul_snd, map_smul, LinearMap.smul_apply, smul_eq_mul, mul_add,
     mul_assoc]
 
-private theorem hermitianTwoBilinFun_add_right (z w₁ w₂ : Octonion R a b c × R) :
+theorem hermitianTwoBilinFun_add_right (z w₁ w₂ : Octonion R a b c × R) :
     hermitianTwoBilinFun z (w₁ + w₂) = hermitianTwoBilinFun z w₁ + hermitianTwoBilinFun z w₂ := by
   unfold hermitianTwoBilinFun
   simp only [Prod.fst_add, Prod.snd_add, map_add, mul_add]
   abel
 
-private theorem hermitianTwoBilinFun_smul_right (r : R) (z w : Octonion R a b c × R) :
+theorem hermitianTwoBilinFun_smul_right (r : R) (z w : Octonion R a b c × R) :
     hermitianTwoBilinFun z (r • w) = r * hermitianTwoBilinFun z w := by
   unfold hermitianTwoBilinFun
   simp only [Prod.smul_fst, Prod.smul_snd, map_smul, smul_eq_mul, mul_add, mul_left_comm]
 
 /-- The bilinear form on the trace-free vector space `Octonion R a b c × R`, making the `2 x 2`
 Hermitian identification work. -/
-private noncomputable def hermitianTwoBilin :
+noncomputable def hermitianTwoBilin :
     LinearMap.BilinForm R (Octonion R a b c × R) :=
   LinearMap.mk₂ R hermitianTwoBilinFun
     hermitianTwoBilinFun_add_left hermitianTwoBilinFun_smul_left
     hermitianTwoBilinFun_add_right hermitianTwoBilinFun_smul_right
 
-private def buildTwo (x : Octonion R a b c) (t p : R) :
+def buildTwo (x : Octonion R a b c) (t p : R) :
     OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) (n:=Fin 2) :=
   !![Octonion.scalarEmbed (t + p), x; star x, Octonion.scalarEmbed (t - p)]
 
 set_option linter.unusedSectionVars false in
-private lemma buildTwo_isHermitian (x : Octonion R a b c) (t p : R) :
+lemma buildTwo_isHermitian (x : Octonion R a b c) (t p : R) :
     star (buildTwo (R:=R) (a:=a) (b:=b) (c:=c) x t p) = buildTwo x t p := by
   apply Matrix.ext
   intro i j
   show star (buildTwo x t p j i) = buildTwo x t p i j
   fin_cases i <;> fin_cases j <;> simp [buildTwo, star_scalarEmbed, star_star]
 
-private lemma traceHalf_buildTwo (x : Octonion R a b c) (t p : R) :
+lemma traceHalf_buildTwo (x : Octonion R a b c) (t p : R) :
     HermitianOctonionMatrixTwo.traceHalf ⟨buildTwo x t p, buildTwo_isHermitian x t p⟩ = t := by
   show ⅟(2 : R) * ((buildTwo x t p 0 0).1.re + (buildTwo x t p 1 1).1.re) = t
   show ⅟(2 : R) * ((scalarEmbed (t + p) : Octonion R a b c).1.re +
@@ -440,7 +444,7 @@ private lemma traceHalf_buildTwo (x : Octonion R a b c) (t p : R) :
   show ⅟(2 : R) * ((t + p) + (t - p)) = t
   rw [show (t + p) + (t - p) = 2 * t from by ring, ← mul_assoc, invOf_mul_self, one_mul]
 
-private lemma diffHalf_buildTwo (x : Octonion R a b c) (t p : R) :
+lemma diffHalf_buildTwo (x : Octonion R a b c) (t p : R) :
     HermitianOctonionMatrixTwo.diffHalf ⟨buildTwo x t p, buildTwo_isHermitian x t p⟩ = p := by
   show ⅟(2 : R) * ((buildTwo x t p 0 0).1.re - (buildTwo x t p 1 1).1.re) = p
   show ⅟(2 : R) * ((scalarEmbed (t + p) : Octonion R a b c).1.re -

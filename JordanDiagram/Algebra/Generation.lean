@@ -1,5 +1,7 @@
-import JordanDiagram.Algebra.Automorphism
-import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+module
+
+public import JordanDiagram.Algebra.Automorphism
+public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 
 /-!
 # Automorphisms are determined on generating sets
@@ -8,6 +10,8 @@ import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 values on a set that generates the algebra as a (non-unital) subalgebra. This is the
 single-algebra input to Lemma 4.3 (generating configurations).
 -/
+
+@[expose] public section
 
 namespace JordanAlgebra.jordanAut
 

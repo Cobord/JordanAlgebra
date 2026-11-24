@@ -1,6 +1,8 @@
-import Jordan.Octonion
-import Jordan.Triality.DivisionAlgebra
-import Jordan.Triality.Gauged
+module
+
+public import Jordan.Octonion
+public import Jordan.Triality.DivisionAlgebra
+public import Jordan.Triality.Gauged
 
 /-!
 # The octonion triality
@@ -26,6 +28,8 @@ over a general ring it amounts to `a`, `b`, `c` being units). Then:
   `innerProduct` makes this a `NormedTriality`: the bound `⟨xy, z⟩² ≤ ‖x‖² ‖y‖² ‖z‖²` is
   Cauchy–Schwarz plus `‖xy‖² = ‖x‖² ‖y‖²`, and it is attained at `z = xy`, `y = x̄ z`, `x = z ȳ`.
 -/
+
+@[expose] public section
 
 open scoped Quaternion
 

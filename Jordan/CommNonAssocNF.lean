@@ -1,3 +1,5 @@
+module
+
 /-!
 # TODO: a normal-form tactic for commutative, non-associative multiplication
 
@@ -38,3 +40,5 @@ reusable pieces -- in particular anything for normalizing a single non-associati
 ("summand") under commutativity, which is exactly the sub-problem this tactic needs to solve
 before `abel`/`abel_nf` can handle the surrounding sum.
 -/
+
+@[expose] public section

@@ -1,9 +1,11 @@
-import Jordan.JordanAlgebra
-import Jordan.FormallyReal
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.ConjTranspose
-import Mathlib.LinearAlgebra.Matrix.Unique
-import Mathlib.LinearAlgebra.Matrix.Trace
+module
+
+public import Jordan.JordanAlgebra
+public import Jordan.FormallyReal
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
+public import Mathlib.LinearAlgebra.Matrix.Unique
+public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # The Jordan algebra of symmetric matrices over a general base ring
@@ -15,6 +17,8 @@ As with `ComplexQM`/`QuaternionicQM`, the only thing this needs from `ℝ` is `2
 and the star structure being trivial; we work over any commutative ring `R` with a trivial star
 and `2` invertible. Specializing `R := ℝ` recovers the classical example.
 -/
+
+@[expose] public section
 
 namespace RealQM
 

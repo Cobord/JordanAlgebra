@@ -1,6 +1,8 @@
-import Jordan.MatrixAssociator
-import Jordan.NuclearInvolution
-import Mathlib.LinearAlgebra.Matrix.Hermitian
+module
+
+public import Jordan.MatrixAssociator
+public import Jordan.NuclearInvolution
+public import Mathlib.LinearAlgebra.Matrix.Hermitian
 
 /-!
 # The matrix associator for Hermitian `3 x 3` matrices
@@ -24,6 +26,8 @@ parametrized over `Fin 3` -- `fin_cases`-driven unification hit `Fin.mk`-vs-nume
 friction that wasn't worth fighting for a three-case split; this also matches the existing
 `jordan_case_diag0/1/2`/`jordan_case_off01/02/12` convention already used in `AlbertAlgebra.lean`.
 -/
+
+@[expose] public section
 
 open IsAlternative
 

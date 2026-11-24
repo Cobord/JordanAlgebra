@@ -1,8 +1,10 @@
-import Mathlib.Algebra.Module.LinearMap.Star
-import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-import Jordan.Triality.Basic
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Star
+public import Mathlib.Algebra.Order.Nonneg.Basic
+public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Jordan.Triality.Basic
 
 /-!
 # Gauged and normed trialities
@@ -28,6 +30,8 @@ gives equality. The gauged triality it induces has
 `Γ = {r : R // 0 ≤ r}`, the "nonnegative reals" of `R`, with gauges `‖m‖² = ⟪m, m⟫` and
 `|r|² = star r * r`; homogeneity and multiplicativity are derived from sesquilinearity.
 -/
+
+@[expose] public section
 
 /-- A triality with homogeneous gauges `Mᵢ → Γ` on its three modules and a multiplicative gauge
 `R →* Γ` on scalars, bounding the triality product: `gauge (t x y z) ≤ gauge x * gauge y * gauge z`.

@@ -1,5 +1,7 @@
-import Jordan.DivisionAlgebra
-import Jordan.Triality.Basic
+module
+
+public import Jordan.DivisionAlgebra
+public import Jordan.Triality.Basic
 
 /-!
 # The division algebras of a triality
@@ -22,6 +24,8 @@ There is one construction per pair of modules chosen:
 In each case the product is `t x y z` with the two chosen-module arguments pulled back along the
 identifications, and the unit is `t e e' ·` for the chosen `e, e'`.
 -/
+
+@[expose] public section
 
 namespace Triality
 

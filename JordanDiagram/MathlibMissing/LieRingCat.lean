@@ -1,5 +1,7 @@
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Lie ring homomorphisms and the category of Lie rings
@@ -16,6 +18,8 @@ a homomorphism of Lie rings and no category of Lie rings.
 This is the target of the compatible-derivation functor `g_F : CAlg_R → LieRing` of
 Proposition 3.8 (`JordanDiagram.derFunctor`). It is generic and could be upstreamed.
 -/
+
+@[expose] public section
 
 universe u
 

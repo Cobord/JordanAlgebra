@@ -1,5 +1,7 @@
-import JordanDiagram.Diagram.Group
-import JordanDiagram.Algebra.Equiv
+module
+
+public import JordanDiagram.Diagram.Group
+public import JordanDiagram.Algebra.Equiv
 
 /-!
 # Isomorphisms of diagrams and shape-twisted automorphisms (Section 3.4)
@@ -18,6 +20,8 @@ the isomorphisms in the fiber of the Grothendieck construction over `(I⁺, R)` 
   `h : F(+) ≃ⱼ F(u +)` with `h(Aᵢ) = νᵘᵢ(F(u i))`. For `u = 𝟭`, twisted isomorphisms are
   the diagram automorphisms (`twistedIdEquiv`), which gives the kernel of `G̃_F(R) → Aut(I⁺, +)`.
 -/
+
+@[expose] public section
 
 universe u v w w'
 

@@ -1,6 +1,8 @@
-import JordanDiagram.Diagram.Group
-import JordanDiagram.Algebra.Generation
-import Mathlib.Data.Finite.Perm
+module
+
+public import JordanDiagram.Diagram.Group
+public import JordanDiagram.Algebra.Generation
+public import Mathlib.Data.Finite.Perm
 
 /-!
 # Detecting configurations (Section 4)
@@ -13,6 +15,8 @@ import Mathlib.Data.Finite.Perm
   single-algebra input, that an automorphism is determined on a generating set, is
   `jordanAut.ext_of_adjoin_eq_top` in `JordanDiagram/Algebra/Generation.lean`.
 -/
+
+@[expose] public section
 
 universe u v w w'
 

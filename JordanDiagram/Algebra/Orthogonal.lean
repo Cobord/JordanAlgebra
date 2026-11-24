@@ -1,6 +1,8 @@
-import JordanDiagram.Algebra.SpinFactor
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
-import Mathlib.LinearAlgebra.Projection
+module
+
+public import JordanDiagram.Algebra.SpinFactor
+public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Orthogonal splittings and stabilizers (the core of Corollary 5.10)
@@ -17,6 +19,8 @@ This is the one-member case of Corollary 5.10. With Proposition 5.6 it says the 
 of the spin-factor diagram `J(W, B) ↪ J(V, B)` is `O(W) × O(W⊥)`. Iterating over a flag gives the
 product `∏ⱼ O(Uⱼ)` of the corollary.
 -/
+
+@[expose] public section
 
 open LinearMap (BilinForm)
 

@@ -1,8 +1,10 @@
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Equiv
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Non-associative division algebras
@@ -17,6 +19,8 @@ Following `JordanAlgebra`, the class bundles the underlying algebra structure (`
 which any division algebra satisfies. `NoZeroDivisors` is in fact a consequence of the bijectivity
 axioms; `DivisionAlgebra.ofBijective` derives it for you.
 -/
+
+@[expose] public section
 
 /-- A unital, not necessarily associative division algebra over `R`: multiplication by a nonzero
 element on either side is bijective. -/

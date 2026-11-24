@@ -1,6 +1,8 @@
-import JordanDiagram.Algebra.Equiv
-import Jordan.SpinFactor
-import Mathlib.LinearAlgebra.FreeModule.Basic
+module
+
+public import JordanDiagram.Algebra.Equiv
+public import Jordan.SpinFactor
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Isomorphisms, automorphisms and derivations of spin factors (Lemma 5.5)
@@ -23,6 +25,8 @@ with no polarization.
 The spin factor's `JordanAlgebra` structure is a definition depending on symmetry of `B`
 (`SpinFactor.jordanAlgebra`); here it is made a scoped instance under `[Fact B.IsSymm]`.
 -/
+
+@[expose] public section
 
 open JordanAlgebra
 

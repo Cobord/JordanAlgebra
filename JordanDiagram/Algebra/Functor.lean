@@ -1,4 +1,6 @@
-import JordanDiagram.Algebra.BaseChange
+module
+
+public import JordanDiagram.Algebra.BaseChange
 
 /-!
 # Transport of automorphisms along algebra maps (functoriality of Proposition 3.3)
@@ -18,6 +20,8 @@ functor laws work:
 `S ↦ Aut_{Jord_S}(S ⊗[R] A)` on commutative `R`-algebras, which `JordanDiagram.autFunctor`
 extends to diagrams.
 -/
+
+@[expose] public section
 
 open TensorProduct
 

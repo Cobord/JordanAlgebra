@@ -1,6 +1,8 @@
-import JordanDiagram.Diagram.Basic
-import JordanDiagram.MathlibMissing.PiLie
-import Mathlib.Algebra.Lie.Subalgebra
+module
+
+public import JordanDiagram.Diagram.Basic
+public import JordanDiagram.MathlibMissing.PiLie
+public import Mathlib.Algebra.Lie.Subalgebra
 
 /-!
 # Compatible derivations of a diagram (Section 3.2)
@@ -16,6 +18,8 @@ product Lie algebra `∀ i, JordanDerivation R (F.obj i)`.
 
 The componentwise Lie structure on the product is in `JordanDiagram/MathlibMissing/PiLie.lean`.
 -/
+
+@[expose] public section
 
 universe u v w w'
 

@@ -1,13 +1,17 @@
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Ring.SumsOfSquares
-import Mathlib.Tactic.NoncommRing
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Ring.SumsOfSquares
+public import Mathlib.Tactic.NoncommRing
+public import Mathlib.Tactic.LinearCombination
+
+@[expose] public section
 
 class JordanAlgebra (R : outParam (Type u)) (M : Type v) [CommRing R] extends
     NonAssocRing M, Module R M, IsScalarTower R M M, SMulCommClass R M M where
@@ -30,7 +34,7 @@ variable {R M : Type*} [CommRing R] [JordanAlgebra R M]
 local notation "L" => AddMonoid.End.mulLeft
 local notation "Rm" => AddMonoid.End.mulRight
 
-private abbrev twoSmulEnd (f : AddMonoid.End M) : AddMonoid.End M :=
+abbrev twoSmulEnd (f : AddMonoid.End M) : AddMonoid.End M :=
   SMul.smul (2 : R) f
 
 private theorem twoSmulEnd_eq_add (f : AddMonoid.End M) : twoSmulEnd f = f + f := by

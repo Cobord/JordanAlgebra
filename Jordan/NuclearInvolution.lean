@@ -1,6 +1,8 @@
-import Jordan.Alternative
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Algebra.Star.Basic
+module
+
+public import Jordan.Alternative
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Nuclear involutions
@@ -14,6 +16,8 @@ and to replace a lower-triangular entry `star x` by `-x` inside an associator. B
 are proved here in fully generic form (`assoc_star_first/mid/last`), independent of any particular
 matrix construction.
 -/
+
+@[expose] public section
 
 open IsAlternative
 

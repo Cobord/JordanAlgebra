@@ -1,6 +1,8 @@
-import Jordan.HermitianMatrixAssociator
-import Mathlib.Algebra.Star.Basic
-import Mathlib.LinearAlgebra.Matrix.Hermitian
+module
+
+public import Jordan.HermitianMatrixAssociator
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.LinearAlgebra.Matrix.Hermitian
 
 /-!
 # The Jordan identity for `H_3(D,-)`
@@ -24,6 +26,8 @@ instance, and declaring both independently creates a `Star D` instance diamond (
 this directly: "`[StarAddMonoid D]` and `[StarRing D]` can be used to infer conflicting versions of
 `[Star D]`"), which silently breaks `rw`/`simp` matching on `star`-headed terms.
 -/
+
+@[expose] public section
 
 open IsAlternative
 open scoped Matrix

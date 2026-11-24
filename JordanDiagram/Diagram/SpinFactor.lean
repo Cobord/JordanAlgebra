@@ -1,7 +1,9 @@
-import JordanDiagram.Diagram.Group
-import JordanDiagram.Diagram.Derivation
-import JordanDiagram.Diagram.Iso
-import JordanDiagram.Algebra.SpinFactor
+module
+
+public import JordanDiagram.Diagram.Group
+public import JordanDiagram.Diagram.Derivation
+public import JordanDiagram.Diagram.Iso
+public import JordanDiagram.Algebra.SpinFactor
 
 /-!
 # Diagrams of spin factors (Section 5)
@@ -22,6 +24,8 @@ The paper's case is `I = P⁺ = WithTop P`, with `W₊ = V`.
 The terminal node is `J(W ⊤, B|)`, so the statements live inside `O(W ⊤, B|)`. When `W ⊤ = ⊤`
 this is `O(V, B)` (identified via `Submodule.topEquiv`).
 -/
+
+@[expose] public section
 
 universe u w
 

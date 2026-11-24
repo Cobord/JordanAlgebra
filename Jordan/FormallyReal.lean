@@ -1,10 +1,14 @@
-import Jordan.JordanAlgebra
-import Mathlib.NumberTheory.Padics.RingHoms
-import Mathlib.RingTheory.Henselian
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.NumberTheory.SumFourSquares
-import Mathlib.NumberTheory.Padics.ProperSpace
-import Mathlib.Algebra.Ring.Semireal.Defs
+module
+
+public import Jordan.JordanAlgebra
+public import Mathlib.NumberTheory.Padics.RingHoms
+public import Mathlib.RingTheory.Henselian
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.NumberTheory.SumFourSquares
+public import Mathlib.NumberTheory.Padics.ProperSpace
+public import Mathlib.Algebra.Ring.Semireal.Defs
+
+@[expose] public section
 
 /-- Mathlib's inductively-defined `IsSumSq` agrees with "is a `Fintype`-indexed sum of squares".
 The class `IsFormallyReal` itself still needs the explicit indexed family (it must track that

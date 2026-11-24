@@ -1,6 +1,8 @@
-import JordanDiagram.Algebra.Automorphism
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Preorder
+module
+
+public import JordanDiagram.Algebra.Automorphism
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Preorder
 
 /-!
 # Terminally pointed Jordan diagrams (Section 2.2)
@@ -16,6 +18,8 @@ The terminal algebra is `J = obj ⊤` and the terminal maps are `ν i = map (! i
 (Definition 2.8). The scalar-extension coherence (the family over varying `R`) is not part of this
 file: everything here is fiberwise, over one ring.
 -/
+
+@[expose] public section
 
 universe u v w w'
 

@@ -1,7 +1,9 @@
-import JordanDiagram.Diagram.Group
-import JordanDiagram.Diagram.Derivation
-import JordanDiagram.Algebra.BaseChange
-import JordanDiagram.Algebra.Tower
+module
+
+public import JordanDiagram.Diagram.Group
+public import JordanDiagram.Diagram.Derivation
+public import JordanDiagram.Algebra.BaseChange
+public import JordanDiagram.Algebra.Tower
 
 /-!
 # Scalar extension of diagrams (Lemma 2.11, Proposition 3.3, Proposition 7.9(b))
@@ -18,6 +20,8 @@ family `F_S = F_R ⊗_R S` of Lemma 2.11, here for one base map `R → S`.
 * `derBaseChange`: the corresponding map `g_F(R) → g_F(S)` on compatible derivations
   (Proposition 3.8), additive and bracket-preserving.
 -/
+
+@[expose] public section
 
 universe u u' v w w'
 
