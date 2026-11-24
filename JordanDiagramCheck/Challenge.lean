@@ -342,4 +342,93 @@ theorem spin_diagram_group :
 
 end SpinDiagram
 
+/-- **The dyadic base ring**: a unital map `Z[1/2] → R` is unique, and exists exactly when `2` is a
+unit in `R`. So `Z[1/2]`-algebras are the commutative rings in which `2` is invertible, and ring
+maps between them automatically commute with the structure maps. -/
+theorem zHalf_hom (R : Type u) [CommRing R] :
+    Subsingleton (Localization.Away (2 : ℤ) →+* R) ∧
+      (Nonempty (Localization.Away (2 : ℤ) →+* R) ↔ IsUnit (2 : R)) := by
+  sorry
+
+/-- **Norm coefficients of the generalized octonions**: the norm of the Cayley–Dickson algebra
+with generators squaring to `a, b, c` (in Lean `Octonion R a b (-c)`) is diagonal in the standard
+basis with coefficients `1, -a, -b, ab, -c, ac, bc, -abc`. -/
+theorem octonion_norm_coefficients {R : Type u} [CommRing R] [StarRing R] [TrivialStar R]
+    {a b c : R} (x : Octonion R a b (-c)) :
+    x * star x = Octonion.scalarEmbed (∑ i : Fin 8,
+      ![1, -a, -b, a * b, -c, a * c, b * c, -(a * b * c)] i *
+        ![x.1.re, x.1.imI, x.1.imJ, x.1.imK, x.2.re, x.2.imI, x.2.imJ, x.2.imK] i ^ 2) := by
+  sorry
+
+/-- **Positive norm coefficients**: over an ordered ring with `a, b, c < 0`, the eight norm
+coefficients `1, -a, -b, ab, -c, ac, bc, -abc` are positive. -/
+theorem octonion_norm_coefficients_pos {R : Type u} [CommRing R] [LinearOrder R]
+    [IsStrictOrderedRing R] {a b c : R} (ha : a < 0) (hb : b < 0) (hc : c < 0) (i : Fin 8) :
+    0 < ![1, -a, -b, a * b, -c, a * c, b * c, -(a * b * c)] i := by
+  sorry
+
+/-- **The shape-twisted group for an arbitrary terminally pointed shape**: twisted automorphisms
+`(u, θ)`, `u` a strict automorphism of `I⁺` fixing `+`, form a group, `1 → G_F → G̃_F → Aut(I⁺, +)`
+is exact, and when the terminal maps are injective `(u, θ) ↦ (u, θ₊)` identifies `G̃_F` with the
+pairs `(u, h)`, `h ∈ Aut(J)`, with `h(Aᵢ) = A_{u(i)}` for every `i`. -/
+theorem shape_twisted_group {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
+    [TerminallyPointed I] (F : JordanDiagram.{u, v} R I) :
+    Function.Injective (JordanDiagram.ShapeTwistedAut.ofAut F) ∧
+      (JordanDiagram.ShapeTwistedAut.ofAut F).range =
+        (JordanDiagram.ShapeTwistedAut.shapeHom F).ker ∧
+      (∀ p, p ∈ JordanDiagram.ShapeTwistedAut.terminalPairs F ↔
+        ∀ i, p.2 '' F.image i = F.image (p.1.functor.obj i)) ∧
+      ((∀ i, Function.Injective (F.ν i)) →
+        ∃ e : JordanDiagram.ShapeTwistedAut F ≃* JordanDiagram.ShapeTwistedAut.terminalPairs F,
+          ∀ a, (e a : JordanDiagram.ShapeAut I × jordanAut R F.J) =
+            (a.shape, JordanDiagram.ShapeTwistedAut.topAut a)) := by
+  sorry
+
+/-- **Minkowski's lemma, every level `m ≥ 3`**: an integer matrix `g ≡ 1 (mod m)` of finite order
+is `1`; so every finite subgroup of `GL_N(ℤ)` embeds in `GL_N(ℤ/m)` under reduction. -/
+theorem minkowski {n : Type*} [Fintype n] [DecidableEq n] {m : ℕ} (hm : 3 ≤ m) :
+    (∀ g : Matrix n n ℤ, (∀ a b, (m : ℤ) ∣ (g - 1) a b) → ∀ r ≠ 0, g ^ r = 1 → g = 1) ∧
+      ∀ H : Subgroup (GL n ℤ), Finite H →
+        Set.InjOn (Units.map ((Int.castRingHom (ZMod m)).mapMatrix (m := n)).toMonoidHom :
+          GL n ℤ →* GL n (ZMod m)) (H : Set (GL n ℤ)) := by
+  sorry
+
+/-- **Formal reality of spin factors over a real closed field**: `J(V, B)` is formally real if
+and only if `B` is positive definite. -/
+theorem spinFactor_formallyReal_iff {R : Type u} [Field R] [LinearOrder R]
+    [IsStrictOrderedRing R] [IsRealClosed R] {V : Type v} [AddCommGroup V] [Module R V]
+    (B : LinearMap.BilinForm R V) (hB : B.IsSymm) :
+    @IsFormallyReal R (SpinFactor R V B) _ (SpinFactor.jordanAlgebra B hB) ↔
+      B.toQuadraticMap.PosDef := by
+  sorry
+
+/-- **The ordered fraction field**: a totally ordered commutative ring is a domain, its fraction
+field is totally ordered extending the order of `R`, and this is the only order making it a
+totally ordered ring in which `R → K` is order-preserving. -/
+theorem fraction_field_order (R : Type u) [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] :
+    IsDomain R ∧ IsStrictOrderedRing (FractionRing R) ∧
+      (∀ r s : R, algebraMap R (FractionRing R) r ≤ algebraMap R (FractionRing R) s ↔ r ≤ s) ∧
+      ∀ o₁ o₂ : LinearOrder (FractionRing R),
+        @IsStrictOrderedRing (FractionRing R) _ o₁.toPartialOrder →
+        @IsStrictOrderedRing (FractionRing R) _ o₂.toPartialOrder →
+        (∀ r s : R, r ≤ s → o₁.le (algebraMap R _ r) (algebraMap R _ s)) →
+        (∀ r s : R, r ≤ s → o₂.le (algebraMap R _ r) (algebraMap R _ s)) →
+        ∀ x y, o₁.le x y ↔ o₂.le x y := by
+  sorry
+
+/-- **A lattice at the terminal node**: for an additive subgroup `L ⊆ J` and `Lᵢ = νᵢ⁻¹(L)`, a
+diagram automorphism preserves `L` at the terminal node exactly when it preserves every `Lᵢ`;
+if `L` spans `J` up to powers of `c`, each `Lᵢ` spans `F(i)` likewise; and if `L` is finitely
+generated and `νᵢ` injective, `Lᵢ` is finitely generated. -/
+theorem lattice_at_terminal {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
+    [TerminallyPointed I] (F : JordanDiagram.{u, v} R I) (L : AddSubgroup F.J) :
+    (∀ g : F.autGroup, g.1 top '' (L : Set F.J) = L ↔
+      ∀ i, g.1 i '' (L.comap (F.ν i : F.obj i →+ F.J) : Set (F.obj i)) =
+        L.comap (F.ν i : F.obj i →+ F.J)) ∧
+      (∀ c : ℕ, (∀ y : F.J, ∃ k : ℕ, (c ^ k) • y ∈ L) →
+        ∀ i (x : F.obj i), ∃ k : ℕ, (c ^ k) • x ∈ L.comap (F.ν i : F.obj i →+ F.J)) ∧
+      (Module.Finite ℤ L → ∀ i, Function.Injective (F.ν i) →
+        Module.Finite ℤ (L.comap (F.ν i : F.obj i →+ F.J))) := by
+  sorry
+
 end JordanDiagramCheck

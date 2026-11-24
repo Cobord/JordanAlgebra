@@ -281,4 +281,76 @@ theorem spin_diagram_group :
 
 end SpinDiagram
 
+theorem zHalf_hom (R : Type u) [CommRing R] :
+    Subsingleton (Localization.Away (2 : ℤ) →+* R) ∧
+      (Nonempty (Localization.Away (2 : ℤ) →+* R) ↔ IsUnit (2 : R)) :=
+  ⟨zHalf_ringHom_subsingleton R, nonempty_zHalf_ringHom_iff R⟩
+
+theorem octonion_norm_coefficients {R : Type u} [CommRing R] [StarRing R] [TrivialStar R]
+    {a b c : R} (x : Octonion R a b (-c)) :
+    x * star x = Octonion.scalarEmbed (∑ i : Fin 8,
+      ![1, -a, -b, a * b, -c, a * c, b * c, -(a * b * c)] i *
+        ![x.1.re, x.1.imI, x.1.imJ, x.1.imK, x.2.re, x.2.imI, x.2.imJ, x.2.imK] i ^ 2) :=
+  Octonion.mul_star_self_eq_diag x
+
+theorem octonion_norm_coefficients_pos {R : Type u} [CommRing R] [LinearOrder R]
+    [IsStrictOrderedRing R] {a b c : R} (ha : a < 0) (hb : b < 0) (hc : c < 0) (i : Fin 8) :
+    0 < ![1, -a, -b, a * b, -c, a * c, b * c, -(a * b * c)] i :=
+  Octonion.normCoeff_pos ha hb hc i
+
+theorem shape_twisted_group {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
+    [TerminallyPointed I] (F : JordanDiagram.{u, v} R I) :
+    Function.Injective (JordanDiagram.ShapeTwistedAut.ofAut F) ∧
+      (JordanDiagram.ShapeTwistedAut.ofAut F).range =
+        (JordanDiagram.ShapeTwistedAut.shapeHom F).ker ∧
+      (∀ p, p ∈ JordanDiagram.ShapeTwistedAut.terminalPairs F ↔
+        ∀ i, p.2 '' F.image i = F.image (p.1.functor.obj i)) ∧
+      ((∀ i, Function.Injective (F.ν i)) →
+        ∃ e : JordanDiagram.ShapeTwistedAut F ≃* JordanDiagram.ShapeTwistedAut.terminalPairs F,
+          ∀ a, (e a : JordanDiagram.ShapeAut I × jordanAut R F.J) =
+            (a.shape, JordanDiagram.ShapeTwistedAut.topAut a)) :=
+  ⟨JordanDiagram.ShapeTwistedAut.ofAut_injective, JordanDiagram.ShapeTwistedAut.range_ofAut,
+    fun _ => JordanDiagram.ShapeTwistedAut.mem_terminalPairs,
+    fun hν => ⟨JordanDiagram.ShapeTwistedAut.terminalEquiv hν, fun _ => rfl⟩⟩
+
+theorem minkowski {n : Type*} [Fintype n] [DecidableEq n] {m : ℕ} (hm : 3 ≤ m) :
+    (∀ g : Matrix n n ℤ, (∀ a b, (m : ℤ) ∣ (g - 1) a b) → ∀ r ≠ 0, g ^ r = 1 → g = 1) ∧
+      ∀ H : Subgroup (GL n ℤ), Finite H →
+        Set.InjOn (Units.map ((Int.castRingHom (ZMod m)).mapMatrix (m := n)).toMonoidHom :
+          GL n ℤ →* GL n (ZMod m)) (H : Set (GL n ℤ)) :=
+  ⟨fun _ hg _ hr hgr => Matrix.eq_one_of_pow_eq_one_of_modEq hm hg hr hgr,
+    fun H _ => Matrix.injOn_reduce hm H⟩
+
+theorem spinFactor_formallyReal_iff {R : Type u} [Field R] [LinearOrder R]
+    [IsStrictOrderedRing R] [IsRealClosed R] {V : Type v} [AddCommGroup V] [Module R V]
+    (B : LinearMap.BilinForm R V) (hB : B.IsSymm) :
+    @IsFormallyReal R (SpinFactor R V B) _ (SpinFactor.jordanAlgebra B hB) ↔
+      B.toQuadraticMap.PosDef :=
+  SpinFactor.isFormallyReal_iff_posDef B hB
+
+theorem fraction_field_order (R : Type u) [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] :
+    IsDomain R ∧ IsStrictOrderedRing (FractionRing R) ∧
+      (∀ r s : R, algebraMap R (FractionRing R) r ≤ algebraMap R (FractionRing R) s ↔ r ≤ s) ∧
+      ∀ o₁ o₂ : LinearOrder (FractionRing R),
+        @IsStrictOrderedRing (FractionRing R) _ o₁.toPartialOrder →
+        @IsStrictOrderedRing (FractionRing R) _ o₂.toPartialOrder →
+        (∀ r s : R, r ≤ s → o₁.le (algebraMap R _ r) (algebraMap R _ s)) →
+        (∀ r s : R, r ≤ s → o₂.le (algebraMap R _ r) (algebraMap R _ s)) →
+        ∀ x y, o₁.le x y ↔ o₂.le x y :=
+  ⟨inferInstance, inferInstance, fun _ _ => FractionRing.algebraMap_le_iff,
+    fun o₁ o₂ h₁ h₂ m₁ m₂ x y => (FractionRing.le_iff_of_order o₁ h₁ m₁ x y).trans
+      (FractionRing.le_iff_of_order o₂ h₂ m₂ x y).symm⟩
+
+theorem lattice_at_terminal {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
+    [TerminallyPointed I] (F : JordanDiagram.{u, v} R I) (L : AddSubgroup F.J) :
+    (∀ g : F.autGroup, g.1 top '' (L : Set F.J) = L ↔
+      ∀ i, g.1 i '' (L.comap (F.ν i : F.obj i →+ F.J) : Set (F.obj i)) =
+        L.comap (F.ν i : F.obj i →+ F.J)) ∧
+      (∀ c : ℕ, (∀ y : F.J, ∃ k : ℕ, (c ^ k) • y ∈ L) →
+        ∀ i (x : F.obj i), ∃ k : ℕ, (c ^ k) • x ∈ L.comap (F.ν i : F.obj i →+ F.J)) ∧
+      (Module.Finite ℤ L → ∀ i, Function.Injective (F.ν i) →
+        Module.Finite ℤ (L.comap (F.ν i : F.obj i →+ F.J))) :=
+  ⟨JordanDiagram.image_top_eq_iff, fun _ hL i x => JordanDiagram.exists_pow_smul_mem_nodeLattice hL i x,
+    fun _ _ hν => JordanDiagram.finite_nodeLattice hν⟩
+
 end JordanDiagramCheck
