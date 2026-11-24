@@ -22,6 +22,9 @@ Review this file, not `Solution.lean`: if these statements say what is intended,
 
 @[expose] public section
 
+-- The `sorry`s below are the intended placeholders of the challenge; silence their warnings.
+set_option warn.sorry false
+
 universe u u' v w w'
 
 open CategoryTheory TerminallyPointed JordanAlgebra TensorProduct
