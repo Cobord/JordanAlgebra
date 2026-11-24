@@ -3,9 +3,9 @@
 Formalization of *Symmetries of Jordan Algebra Diagrams over Varying Base Rings* (an earlier
 draft is in [`Beyond/`](../Beyond/)), built on the `Jordan` library. Scalar extension is done for
 a base map `R → S` (`F ↦ S ⊗[R] F`), and the diagram automorphism groups form a functor
-`G_F : CommAlgCat R ⥤ GrpCat` (`autFunctor`). The family `{F_S}` is the scalar-extension family
-`F_S = S ⊗[R] F`; general families with arbitrary coherences `β_f` are not packaged as a
-structure.
+`G_F : CommAlgCat R ⥤ GrpCat` (`autFunctor`). General families `{F_S}` with coherent base-change
+maps `β_φ` are the structure `DiagramFamily`, and every family is the scalar extension
+`F_S ≅ S ⊗[R] F_R` of its fiber over the base.
 
 ## Design choices
 
@@ -22,7 +22,11 @@ structure.
 * **Monomorphisms.** Terminal determination can be stated for monic terminal maps. Monomorphisms
   of `Jord_R` are injective, so here injectivity of each `νᵢ` is the hypothesis.
 * **Shape-twisted automorphisms** over a functor `u` are isomorphisms `F ≅ u* F`
-  (`TwistedIso F u`), which describe the morphisms over `(u, id_R)`.
+  (`TwistedIso F u`), which describe the morphisms over `(u, id_R)`. The shape-twisted group
+  `G̃_F(R)` is `ShapeTwistedAut F`: a strict automorphism of the shape fixing `+` with compatible
+  Jordan isomorphisms of the nodes, transported along `F(eqToHom _)` where objects are only
+  propositionally equal. For a preorder shape the simpler `TwistedAut F` (with order
+  automorphisms) is used in the wreath-product example.
 * **Spin factors.** `SpinFactor.jordanAlgebra` is a definition that depends on `B.IsSymm`, so
   [`Algebra/SpinFactor.lean`](Algebra/SpinFactor.lean) adds a scoped instance under `[Fact B.IsSymm]`.
   A spin-factor diagram is indexed by any preorder with a top element, and its terminal node is
@@ -53,6 +57,9 @@ The library has three parts:
 | [`OrthogonalFlagIso.lean`](Algebra/OrthogonalFlagIso.lean) | `nonempty_flagIsometry_iff`: two orthogonal flags with nondegenerate pieces are isometric exactly when their pieces are pairwise isometric. `skewFlagEquivPi`: the skew endomorphisms preserving the flag are `⊕ᵢ o(Uᵢ, B)`, by restriction (the Lie algebra analogue). |
 | [`Tower.lean`](Algebra/Tower.lean) | For `R → S → T`: the coherence `cancelJordanEquiv : T ⊗[S] (S ⊗[R] A) ≃ⱼ[T] T ⊗[R] A`, the extension `autTower : Aut(S ⊗ A) →* Aut(T ⊗ A)`, and `autTower_baseChangeAut`: extending from `R` to `S` and then to `T` is extending from `R` to `T`. |
 | [`SpinFactor.lean`](Algebra/SpinFactor.lean) | For `V`, `V'` free, `2` invertible and any symmetric forms, including degenerate ones: `isometryEquiv : Isometry B B' ≃ (J(V, B) ≃ⱼ J(V', B'))` (`g ↦ g ⊕ id`), `autEquivOrthogonal : O(V, B)(R) ≃* Aut J(V, B)`, and `derEquivSkew : o(V, B)(R) ≃ Der J(V, B)` (`X ↦ X ⊕ 0`). |
+| [`SpinFactorFormallyReal.lean`](Algebra/SpinFactorFormallyReal.lean) | `SpinFactor.isFormallyReal_iff_posDef`: over a real closed field, `J(V, B)` is formally real exactly when `B` is positive definite (the converse of `SpinFactor.isFormallyRealPos`). |
+| [`OctonionNorm.lean`](Algebra/OctonionNorm.lean) | The norm of the Cayley–Dickson algebra with generators squaring to `a, b, c` (`Octonion R a b (-c)`) is diagonal with coefficients `1, -a, -b, ab, -c, ac, bc, -abc` (`Octonion.mul_star_self_eq_diag`), all positive over an ordered ring when `a, b, c < 0` (`Octonion.normCoeff_pos`). |
+| [`Dyadic.lean`](Algebra/Dyadic.lean) | `ZHalf`, the ring `Z[1/2]`. A unital map `Z[1/2] → R` is unique (`zHalf_ringHom_subsingleton`) and exists exactly when `2` is a unit in `R` (`nonempty_zHalf_ringHom_iff`); ring homomorphisms between `Z[1/2]`-algebras commute with the structure maps (`comp_algebraMap_zHalf`, `zHalfAlgHomEquiv`), so `CAlg_{Z[1/2]}` is the full subcategory of commutative rings with `2` invertible. |
 
 ### `MathlibMissing/`: general constructions not in Mathlib
 
@@ -63,6 +70,8 @@ The library has three parts:
 | [`SemilinearBaseChange.lean`](MathlibMissing/SemilinearBaseChange.lean) | `IsSemilinearBaseChange f`: a `σ`-semilinear `f : M → N` is a base change along `σ : S → T` (universal property of `M → T ⊗_S M`, without making `T` an `S`-algebra). `lift`, `ext`, `extend`/`extendEquiv` of endomorphisms, and `extend_mul`, `extend_leibniz` for Jordan algebras. |
 | [`PowerSeriesOrder.lean`](MathlibMissing/PowerSeriesOrder.lean) | `PowerSeries.lowestCoeff` (multiplicative over a domain) and `PowerSeriesLC A`, the lowest-coefficient order on `A⟦X⟧` as a `LinearOrder` and `IsStrictOrderedRing`, built from the cone of series with nonnegative lowest coefficient. |
 | [`PowerSeriesMatrix.lean`](MathlibMissing/PowerSeriesMatrix.lean) | `Matrix.eq_one_of_pow_eq_one`: over a torsion-free `R`, a matrix over `R⟦X⟧` with constant term `1` and finite order is `1` (the kernel of `GL_n(R⟦X⟧) → GL_n(R)` is torsion-free). |
+| [`FractionRingOrder.lean`](MathlibMissing/FractionRingOrder.lean) | The ordered fraction field of a totally ordered ring: `FractionRing R` ordered by the cone `{a / b | ab ≥ 0}` (`posCone`) as an `IsStrictOrderedRing`, extending the order of `R` (`algebraMap_le_iff`), and the unique such order (`le_iff_of_order`). |
+| [`Minkowski.lean`](MathlibMissing/Minkowski.lean) | Minkowski's lemma: for `m ≥ 3`, the kernel of `GL_N(ℤ) → GL_N(ℤ/m)` is torsion-free (`Matrix.eq_one_of_pow_eq_one_of_modEq`, via the prime-power case `Matrix.eq_one_of_pow_eq_one_of_modEq_prime_pow`), so every finite subgroup of `GL_N(ℤ)` embeds in `GL_N(ℤ/m)` (`Matrix.injOn_reduce`). |
 
 ### `Diagram/`: the diagram layer
 
@@ -79,6 +88,8 @@ The library has three parts:
 | [`Product.lean`](Diagram/Product.lean) | `prodAutEquiv : Aut((S × S') ⊗ A) ≃* Aut(S ⊗ A) × Aut(S' ⊗ A)` and **`autGroupProdEquiv : G_F(S × S') ≃* G_F(S) × G_F(S')`**, the map being `(G_F(fst), G_F(snd))` (`autMap_prod_bijective`). |
 | [`PowerSeries.lean`](Diagram/PowerSeries.lean) | The constant-term map `constCoeffAlg : S⟦X⟧ → S`, split by `constAlg`. For finite free nodes and torsion-free `S`: the kernel of `G_F(S⟦X⟧) → G_F(S)` is torsion-free (`autMap_const_eq_one`), finite subgroups embed (`injOn_autMap_const`), and the map is split (`autMap_const_comp_autMap_C`). |
 | [`Twisted.lean`](Diagram/Twisted.lean) | For a shape that is a preorder: `TwistedAut F` (an order automorphism `σ` of the shape with Jordan isomorphisms `F(i) ≃ F(σ i)` compatible with the arrows) and its group structure, **the shape-twisted group `G̃_F(R)`**. `shapeHom : G̃_F(R) →* Aut(I)` and `ofAut : G_F(R) →* G̃_F(R)`, with `ofAut_injective` and `range_ofAut`: `1 → G_F(R) → G̃_F(R) → Aut(I)` is exact. `toTwistedIso`/`ofTwistedIso` relate it to `TwistedIso`. |
+| [`TwistedGeneral.lean`](Diagram/TwistedGeneral.lean) | For an arbitrary terminally pointed shape: `ShapeAut I`, the group `Aut(I⁺, +)` of strict automorphisms fixing `+`, and `ShapeTwistedAut F`, **the shape-twisted group** of pairs `(u, θ)`. `range_ofAut`: `1 → G_F(R) → G̃_F(R) → Aut(I⁺, +)` is exact. `terminalEquiv`: with injective terminal maps, `(u, θ) ↦ (u, θ₊)` identifies `G̃_F(R)` with the pairs `(u, h)` with `h(Aᵢ) = A_{u(i)}` (`terminalPairs`). |
+| [`Lattice.lean`](Diagram/Lattice.lean) | **A lattice at the terminal node**: for `L ⊆ J` and `Lᵢ = νᵢ⁻¹(L)` (`nodeLattice`), `g₊(L) = L` iff `gᵢ(Lᵢ) = Lᵢ` for all `i` (`image_top_eq_iff`); the `Lᵢ` span when `L` does (`exists_pow_smul_mem_nodeLattice`) and are finitely generated when `L` is (`finite_nodeLattice`). |
 | [`Wreath.lean`](Diagram/Wreath.lean) | `spinTwist`: a shape automorphism `σ` and an isometry with `g(Wᵢ) = W_{σ i}` give a twisted automorphism `g ⊕ id` of a spin-factor diagram. `Disc κ` (discrete order), with `permShape_surjective`: every automorphism of `WithTop (Disc κ)` is a permutation. `wreathDiagram BU κ` (copies of `U` below `κ → U`) and **`wreathEquiv : G̃_F(R) ≃* O(U)^κ ⋊ Perm κ`**, with the shape map the permutation part. |
 | [`Finiteness.lean`](Diagram/Finiteness.lean) | The finite detector criterion: a faithful action on a finite `X` gives `\|G\| ≤ \|X\|!`. `card_autGroup_le`: a finite, stable, Jordan-generating `X ⊆ J` bounds `\|G_F(R)\|` by `\|X\|!`. |
 | [`SpinFactor.lean`](Diagram/SpinFactor.lean) | `spinDiagram B W` for monotone `W : I →o Submodule R V`. Its terminal maps are injective, with image `R 1 ⊕ Wᵢ`. `spinDiagramAutEquiv : G_F(R) ≃* Stab_{O(W ⊤, B)}(W)`, `spinDiagramDerEquiv : g_F(R) ≃ Stab_{o(W ⊤, B)}(W)`, and `spinDiagramIsoEquiv`: isomorphisms of spin-factor diagrams are isometries of the configurations. |
@@ -90,6 +101,7 @@ are no `sorry`s. The headline results use only `propext`, `Classical.choice` and
 
 ## Next steps
 
-1. The shape-twisted group for shapes that are general categories rather than preorders.
-2. The rest of the ordered layer: the ordered fraction field, the comparison fields (Scott
-   completion, real closure) and the continuity criterion for `R → E`.
+1. The comparison fields of the ordered layer (Scott completion, real closure) and the continuity
+   criterion for `R → E`; Mathlib has neither construction.
+2. Results resting on group schemes, `ℚ₂`-compactness or Galois cohomology (representability,
+   finiteness criteria at `2`, forms of spin-factor diagrams).
