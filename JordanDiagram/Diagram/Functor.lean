@@ -2,6 +2,7 @@ import JordanDiagram.Diagram.BaseChange
 import JordanDiagram.Algebra.Functor
 import Mathlib.Algebra.Category.CommAlgCat.Basic
 import Mathlib.Algebra.Category.Grp.Basic
+import JordanDiagram.MathlibMissing.LieRingCat
 
 /-!
 # The diagram group functor `G_F : CAlg_R → Grp` (Proposition 3.3)
@@ -78,52 +79,54 @@ theorem autFunctor_map {S T : CommAlgCat.{u'} R} (φ : S ⟶ T) :
 
 section Der
 
-/-- **Proposition 3.8** (functoriality): `g_F(φ) : g_F(S) → g_F(T)` for `φ : S →ₐ[R] T`,
-transporting each component derivation along `φ`. It is additive and preserves brackets
-(`derMap_lie`). -/
+/-- **Proposition 3.8** (functoriality): the Lie ring homomorphism `g_F(φ) : g_F(S) →⁅⁆ g_F(T)`
+for `φ : S →ₐ[R] T`, transporting each component derivation along `φ`. Bracket preservation
+(`mapDer_lie`) is part of the data. -/
 noncomputable def derMap (φ : S →ₐ[R] T) :
-    (F.baseChange S).derAlgebra →+ (F.baseChange T).derAlgebra :=
-  AddMonoidHom.mk'
-    (fun D => ⟨fun i => mapDer φ (D.1 i), fun α x =>
-      mapLin_baseChangeHom_comm φ (F.map α) _ _ (fun y => D.2 α y) x⟩)
-    (fun D E => Subtype.ext (funext fun i => mapDer_add φ (D.1 i) (E.1 i)))
+    (F.baseChange S).derAlgebra →⁅⁆ (F.baseChange T).derAlgebra :=
+  ⟨AddMonoidHom.mk'
+      (fun D => ⟨fun i => mapDer φ (D.1 i), fun α x =>
+        mapLin_baseChangeHom_comm φ (F.map α) _ _ (fun y => D.2 α y) x⟩)
+      (fun D E => Subtype.ext (funext fun i => mapDer_add φ (D.1 i) (E.1 i))),
+    fun D E => Subtype.ext (funext fun i => mapDer_lie φ (D.1 i) (E.1 i))⟩
 
 theorem derMap_apply (φ : S →ₐ[R] T) (D : (F.baseChange S).derAlgebra) (i : I) :
     (derMap F φ D).1 i = mapDer φ (D.1 i) := rfl
 
-/-- `g_F(φ)` preserves brackets. -/
-theorem derMap_lie (φ : S →ₐ[R] T) (D E : (F.baseChange S).derAlgebra) :
-    derMap F φ ⁅D, E⁆ = ⁅derMap F φ D, derMap F φ E⁆ :=
-  Subtype.ext (funext fun i => mapDer_lie φ (D.1 i) (E.1 i))
-
 /-- `g_F(id) = id`. -/
-theorem derMap_id : derMap F (AlgHom.id R S) = AddMonoidHom.id _ :=
-  AddMonoidHom.ext fun D => Subtype.ext (funext fun i => mapDer_id_alg (D.1 i))
+theorem derMap_id : derMap F (AlgHom.id R S) = LieRingHom.id :=
+  LieRingHom.ext fun D => Subtype.ext (funext fun i => mapDer_id_alg (D.1 i))
 
 /-- `g_F(χ ∘ φ) = g_F(χ) ∘ g_F(φ)`. -/
 theorem derMap_comp (φ : S →ₐ[R] T) (χ : T →ₐ[R] U) :
     derMap F (χ.comp φ) = (derMap F χ).comp (derMap F φ) :=
-  AddMonoidHom.ext fun D => Subtype.ext (funext fun i => mapDer_comp_alg φ χ (D.1 i))
+  LieRingHom.ext fun D => Subtype.ext (funext fun i => mapDer_comp_alg φ χ (D.1 i))
 
 /-- `g_F(φ) ∘ (g_F(R) → g_F(S)) = (g_F(R) → g_F(T))`. -/
 theorem derMap_derBaseChange (φ : S →ₐ[R] T) (D : F.derAlgebra) :
     derMap F φ (derBaseChange S D) = derBaseChange T D :=
   Subtype.ext (funext fun i => mapDer_baseChangeDer φ (D.1 i))
 
-/-- **Proposition 3.8**: the compatible-derivation functor `g_F : CAlg_R → Ab`,
-`S ↦ Der(S ⊗[R] F)`, on underlying additive groups. Mathlib has no category of Lie rings; the
-brackets are preserved by every `g_F(φ)` (`derMap_lie`). -/
-noncomputable def derFunctor : CommAlgCat.{u'} R ⥤ AddCommGrpCat.{max u' v w} where
-  obj S := AddCommGrpCat.of (F.baseChange S).derAlgebra
-  map φ := AddCommGrpCat.ofHom (derMap F φ.hom)
+/-- **Proposition 3.8**: the compatible-derivation functor `g_F : CAlg_R → LieRing`,
+`S ↦ Der(S ⊗[R] F)`. -/
+noncomputable def derFunctor : CommAlgCat.{u'} R ⥤ LieRingCat.{max u' v w} where
+  obj S := LieRingCat.of (F.baseChange S).derAlgebra
+  map φ := LieRingCat.ofHom (derMap F φ.hom)
   map_id S := by
-    apply AddCommGrpCat.hom_ext
-    rw [AddCommGrpCat.hom_ofHom, CommAlgCat.hom_id, derMap_id]
+    apply LieRingCat.hom_ext
+    rw [LieRingCat.hom_ofHom, CommAlgCat.hom_id, derMap_id]
     rfl
   map_comp φ χ := by
-    apply AddCommGrpCat.hom_ext
-    rw [AddCommGrpCat.hom_ofHom, CommAlgCat.hom_comp, derMap_comp]
+    apply LieRingCat.hom_ext
+    rw [LieRingCat.hom_ofHom, CommAlgCat.hom_comp, derMap_comp]
     rfl
+
+@[simp]
+theorem derFunctor_obj (S : CommAlgCat.{u'} R) :
+    (derFunctor F).obj S = LieRingCat.of (F.baseChange S).derAlgebra := rfl
+
+theorem derFunctor_map {S T : CommAlgCat.{u'} R} (φ : S ⟶ T) :
+    (derFunctor F).map φ = LieRingCat.ofHom (derMap F φ.hom) := rfl
 
 end Der
 

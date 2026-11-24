@@ -13,6 +13,9 @@ name = "Jordan"
 [[lean_lib]]
 name = "JordanDiagram"
 
+[[lean_lib]]
+name = "JordanDiagramCheck"
+
 [[lean_exe]]
 name = "jordan"
 root = "Main"

@@ -1,0 +1,151 @@
+import JordanDiagram
+
+/-!
+# Solution: proofs of the statements in `Challenge.lean`
+
+Each theorem restates the corresponding one in `JordanDiagramCheck/Challenge.lean` verbatim and
+proves it from the `JordanDiagram` library. `comparator` checks that the statements agree and that
+only `propext`, `Quot.sound`, `Classical.choice` are used.
+-/
+
+universe u u' v w w'
+
+open CategoryTheory TerminallyPointed JordanAlgebra TensorProduct
+
+namespace JordanDiagramCheck
+
+section Diagram
+
+variable {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I] [TerminallyPointed I]
+
+theorem terminal_determination (F : JordanDiagram.{u, v} R I)
+    (hν : ∀ i, Function.Injective (F.ν i)) :
+    Function.Injective (JordanDiagram.ev F) ∧
+      ∀ h : jordanAut R F.J, h ∈ (JordanDiagram.ev F).range ↔
+        ∀ i, h '' F.image i = F.image i := by
+  refine ⟨JordanDiagram.ev_injective hν, fun h => ?_⟩
+  rw [JordanDiagram.range_ev hν, JordanDiagram.mem_stabImages]
+
+theorem compatible_derivations (F : JordanDiagram.{u, v} R I)
+    (hν : ∀ i, Function.Injective (F.ν i)) :
+    Function.Injective (JordanDiagram.evDer F) ∧
+      Set.range (JordanDiagram.evDer F) =
+        {d : JordanDerivation R F.J | ∀ i, ∀ y ∈ F.image i, d y ∈ F.image i} :=
+  ⟨JordanDiagram.evDer_injective hν, JordanDiagram.range_evDer hν⟩
+
+theorem wedge (F : JordanDiagram.{u, v} R I) {P₁ P₂ : ObjectProperty I}
+    (hW : JordanDiagram.IsWedge P₁ P₂) :
+    Function.Injective (JordanDiagram.wedgeHom (F := F) P₁ P₂) ∧
+      Set.range (JordanDiagram.wedgeHom (F := F) P₁ P₂) =
+        {p | p.1.1 ⟨top, hW.top₁⟩ = p.2.1 ⟨top, hW.top₂⟩} :=
+  ⟨JordanDiagram.wedgeHom_injective hW, JordanDiagram.range_wedgeHom hW⟩
+
+theorem iso_terminal_determination (F F' : JordanDiagram.{u, v} R I)
+    (hν : ∀ i, Function.Injective (F.ν i)) (hν' : ∀ i, Function.Injective (F'.ν i)) :
+    Nonempty (JordanDiagram.DiagramIso F F' ≃
+      {h : F.J ≃ⱼ[R] F'.J // ∀ i, h '' F.image i = F'.image i}) :=
+  ⟨JordanDiagram.DiagramIso.terminalEquiv hν hν'⟩
+
+theorem finite_detector (F : JordanDiagram.{u, v} R I)
+    (hν : ∀ i, Function.Injective (F.ν i)) {X : Set F.J} [Finite X]
+    (hX : ∀ g : F.autGroup, ∀ x ∈ X, JordanDiagram.ev F g x ∈ X)
+    (hgen : NonUnitalAlgebra.adjoin R X = ⊤) :
+    Finite F.autGroup ∧ Nat.card F.autGroup ≤ (Nat.card X).factorial :=
+  JordanDiagram.card_autGroup_le hν hX hgen
+
+end Diagram
+
+section ScalarExtension
+
+variable {R : Type u} [CommRing R] [Invertible (2 : R)] {A : Type v} [JordanAlgebra R A]
+variable (S : Type u') [CommRing S] [Algebra R S]
+
+theorem scalar_extension (x y : S ⊗[R] A) :
+    x * y = y * x ∧ x * x * (x * y) = x * (x * x * y) :=
+  ⟨BaseChange.mul_comm' S x y, JordanAlgebra.jordan_identity x y⟩
+
+end ScalarExtension
+
+section Functor
+
+variable {R : Type u} [CommRing R] [Invertible (2 : R)] {I : Type w} [Category.{w'} I]
+variable (F : JordanDiagram.{u, v} R I)
+variable {S T U : Type u'} [CommRing S] [Algebra R S] [CommRing T] [Algebra R T]
+  [CommRing U] [Algebra R U]
+
+theorem autMap_functor (φ : S →ₐ[R] T) (χ : T →ₐ[R] U) :
+    JordanDiagram.autMap F (AlgHom.id R S) = MonoidHom.id _ ∧
+      JordanDiagram.autMap F (χ.comp φ) =
+        (JordanDiagram.autMap F χ).comp (JordanDiagram.autMap F φ) ∧
+      (JordanDiagram.autMap F φ).comp (JordanDiagram.autBaseChange S F) =
+        JordanDiagram.autBaseChange T F :=
+  ⟨JordanDiagram.autMap_id F, JordanDiagram.autMap_comp F φ χ,
+    JordanDiagram.autMap_comp_autBaseChange F φ⟩
+
+theorem derMap_functor (φ : S →ₐ[R] T) (χ : T →ₐ[R] U) :
+    JordanDiagram.derMap F (AlgHom.id R S) = LieRingHom.id ∧
+      JordanDiagram.derMap F (χ.comp φ) =
+        (JordanDiagram.derMap F χ).comp (JordanDiagram.derMap F φ) ∧
+      ∀ D E, JordanDiagram.derMap F φ ⁅D, E⁆ =
+        ⁅JordanDiagram.derMap F φ D, JordanDiagram.derMap F φ E⁆ :=
+  ⟨JordanDiagram.derMap_id F, JordanDiagram.derMap_comp F φ χ,
+    (JordanDiagram.derMap F φ).map_lie⟩
+
+theorem comparison_injective
+    (h : ∀ i, Function.Injective (fun a : F.obj i => (1 : S) ⊗ₜ[R] a)) :
+    Function.Injective (JordanDiagram.autBaseChange S F) :=
+  JordanDiagram.autBaseChange_injective h
+
+theorem comparison_image
+    (h : ∀ i, Function.Injective (fun a : F.obj i => (1 : S) ⊗ₜ[R] a)) :
+    Set.range (JordanDiagram.autBaseChange S F) =
+      {g | ∀ i, g.1 i '' Set.range (fun a : F.obj i => (1 : S) ⊗ₜ[R] a) =
+        Set.range (fun a : F.obj i => (1 : S) ⊗ₜ[R] a)} :=
+  JordanDiagram.range_autBaseChange h
+
+end Functor
+
+section SpinFactor
+
+variable {R : Type u} [CommRing R] [Invertible (2 : R)] {V : Type v} [AddCommGroup V]
+  [Module R V] [Module.Free R V] (B : LinearMap.BilinForm R V) [Fact B.IsSymm]
+
+open SpinFactor in
+theorem spinFactor_aut (a : jordanAut R (SpinFactor R V B)) :
+    ∃ g : V ≃ₗ[R] V, (∀ v w, B (g v) (g w) = B v w) ∧ ∀ z : SpinFactor R V B,
+      a z = SpinFactor.mk B (g z.1) z.2 :=
+  ⟨(orthogonalOfAut a).1, (orthogonalOfAut a).2, fun z =>
+    (congrArg (fun b : jordanAut R (SpinFactor R V B) => b z)
+      (autOfOrthogonal_orthogonalOfAut a)).symm⟩
+
+open SpinFactor in
+theorem spinFactor_der (d : JordanDerivation R (SpinFactor R V B)) :
+    ∃ X : V →ₗ[R] V, (∀ v w, B (X v) w + B v (X w) = 0) ∧ ∀ z : SpinFactor R V B,
+      d z = SpinFactor.mk B (X z.1) 0 :=
+  ⟨derVecPart d, derVecPart_isSkew d, fun z =>
+    (JordanDerivation.congr_fun (derOfSkew_derVecPart d) z).symm⟩
+
+end SpinFactor
+
+open SpinFactor in
+theorem orthogonal_splitting {R : Type u} [CommRing R] {V : Type v} [AddCommGroup V] [Module R V]
+    (B : LinearMap.BilinForm R V) (hB : B.IsSymm) (W : Submodule R V)
+    (hW : IsNonsingularOn B W) :
+    Nonempty (stabSub B W ≃*
+      orthogonalGroup (B.restrict W) × orthogonalGroup (B.restrict (B.orthogonal W))) :=
+  ⟨stabEquivProd hB hW⟩
+
+section SpinDiagram
+
+variable {R : Type u} [CommRing R] [Invertible (2 : R)] {V : Type u} [AddCommGroup V]
+  [Module R V] (B : LinearMap.BilinForm R V) [Fact B.IsSymm]
+  {I : Type w} [Preorder I] [OrderTop I] (W : I →o Submodule R V) [Module.Free R (W ⊤)]
+
+open SpinFactor in
+theorem spin_diagram_group :
+    Nonempty ((JordanDiagram.spinDiagram B W).autGroup ≃* JordanDiagram.orthStab B W) :=
+  ⟨JordanDiagram.spinDiagramAutEquiv B W⟩
+
+end SpinDiagram
+
+end JordanDiagramCheck

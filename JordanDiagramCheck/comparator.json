@@ -1,0 +1,21 @@
+{
+    "challenge_module": "JordanDiagramCheck.Challenge",
+    "solution_module": "JordanDiagramCheck.Solution",
+    "theorem_names": [
+        "JordanDiagramCheck.terminal_determination",
+        "JordanDiagramCheck.compatible_derivations",
+        "JordanDiagramCheck.wedge",
+        "JordanDiagramCheck.iso_terminal_determination",
+        "JordanDiagramCheck.finite_detector",
+        "JordanDiagramCheck.scalar_extension",
+        "JordanDiagramCheck.autMap_functor",
+        "JordanDiagramCheck.derMap_functor",
+        "JordanDiagramCheck.comparison_injective",
+        "JordanDiagramCheck.comparison_image",
+        "JordanDiagramCheck.spinFactor_aut",
+        "JordanDiagramCheck.spinFactor_der",
+        "JordanDiagramCheck.orthogonal_splitting",
+        "JordanDiagramCheck.spin_diagram_group"
+    ],
+    "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
+}

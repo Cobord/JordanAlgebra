@@ -11,6 +11,10 @@ import JordanDiagram.Algebra.Orthogonal
 import JordanDiagram.Algebra.SpinFactor
 import JordanDiagram.Algebra.Tower
 
+-- General constructions missing from Mathlib (candidates for upstreaming).
+import JordanDiagram.MathlibMissing.LieRingCat
+import JordanDiagram.MathlibMissing.PiLie
+
 -- The diagram layer: terminally pointed diagrams and their symmetry groups.
 import JordanDiagram.Diagram.BaseChange
 import JordanDiagram.Diagram.Basic
