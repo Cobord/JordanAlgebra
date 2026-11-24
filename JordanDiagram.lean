@@ -11,6 +11,7 @@ public import JordanDiagram.Algebra.Equiv
 public import JordanDiagram.Algebra.Functor
 public import JordanDiagram.Algebra.FiniteSubgroupStabilizer
 public import JordanDiagram.Algebra.Generation
+public import JordanDiagram.Algebra.HermitianTwo
 public import JordanDiagram.Algebra.OctonionNorm
 public import JordanDiagram.Algebra.Orthogonal
 public import JordanDiagram.Algebra.OrthogonalFlag

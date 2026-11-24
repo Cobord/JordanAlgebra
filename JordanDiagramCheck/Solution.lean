@@ -126,6 +126,12 @@ theorem comparison_image
         Set.range (fun a : F.obj i => (1 : S) ⊗ₜ[R] a)} :=
   JordanDiagram.range_autBaseChange h
 
+theorem comparison_subgroups
+    (h : ∀ i, Function.Injective (fun a : F.obj i => (1 : S) ⊗ₜ[R] a)) (H : Subgroup F.autGroup) :
+    Nonempty (H ≃* H.map (JordanDiagram.autBaseChange S F)) ∧
+      Nat.card (H.map (JordanDiagram.autBaseChange S F)) = Nat.card H :=
+  ⟨⟨JordanDiagram.subgroupEquivMap h H⟩, JordanDiagram.card_map_autBaseChange h H⟩
+
 end Functor
 
 section Family
@@ -359,6 +365,35 @@ theorem octonion_nonsingular {R : Type u} [CommRing R] [Invertible (2 : R)] [Sta
     Function.Bijective (Octonion.innerProduct : LinearMap.BilinForm R (Octonion R a b (-c))) ↔
       IsUnit a ∧ IsUnit b ∧ IsUnit c :=
   Octonion.bijective_innerProduct_iff
+
+theorem hermitian_two {R : Type u} [CommRing R] [Invertible (2 : R)] [StarRing R] [TrivialStar R]
+    (a b c : R) :
+    (∀ M : HermitianOctonionMatrix (R := R) (a := a) (b := b) (c := c) (n := Fin 2),
+      Octonion.ofSymmetricMatricesTwo M = SpinFactor.mk _
+        (M.val 0 1, ⅟(2 : R) * ((M.val 0 0).1.re - (M.val 1 1).1.re))
+        (⅟(2 : R) * ((M.val 0 0).1.re + (M.val 1 1).1.re))) ∧
+    (∀ (r : R) (M : HermitianOctonionMatrix (R := R) (a := a) (b := b) (c := c) (n := Fin 2)),
+      Octonion.ofSymmetricMatricesTwo (r • M) = r • Octonion.ofSymmetricMatricesTwo M) ∧
+    (∀ M N : HermitianOctonionMatrix (R := R) (a := a) (b := b) (c := c) (n := Fin 2),
+      Octonion.ofSymmetricMatricesTwo (M * N) =
+        Octonion.ofSymmetricMatricesTwo M * Octonion.ofSymmetricMatricesTwo N) ∧
+    Function.Bijective
+      (Octonion.ofSymmetricMatricesTwo (R := R) (a := a) (b := b) (c := c)) ∧
+    (∀ (x y : Octonion R a b c) (α β : R),
+      Octonion.hermitianTwoBilin (x, α) (y, β) = Octonion.innerProduct x y + α * β) ∧
+    (∀ k : ℕ, (1 : Octonion R a b c) ∈ Octonion.cdStage k ∧
+      (∀ x ∈ Octonion.cdStage (a := a) (b := b) (c := c) k, ∀ y ∈ Octonion.cdStage k,
+        x * y ∈ Octonion.cdStage k) ∧
+      ∀ x ∈ Octonion.cdStage (a := a) (b := b) (c := c) k, star x ∈ Octonion.cdStage k) ∧
+    ∀ (k : ℕ) (M : HermitianOctonionMatrix (R := R) (a := a) (b := b) (c := c) (n := Fin 2)),
+      (∀ i j, M.val i j ∈ Octonion.cdStage k) ↔
+        (Octonion.ofSymmetricMatricesTwo M).1.1 ∈ Octonion.cdStage k :=
+  ⟨Octonion.ofSymmetricMatricesTwo_apply, Octonion.ofSymmetricMatricesTwo_smul,
+    map_mul Octonion.ofSymmetricMatricesTwo, Octonion.ofSymmetricMatricesTwo.bijective,
+    Octonion.hermitianTwoBilin_apply,
+    fun k => ⟨Octonion.one_mem_cdStage k, fun _ hx _ hy => Octonion.mul_mem_cdStage hx hy,
+      fun _ hx => Octonion.star_mem_cdStage hx⟩,
+    Octonion.forall_mem_cdStage_iff⟩
 
 theorem finite_subgroups {M : Type u} [AddCommGroup M] [Module ZHalf M] [Module.Finite ZHalf M]
     [Module.Free ZHalf M] {G : Type v} [Group G] (ρ : G →* (M ≃ₗ[ZHalf] M))

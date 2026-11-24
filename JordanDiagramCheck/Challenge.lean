@@ -161,6 +161,15 @@ theorem comparison_image
         Set.range (fun a : F.obj i => (1 : S) ⊗ₜ[R] a)} := by
   sorry
 
+/-- **Finite subgroups embed under the comparison map**. If every `F(i) → S ⊗ F(i)` is injective,
+every subgroup `H` of `G_F(R)`, finite ones in particular, is isomorphic to its image in `G_F(S)`,
+which has the same order. -/
+theorem comparison_subgroups
+    (h : ∀ i, Function.Injective (fun a : F.obj i => (1 : S) ⊗ₜ[R] a)) (H : Subgroup F.autGroup) :
+    Nonempty (H ≃* H.map (JordanDiagram.autBaseChange S F)) ∧
+      Nat.card (H.map (JordanDiagram.autBaseChange S F)) = Nat.card H := by
+  sorry
+
 end Functor
 
 section Family
@@ -438,6 +447,37 @@ theorem octonion_nonsingular {R : Type u} [CommRing R] [Invertible (2 : R)] [Sta
     [TrivialStar R] (a b c : R) :
     Function.Bijective (Octonion.innerProduct : LinearMap.BilinForm R (Octonion R a b (-c))) ↔
       IsUnit a ∧ IsUnit b ∧ IsUnit c := by
+  sorry
+
+/-- **Two-by-two Hermitian matrices are spin factors**, over every Cayley–Dickson stage. The map
+`!![ρ + α, x; x̄, ρ - α] ↦ ((x, α), ρ)` from Hermitian `2 × 2` matrices over `C₃ = Octonion R a b c`
+to the spin factor of `B((x, α), (y, β)) = n(x, y) + αβ` (`n` the polar form of the norm) is
+`R`-linear and multiplicative. The stages `Cₖ` (spanned by the first `2ᵏ` basis vectors) contain
+`1` and are closed under the product and the conjugation, and a matrix has all its entries in `Cₖ`
+exactly when the vector part of its image lies in `Cₖ`, so the map restricts to
+`H₂(Cₖ) ≅ J(Cₖ ⊕ R)`. -/
+theorem hermitian_two {R : Type u} [CommRing R] [Invertible (2 : R)] [StarRing R] [TrivialStar R]
+    (a b c : R) :
+    (∀ M : HermitianOctonionMatrix (R := R) (a := a) (b := b) (c := c) (n := Fin 2),
+      Octonion.ofSymmetricMatricesTwo M = SpinFactor.mk _
+        (M.val 0 1, ⅟(2 : R) * ((M.val 0 0).1.re - (M.val 1 1).1.re))
+        (⅟(2 : R) * ((M.val 0 0).1.re + (M.val 1 1).1.re))) ∧
+    (∀ (r : R) (M : HermitianOctonionMatrix (R := R) (a := a) (b := b) (c := c) (n := Fin 2)),
+      Octonion.ofSymmetricMatricesTwo (r • M) = r • Octonion.ofSymmetricMatricesTwo M) ∧
+    (∀ M N : HermitianOctonionMatrix (R := R) (a := a) (b := b) (c := c) (n := Fin 2),
+      Octonion.ofSymmetricMatricesTwo (M * N) =
+        Octonion.ofSymmetricMatricesTwo M * Octonion.ofSymmetricMatricesTwo N) ∧
+    Function.Bijective
+      (Octonion.ofSymmetricMatricesTwo (R := R) (a := a) (b := b) (c := c)) ∧
+    (∀ (x y : Octonion R a b c) (α β : R),
+      Octonion.hermitianTwoBilin (x, α) (y, β) = Octonion.innerProduct x y + α * β) ∧
+    (∀ k : ℕ, (1 : Octonion R a b c) ∈ Octonion.cdStage k ∧
+      (∀ x ∈ Octonion.cdStage (a := a) (b := b) (c := c) k, ∀ y ∈ Octonion.cdStage k,
+        x * y ∈ Octonion.cdStage k) ∧
+      ∀ x ∈ Octonion.cdStage (a := a) (b := b) (c := c) k, star x ∈ Octonion.cdStage k) ∧
+    ∀ (k : ℕ) (M : HermitianOctonionMatrix (R := R) (a := a) (b := b) (c := c) (n := Fin 2)),
+      (∀ i j, M.val i j ∈ Octonion.cdStage k) ↔
+        (Octonion.ofSymmetricMatricesTwo M).1.1 ∈ Octonion.cdStage k := by
   sorry
 
 /-- **Finite subgroups preserve finitely generated spanning subgroups.** Let a group `G` act

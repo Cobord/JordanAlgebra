@@ -28,6 +28,7 @@ permitted axioms, and is accepted by the kernel.
 | `power_series_specialization` | For finite free nodes and torsion-free `S`, the kernel of `G_F(S⟦X⟧) → G_F(S)` is torsion-free, finite subgroups embed, and the map is split by constant series |
 | `derMap_functor` | Functor laws for `g_F`, brackets preserved |
 | `comparison_injective`, `comparison_image` | Injectivity and image of `G_F(R) → G_F(S)` when every `a ↦ 1 ⊗ a` is injective |
+| `comparison_subgroups` | Under the same hypothesis, every (finite) subgroup of `G_F(R)` is isomorphic to its image in `G_F(S)`, of the same order |
 | `family_functor` | For a family with coherent base-change maps `β_φ`, `G_F(φ)(g) ∘ β_φ = β_φ ∘ g` (likewise `g_F`), and `G_F`, `g_F` satisfy the functor laws |
 | `baseChangeFamily_functor` | The family `S ↦ S ⊗ F` has the `G_F`, `g_F` of scalar extension |
 | `family_base` | Every family is the scalar extension of its fiber over the base: `F_S ≅ S ⊗ F_R` via `1 ⊗ a ↦ β_{ι_S}(a)` |
@@ -51,6 +52,7 @@ permitted axioms, and is accepted by the kernel.
 | `fraction_field_order` | A totally ordered ring is a domain, and its fraction field has a unique order extending it |
 | `subgroup_at_terminal` | An additive subgroup `L` at the terminal node determines the integral points of the diagram: `g₊(L) = L` iff `gᵢ(νᵢ⁻¹L) = νᵢ⁻¹L` for all `i`; the preimages span when `L` does and are finitely generated when `L` is |
 | `octonion_nonsingular` | The polar form of the generalized octonion norm is nonsingular exactly when `a`, `b`, `c` are units |
+| `hermitian_two` | `!![ρ+α, x; x̄, ρ-α] ↦ ((x, α), ρ)` is a linear, multiplicative bijection from Hermitian `2 × 2` octonionic matrices onto the spin factor of `n(x, y) + αβ`; the Cayley–Dickson stages are closed under product and conjugation, and the map restricts to `H₂(Cₖ) ≅ J(Cₖ ⊕ R)` |
 | `finite_subgroups` | For a faithful action on a finite free `Z[1/2]`-module of rank `n`: every finite subgroup preserves a finitely generated additive subgroup `L` with `Z[1/2] L = M`, has order at most `3^(n²)`, and lies in a maximal finite subgroup; if the stabilizers of all such `L` are finite, the maximal finite subgroups are the maximal members among them |
 | `diagram_faithful` | `G_F(Z[1/2])` acts faithfully on `∏ᵢ F(i)`, and on `F(+)` when the terminal maps are injective |
 | `restriction_strict` | Restriction along shapes is strictly functorial and commutes strictly with scalar extension; for a fixed base ring its Grothendieck construction is a fibration over `Cat₊` |

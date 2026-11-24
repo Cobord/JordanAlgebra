@@ -53,6 +53,8 @@
         "JordanDiagramCheck.wreath_product",
         "JordanDiagramCheck.spin_diagram_group",
         "JordanDiagramCheck.octonion_nonsingular",
+        "JordanDiagramCheck.hermitian_two",
+        "JordanDiagramCheck.comparison_subgroups",
         "JordanDiagramCheck.finite_subgroups",
         "JordanDiagramCheck.diagram_faithful",
         "JordanDiagramCheck.restriction_strict",
