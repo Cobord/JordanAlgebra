@@ -15,6 +15,7 @@ name = "JordanDiagram"
 
 [[lean_lib]]
 name = "JordanDiagramCheck"
+roots = ["JordanDiagramCheck.Challenge", "JordanDiagramCheck.Solution"]
 
 [[lean_exe]]
 name = "jordan"

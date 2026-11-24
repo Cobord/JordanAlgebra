@@ -31,10 +31,12 @@ are not packaged as a structure.
 
 ## Files
 
-The library has two parts:
+The library has three parts:
 
 * [`Algebra/`](Algebra/) concerns the symmetries of a single Jordan algebra, either generic or
   one of the algebras already formalized in `Jordan/`. Nothing in it mentions diagrams.
+* [`MathlibMissing/`](MathlibMissing/) holds general constructions that Mathlib lacks and that
+  the rest uses, candidates for upstreaming.
 * [`Diagram/`](Diagram/) is the new content: terminally pointed diagrams, their automorphism
   groups and compatible derivations, and statements about them.
 
@@ -51,18 +53,25 @@ The library has two parts:
 | [`Tower.lean`](Algebra/Tower.lean) | Def. 2.8 (`β_f`); Prop. 3.3 | For `R → S → T`: the coherence `cancelJordanEquiv : T ⊗[S] (S ⊗[R] A) ≃ⱼ[T] T ⊗[R] A`, the extension `autTower : Aut(S ⊗ A) →* Aut(T ⊗ A)`, and `autTower_baseChangeAut`: extending from `R` to `S` and then to `T` is extending from `R` to `T`. |
 | [`SpinFactor.lean`](Algebra/SpinFactor.lean) | Def. 5.2; Lemma 5.5 | For `V`, `V'` free, `2` invertible and any symmetric forms, including degenerate ones: `isometryEquiv : Isometry B B' ≃ (J(V, B) ≃ⱼ J(V', B'))` (`g ↦ g ⊕ id`), `autEquivOrthogonal : O(V, B)(R) ≃* Aut J(V, B)`, and `derEquivSkew : o(V, B)(R) ≃ Der J(V, B)` (`X ↦ X ⊕ 0`). |
 
+### `MathlibMissing/`: general constructions not in Mathlib
+
+| File | Contents |
+| --- | --- |
+| [`LieRingCat.lean`](MathlibMissing/LieRingCat.lean) | `LieRingHom L L'` (`L →⁅⁆ L'`): additive maps with bracket preservation as a field, with `id`, `comp`, `ext`, `map_lie`. `LieRingCat`, the category of Lie rings, with the same API as `GrpCat`. |
+| [`PiLie.lean`](MathlibMissing/PiLie.lean) | The componentwise Lie ring and Lie algebra structures on a Pi type. |
+
 ### `Diagram/`: the diagram layer
 
 | File | Paper | Contents |
 | --- | --- | --- |
 | [`Basic.lean`](Diagram/Basic.lean) | Defs. 2.5, 2.8 | `TerminallyPointed`, `JordanDiagram`, restriction along a functor, the terminal algebra `J`, the terminal maps `ν i` and the terminal relation `ν_map`, and the images `Aᵢ`. |
 | [`Group.lean`](Diagram/Group.lean) | Defs. 3.1, 3.4; Prop. 3.6; Lemma 3.11 | The diagram automorphism group `autGroup`, terminal evaluation `ev`, and terminal determination: `ev_injective`, `range_ev`, and `autGroupEquivStab : G_F(R) ≃* ⋂ᵢ Stab(Aᵢ)`. Also `restrictHom`. |
-| [`Derivation.lean`](Diagram/Derivation.lean) | Def. 3.7; Prop. 3.8; Lemma 3.11 | A componentwise Lie algebra structure on Pi types, which Mathlib lacks. The compatible derivations `derAlgebra` as a Lie subalgebra, the Lie homomorphism `evDer`, `evDer_injective`, `range_evDer` (image `{D : D(Aᵢ) ⊆ Aᵢ}`), and `restrictDer`. |
+| [`Derivation.lean`](Diagram/Derivation.lean) | Def. 3.7; Prop. 3.8; Lemma 3.11 | The compatible derivations `derAlgebra` as a Lie subalgebra, the Lie homomorphism `evDer`, `evDer_injective`, `range_evDer` (image `{D : D(Aᵢ) ⊆ Aᵢ}`), and `restrictDer`. |
 | [`Wedge.lean`](Diagram/Wedge.lean) | Prop. 3.12 | `IsWedge P₁ P₂` and `autGroupEquivWedge : G_F(R) ≃* G_{F₁}(R) ×_{Aut(J)} G_{F₂}(R)`. For derivations, `wedgeDer_injective` and `range_wedgeDer`. |
 | [`Iso.lean`](Diagram/Iso.lean) | Prop. 2.7 (fibers); Def. 3.13; Prop. 3.14 | `DiagramIso F F'` and its terminal determination `terminalEquiv` (isomorphisms `↔` `h : J ≃ⱼ J'` with `h(Aᵢ) = A'ᵢ`). `TwistedIso F u = DiagramIso F (u* F)`. `twistedIdEquiv` identifies the twisted isomorphisms over `𝟭` with `G_F(R)`, the kernel in Prop. 3.14. `twistedTerminalEquiv` is the terminal description in Prop. 3.14. |
 | [`Finiteness.lean`](Diagram/Finiteness.lean) | Prop. 4.2; Lemma 4.3 | The finite detector criterion: a faithful action on a finite `X` gives `\|G\| ≤ \|X\|!`. `card_autGroup_le`: a finite, stable, Jordan-generating `X ⊆ J` bounds `\|G_F(R)\|` by `\|X\|!`. |
 | [`SpinFactor.lean`](Diagram/SpinFactor.lean) | Def. 5.3; Lemma 5.4; Props. 5.6, 5.7 | `spinDiagram B W` for monotone `W : I →o Submodule R V`. Its terminal maps are injective, with image `R 1 ⊕ Wᵢ`. `spinDiagramAutEquiv : G_F(R) ≃* Stab_{O(W ⊤, B)}(W)`, `spinDiagramDerEquiv : g_F(R) ≃ Stab_{o(W ⊤, B)}(W)`, and `spinDiagramIsoEquiv`: isomorphisms of spin-factor diagrams are isometries of the configurations. |
-| [`Functor.lean`](Diagram/Functor.lean) | Prop. 3.3 | **The functor `G_F`**: `autFunctor F : CommAlgCat R ⥤ GrpCat`, `S ↦ Aut(S ⊗[R] F)`, built from `autMap F φ : G_F(S) →* G_F(T)` with `autMap_id`, `autMap_comp`, and `autMap_comp_autBaseChange`. For `R = Z[1/2]`, `CommAlgCat R` is the paper's `CAlg_{Z[1/2]}`. **The functor `g_F`**: `derFunctor F : CommAlgCat R ⥤ AddCommGrpCat`, built from `derMap F φ` with `derMap_id`, `derMap_comp`, `derMap_derBaseChange`, and `derMap_lie` (brackets are preserved; Mathlib has no category of Lie rings to land in). |
+| [`Functor.lean`](Diagram/Functor.lean) | Prop. 3.3 | **The functor `G_F`**: `autFunctor F : CommAlgCat R ⥤ GrpCat`, `S ↦ Aut(S ⊗[R] F)`, built from `autMap F φ : G_F(S) →* G_F(T)` with `autMap_id`, `autMap_comp`, and `autMap_comp_autBaseChange`. For `R = Z[1/2]`, `CommAlgCat R` is the paper's `CAlg_{Z[1/2]}`. **The functor `g_F`**: `derFunctor F : CommAlgCat R ⥤ LieRingCat`, built from the Lie ring homomorphisms `derMap F φ : g_F(S) →⁅⁆ g_F(T)` with `derMap_id`, `derMap_comp`, and `derMap_derBaseChange`. |
 | [`BaseChange.lean`](Diagram/BaseChange.lean) | Lemma 2.11; Props. 3.3, 7.9(b), 7.9(c); Cor. 7.10 | `F.baseChange S = S ⊗[R] F`. `autBaseChange : G_F(R) →* G_F(S)`, injective when every `F(i) → S ⊗ F(i)` is (`autBaseChange_injective`). Its image is the set of automorphisms preserving every `1 ⊗ F(i)` (`range_autBaseChange`, Prop. 7.9(c)), with `autGroupEquivPreserving` (Cor. 7.10). `autTowerDiagram : G_F(S) →* G_F(T)` for `R → S → T`, and `autTowerDiagram_comp_autBaseChange`: it composes with `G_F(R) → G_F(S)` to give `G_F(R) → G_F(T)` (Prop. 3.3). `derBaseChange` on compatible derivations, additive and bracket-preserving. Terminal maps stay injective along flat `R → S`. |
 
 Build with `lake build JordanDiagram`. The default target is still the `jordan` executable. There
