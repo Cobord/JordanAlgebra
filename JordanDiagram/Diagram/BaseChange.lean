@@ -36,13 +36,11 @@ seen as the tensor products `S ⊗[R] F(i)` by rewriting and instance search. -/
   jordan _ := inferInstance
   map α := baseChangeHom S (F.map α)
   map_id i x := by
-    induction x using TensorProduct.induction_on with
-    | zero => exact map_zero _
+    induction x using TensorProduct.inductionOn with
     | add x y hx hy => rw [map_add, hx, hy]
     | tmul s a => rw [baseChangeHom_tmul, F.map_id]
   map_comp α β x := by
-    induction x using TensorProduct.induction_on with
-    | zero => simp only [map_zero]
+    induction x using TensorProduct.inductionOn with
     | add x y hx hy => rw [map_add, hx, hy, map_add, map_add]
     | tmul s a => rw [baseChangeHom_tmul, baseChangeHom_tmul, baseChangeHom_tmul, F.map_comp]
 

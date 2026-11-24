@@ -162,7 +162,8 @@ variable (F : Type*) [Field F] [StarRing F]
 /-- On `K = F` with `τ = star`, the trace is the identity: `t x y z = x * star y * z`. -/
 theorem ofTrace_self_apply (x y z : F) :
     (ofTrace F F starRingAut (fun _ => rfl)).triality_prod x y z = x * star y * z := by
-  rw [ofTrace_triality_prod, Algebra.trace_self_apply]; rfl
+  change Algebra.trace F F (x * starRingAut y * z) = _
+  rw [Algebra.trace_self_apply]; rfl
 
 end Self
 

@@ -62,9 +62,8 @@ noncomputable def wedgePick (i : I) : jordanAut R (F.obj i) := by
   exact if h : P₁ i then g₁.1 ⟨i, h⟩ else g₂.1 ⟨i, (hW.cover i).resolve_left h⟩
 
 theorem wedgePick₁ {i : I} (h : P₁ i) : wedgePick hW g₁ g₂ i = g₁.1 ⟨i, h⟩ := by
-  classical
   unfold wedgePick
-  convert dif_pos h
+  simp only [h, dite_true]
 
 theorem wedgePick₂ (hc : WedgeCompatible hW (g₁, g₂)) {i : I} (h : P₂ i) :
     wedgePick hW g₁ g₂ i = g₂.1 ⟨i, h⟩ := by
@@ -74,7 +73,7 @@ theorem wedgePick₂ (hc : WedgeCompatible hW (g₁, g₂)) {i : I} (h : P₂ i)
     rw [wedgePick₁ hW g₁ g₂ h₁]
     exact hc
   · unfold wedgePick
-    convert dif_neg h₁
+    simp only [h₁, dite_false]
 
 /-- The diagram automorphism glued from a compatible pair. -/
 noncomputable def wedgeGlue (hc : WedgeCompatible hW (g₁, g₂)) : F.autGroup :=
@@ -151,9 +150,8 @@ noncomputable def wedgePickDer (i : I) : JordanDerivation R (F.obj i) := by
   exact if h : P₁ i then D₁.1 ⟨i, h⟩ else D₂.1 ⟨i, (hW.cover i).resolve_left h⟩
 
 theorem wedgePickDer₁ {i : I} (h : P₁ i) : wedgePickDer hW D₁ D₂ i = D₁.1 ⟨i, h⟩ := by
-  classical
   unfold wedgePickDer
-  convert dif_pos h
+  simp only [h, dite_true]
 
 theorem wedgePickDer₂ (hc : D₁.1 ⟨top, hW.top₁⟩ = D₂.1 ⟨top, hW.top₂⟩) {i : I} (h : P₂ i) :
     wedgePickDer hW D₁ D₂ i = D₂.1 ⟨i, h⟩ := by
@@ -163,7 +161,7 @@ theorem wedgePickDer₂ (hc : D₁.1 ⟨top, hW.top₁⟩ = D₂.1 ⟨top, hW.to
     rw [wedgePickDer₁ hW D₁ D₂ h₁]
     exact hc
   · unfold wedgePickDer
-    convert dif_neg h₁
+    simp only [h₁, dite_false]
 
 /-- **Proposition 3.12** (derivations): the image of restriction to the two halves of a wedge is
 the fiber product over `Der(J)`. -/

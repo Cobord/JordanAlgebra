@@ -136,7 +136,7 @@ variable {R M : Type*} [CommRing R] [JordanAlgebra R M] [IsFormallyReal R M]
 
 theorem eq_zero_of_mul_self_eq_zero {x : M} (hx : x * x = 0) : x = 0 := by
   have h := IsFormallyReal.eq_zero_of_sum_mul_self_eq_zero (ι := PUnit) (fun _ => x)
-    (by simpa [one_nsmul] using hx)
+    (by rw [Fintype.sum_unique]; exact hx)
   exact h PUnit.unit
 
 omit [IsFormallyReal R M] in
@@ -188,9 +188,7 @@ theorem eq_zero_of_nsmul_eq_zero {n : ℕ} (hn : n ≠ 0) {x : M} (hx : n • x 
     ⟨0, Nat.pos_of_ne_zero hn⟩
 
 theorem isAddTorsionFree : IsAddTorsionFree M where
-  nsmul_right_injective {n} hn := by
-    intro x y hxy
-    change n • x = n • y at hxy
+  eq_of_nsmul_eq_nsmul_of_addCommute n hn x y _ hxy := by
     rw [← sub_eq_zero]
     apply eq_zero_of_nsmul_eq_zero hn
     rw [nsmul_sub]

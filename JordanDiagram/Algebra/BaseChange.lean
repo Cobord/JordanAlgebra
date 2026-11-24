@@ -82,10 +82,8 @@ variable (S : Type*) [CommRing S] [Algebra R S]
 
 theorem mul_comm' (x y : S ⊗[R] A) : x * y = y * x := by
   induction x with
-  | zero => simp
   | tmul s a =>
     induction y with
-    | zero => simp
     | tmul t b =>
       rw [Algebra.TensorProduct.tmul_mul_tmul, Algebra.TensorProduct.tmul_mul_tmul, mul_comm s t,
         jordan_mul_comm a b]
@@ -100,31 +98,25 @@ theorem lin_tmul (s t u v : S) (a b c y : A) :
 
 theorem lin_eq_zero [Invertible (2 : R)] (a b c y : S ⊗[R] A) : lin a b c y = 0 := by
   induction a with
-  | zero => exact lin_zero₁ b c y
   | add a a' ha ha' => rw [lin_add₁, ha, ha', add_zero]
   | tmul s a =>
     induction b with
-    | zero => exact lin_zero₂ _ c y
     | add b b' hb hb' => rw [lin_add₂, hb, hb', add_zero]
     | tmul t b =>
       induction c with
-      | zero => exact lin_zero₃ _ _ y
       | add c c' hc hc' => rw [lin_add₃, hc, hc', add_zero]
       | tmul u c =>
         induction y with
-        | zero => exact lin_zero₄ _ _ _
         | add y y' hy hy' => rw [lin_add₄, hy, hy', add_zero]
         | tmul v y => rw [lin_tmul, JordanAlgebra.lin_eq_zero (R := R), TensorProduct.tmul_zero]
 
 theorem jordanExpr_eq_zero [Invertible (2 : R)] (x y : S ⊗[R] A) : jordanExpr x y = 0 := by
   induction x with
-  | zero => simp [jordanExpr]
   | add x z hx hz =>
     rw [jordanExpr_add (mul_comm' S), hx, hz, lin_eq_zero, lin_eq_zero]
     simp
   | tmul s a =>
     induction y with
-    | zero => simp [jordanExpr]
     | add y y' hy hy' => rw [jordanExpr_add₂, hy, hy', add_zero]
     | tmul t b =>
       have h : jordanExpr (s ⊗ₜ[R] a) (t ⊗ₜ b) = (s * s * s * t) ⊗ₜ jordanExpr a b := by
@@ -153,11 +145,9 @@ omit [Invertible (2 : R)] in
 theorem baseChange_mul (f : A →ₙₐ[R] B) (x y : S ⊗[R] A) :
     (toLin f).baseChange S (x * y) = (toLin f).baseChange S x * (toLin f).baseChange S y := by
   induction x with
-  | zero => simp
   | add x z hx hz => rw [add_mul, map_add, hx, hz, map_add, add_mul]
   | tmul s a =>
     induction y with
-    | zero => simp
     | add y z hy hz => rw [mul_add, map_add, hy, hz, map_add, mul_add]
     | tmul t b =>
       simp only [Algebra.TensorProduct.tmul_mul_tmul, LinearMap.baseChange_tmul, toLin_apply,
@@ -202,11 +192,9 @@ noncomputable def baseChangeDer (d : JordanDerivation R A) : JordanDerivation S 
   toLinearMap := (d : A →ₗ[R] A).baseChange S
   leibniz' x y := by
     induction x with
-    | zero => simp
     | add x z hx hz => simp only [add_mul, map_add, hx, hz]; abel
     | tmul s a =>
       induction y with
-      | zero => simp
       | add y z hy hz => simp only [mul_add, map_add, hy, hz]; abel
       | tmul t b =>
         simp only [Algebra.TensorProduct.tmul_mul_tmul, LinearMap.baseChange_tmul,
@@ -220,7 +208,6 @@ theorem baseChangeDer_add (d e : JordanDerivation R A) :
     baseChangeDer S (d + e) = baseChangeDer S d + baseChangeDer S e := by
   refine JordanDerivation.ext fun x => ?_
   induction x with
-  | zero => simp only [map_zero]
   | add x y hx hy =>
     rw [JordanDerivation.map_add, hx, hy, JordanDerivation.map_add]
   | tmul s a =>
@@ -231,7 +218,6 @@ theorem baseChangeDer_lie (d e : JordanDerivation R A) :
     baseChangeDer S ⁅d, e⁆ = ⁅baseChangeDer S d, baseChangeDer S e⁆ := by
   refine JordanDerivation.ext fun x => ?_
   induction x with
-  | zero => simp only [map_zero]
   | add x y hx hy =>
     rw [JordanDerivation.map_add, hx, hy, JordanDerivation.map_add]
   | tmul s a =>
@@ -244,12 +230,6 @@ theorem baseChangeAut_comm {g : jordanAut R A} {g' : jordanAut R B} {f : A →�
     (h : ∀ a, g' (f a) = f (g a)) (x : S ⊗[R] A) :
     baseChangeAut S g' (baseChangeHom S f x) = baseChangeHom S f (baseChangeAut S g x) := by
   induction x with
-  | zero =>
-    change ((baseChangeAut S g' : jordanAut S (S ⊗[R] B)) : S ⊗[R] B ≃ₗ[S] S ⊗[R] B)
-        (baseChangeHom S f 0) =
-      baseChangeHom S f (((baseChangeAut S g : jordanAut S (S ⊗[R] A)) :
-        S ⊗[R] A ≃ₗ[S] S ⊗[R] A) 0)
-    simp only [map_zero]
   | add x y hx hy =>
     change ((baseChangeAut S g' : jordanAut S (S ⊗[R] B)) : S ⊗[R] B ≃ₗ[S] S ⊗[R] B)
         (baseChangeHom S f (x + y)) =
@@ -267,7 +247,6 @@ theorem baseChangeDer_comm {d : JordanDerivation R A} {d' : JordanDerivation R B
     {f : A →ₙₐ[R] B} (h : ∀ a, d' (f a) = f (d a)) (x : S ⊗[R] A) :
     baseChangeDer S d' (baseChangeHom S f x) = baseChangeHom S f (baseChangeDer S d x) := by
   induction x with
-  | zero => simp only [map_zero]
   | add x y hx hy =>
     rw [map_add, JordanDerivation.map_add, hx, hy, JordanDerivation.map_add, map_add]
   | tmul s a =>
@@ -372,10 +351,6 @@ theorem baseChangeAut_descendAut (g : jordanAut E (E ⊗[R] A)) (hg : PreservesI
     (hg' : PreservesIncl g⁻¹) : baseChangeAut E (descendAut hι g hg hg') = g := by
   refine jordanAut.ext fun x => ?_
   induction x with
-  | zero =>
-    change ((baseChangeAut E _ : jordanAut E (E ⊗[R] A)) : E ⊗[R] A ≃ₗ[E] E ⊗[R] A) 0 =
-      ((g : jordanAut E (E ⊗[R] A)) : E ⊗[R] A ≃ₗ[E] E ⊗[R] A) 0
-    rw [map_zero, map_zero]
   | add x y hx hy =>
     change ((baseChangeAut E _ : jordanAut E (E ⊗[R] A)) : E ⊗[R] A ≃ₗ[E] E ⊗[R] A) (x + y) =
       g (x + y)

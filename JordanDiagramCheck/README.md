@@ -1,7 +1,6 @@
 # JordanDiagramCheck
 
-A [comparator](https://github.com/leanprover/comparator) check of the main results of
-[`JordanDiagram`](../JordanDiagram/).
+A `lake comparator` check of the main results of [`JordanDiagram`](../JordanDiagram/).
 
 * [`Challenge.lean`](Challenge.lean): the **trusted** statements, each with `sorry`. This is the
   file to review. It says, in Lean, what the formalization claims about the paper.
@@ -10,7 +9,7 @@ A [comparator](https://github.com/leanprover/comparator) check of the main resul
   (`propext`, `Quot.sound`, `Classical.choice`).
 
 A passing run means each Solution theorem has exactly the Challenge statement, uses only the
-permitted axioms, and is accepted by the Lean kernel.
+permitted axioms, and is accepted by the kernel.
 
 ## Statements
 
@@ -37,52 +36,28 @@ definitions from the untrusted proofs in the library.
 ## Running
 
 ```sh
-JordanDiagramCheck/run.sh                      # comparator at ../comparator
-COMPARATOR_DIR=/path/to/comparator JordanDiagramCheck/run.sh
+JordanDiagramCheck/run.sh              # lake comparator, inside systemd-run
+JordanDiagramCheck/run.sh --paranoid   # also every external kernel bundled with Lean
+lake comparator --config JordanDiagramCheck/comparator.json   # directly
 ```
 
-Expected output ends with
+`lake comparator` needs Lean v4.35.0 or later. The expected output ends with
 
 ```
 Lean default kernel accepts the solution
 Your solution is okay!
 ```
 
-Setup: the comparator repository is archived, and its functionality moved into Lean core as
-`lake comparator` from v4.35.0. This project is on v4.31.0, so use the standalone tool at its last
-v4.31.0 commit:
-
-```sh
-git clone https://github.com/leanprover/comparator ../comparator
-cd ../comparator && git checkout fd2e25d
-lake build comparator
-(cd .lake/packages/lean4export && lake build)
-```
-
-After a toolchain bump to v4.35.0 or later, switch to `lake comparator` with the same
-`comparator.json`.
+With `--paranoid`, the solution is also accepted by Lean's paranoid kernel, `lean4lean`,
+`nanoda`, `con-leche` and `con-ron`.
 
 ## Sandbox
 
-Comparator runs every build and export step under `landrun`, which needs Landlock (Linux ≥ 5.13).
-On a kernel without it, [`landrun-bwrap.sh`](landrun-bwrap.sh) takes landrun's place. It accepts
-comparator's landrun command line and runs the step under bubblewrap with:
-
-* the filesystem read-only, except `.lake` during the build;
-* a private `/tmp` and `/run` (no sockets from `/run`);
-* no network;
-* an environment cleared except for the variables comparator passes.
-
-`run.sh` additionally runs the whole check under `systemd-run -p RestrictAddressFamilies=~AF_UNIX`,
-as comparator's README recommends, so Unix sockets elsewhere (e.g. under `$HOME`) cannot be
-reached either.
-
-Not reproduced: landrun's per-path *execute* restriction, since bubblewrap has no per-mount
-`noexec`.
+`lake comparator` builds and exports the project inside its own bubblewrap sandbox, and never
+loads the project's `.olean` files into Lake itself. `run.sh` additionally runs it under
+`systemd-run -p RestrictAddressFamilies=~AF_UNIX`, so no step can connect to a Unix socket
+(Docker, D-Bus, and so on) that stays visible on the read-only filesystem.
 
 Checks done on this setup:
-* writes outside `.lake` fail ("Read-only file system");
-* TCP fails ("Network is unreachable");
-* unlisted environment variables are dropped;
-* `socket(AF_UNIX)` fails ("Address family not supported");
-* replacing a Solution proof with `sorry` is rejected ("Illegal axiom detected: 'sorryAx'").
+* replacing a Solution proof with `sorry` is rejected ("Illegal axiom detected: 'sorryAx'");
+* `socket(AF_UNIX)` fails inside the `systemd-run` layer ("Address family not supported").

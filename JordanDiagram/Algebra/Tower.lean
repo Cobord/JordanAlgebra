@@ -32,19 +32,15 @@ theorem cancel_mul (x y : T ⊗[S] (S ⊗[R] A)) :
       AlgebraTensorModule.cancelBaseChange R S T T A x *
         AlgebraTensorModule.cancelBaseChange R S T T A y := by
   induction x with
-  | zero => simp
   | add x z hx hz => rw [add_mul, map_add, hx, hz, map_add, add_mul]
   | tmul t x =>
     induction y with
-    | zero => simp
     | add y z hy hz => rw [mul_add, map_add, hy, hz, map_add, mul_add]
     | tmul t' y =>
       induction x with
-      | zero => simp
       | add x z hx hz => simp only [TensorProduct.tmul_add, add_mul, map_add, hx, hz]
       | tmul s a =>
         induction y with
-        | zero => simp
         | add y z hy hz => simp only [TensorProduct.tmul_add, mul_add, map_add, hy, hz]
         | tmul s' b =>
           simp only [Algebra.TensorProduct.tmul_mul_tmul,
@@ -88,11 +84,6 @@ theorem autTower_baseChangeAut (h : jordanAut R A) :
     autTower S T (baseChangeAut S h) = baseChangeAut T h := by
   refine jordanAut.ext fun x => ?_
   induction x with
-  | zero =>
-    change ((autTower S T (baseChangeAut S h) : jordanAut T (T ⊗[R] A)) :
-        T ⊗[R] A ≃ₗ[T] T ⊗[R] A) 0 =
-      ((baseChangeAut T h : jordanAut T (T ⊗[R] A)) : T ⊗[R] A ≃ₗ[T] T ⊗[R] A) 0
-    rw [map_zero, map_zero]
   | add x y hx hy =>
     change ((autTower S T (baseChangeAut S h) : jordanAut T (T ⊗[R] A)) :
         T ⊗[R] A ≃ₗ[T] T ⊗[R] A) (x + y) =
@@ -109,12 +100,10 @@ theorem cancelJordanEquiv_baseChangeHom {B : Type*} [JordanAlgebra R B] (f : A �
     cancelJordanEquiv R S T B (baseChangeHom T (baseChangeHom S f) x) =
       baseChangeHom T f (cancelJordanEquiv R S T A x) := by
   induction x with
-  | zero => simp only [map_zero]
   | add x y hx hy =>
     rw [map_add, map_add, hx, hy, ← map_add, ← map_add]
   | tmul t x =>
     induction x with
-    | zero => simp only [TensorProduct.tmul_zero, map_zero]
     | add x y hx hy =>
       rw [TensorProduct.tmul_add, map_add, map_add, hx, hy, ← map_add, ← map_add]
     | tmul s a => rfl

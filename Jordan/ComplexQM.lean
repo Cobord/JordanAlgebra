@@ -52,7 +52,9 @@ theorem star_algebraMap_eq (r : R) :
   ext i j : 1
   rw [Matrix.star_apply, Matrix.algebraMap_matrix_apply, Matrix.algebraMap_matrix_apply]
   by_cases h : i = j
-  · subst h; simp [QuadraticAlgebra.algebraMap_eq]
+  · subst h
+    simp only [ite_true]
+    ext <;> simp
   · simp [h, Ne.symm h]
 
 /-- The `n × n` "complex" Hermitian matrices over `R`, as an `R`-Jordan algebra. -/
@@ -186,8 +188,8 @@ private theorem eq_algebraMap_re_of_star_eq (z : ℂ[R, a, b]) (hz : star z = z)
     have h3 := congrArg (⅟(2 : R) • ·) h2
     simpa [smul_smul] using h3
   ext
-  · simp [QuadraticAlgebra.algebraMap_eq]
-  · simp [QuadraticAlgebra.algebraMap_eq, him0]
+  · simp [-QuadraticAlgebra.C_eq_algebraMap, QuadraticAlgebra.algebraMap_eq]
+  · simp [-QuadraticAlgebra.C_eq_algebraMap, QuadraticAlgebra.algebraMap_eq, him0]
 
 omit [StarRing R] [TrivialStar R] [DecidableEq n] [LinearOrder R] [IsStrictOrderedRing R] in
 theorem trace_eq_algebraMap (A : Matrix n n ℂ[R, a, b]) (hA : star A = A) :

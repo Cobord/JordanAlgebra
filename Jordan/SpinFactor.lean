@@ -92,8 +92,8 @@ noncomputable def jordanAlgebra (hB : B.IsSymm) : JordanAlgebra R (SpinFactor R 
     (inferInstance : SMulCommClass R (SpinFactor R V B) (SpinFactor R V B)) with
     jordan_mul_comm := spinFactor_mul_comm B hB
     jordan_identity := fun z w => by
-      obtain ⟨x, a⟩ := z
-      obtain ⟨y, b⟩ := w
+      obtain ⟨x, a, rfl⟩ : ∃ x a, z = mk B x a := ⟨z.1, z.2, rfl⟩
+      obtain ⟨y, b, rfl⟩ : ∃ y b, w = mk B y b := ⟨w.1, w.2, rfl⟩
       ext <;> simp <;> [module; ring]
   }
 

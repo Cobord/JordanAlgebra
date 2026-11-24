@@ -70,6 +70,7 @@ theorem one_def : (1 : T.DivAlg₁₂ he₁ he₂) = T.triality_prod e₁ e₂ :
 @[simp] theorem ofM1_mul_ofM2 (x : M1) (y : M2) :
     ofM1 T he₁ he₂ x * ofM2 T he₁ he₂ y = T.triality_prod x y := by
   simp only [mul_def, LinearEquiv.symm_apply_apply]
+  rfl
 
 @[simp] theorem ofM1_symm_one : (ofM1 T he₁ he₂).symm 1 = e₁ :=
   (ofM1 T he₁ he₂).symm_apply_eq.mpr rfl
@@ -158,6 +159,7 @@ theorem one_def : (1 : T.DivAlg₁₃ he₁ he₃) = T.triality_prod_xz e₁ e�
 @[simp] theorem ofM1_mul_ofM3 (x : M1) (z : M3) :
     ofM1 T he₁ he₃ x * ofM3 T he₁ he₃ z = T.triality_prod_xz x z := by
   simp only [mul_def, LinearEquiv.symm_apply_apply]
+  rfl
 
 @[simp] theorem ofM1_symm_one : (ofM1 T he₁ he₃).symm 1 = e₁ :=
   (ofM1 T he₁ he₃).symm_apply_eq.mpr rfl
@@ -244,6 +246,7 @@ theorem one_def : (1 : T.DivAlg₂₃ he₂ he₃) = T.triality_prod_yz e₂ e�
 @[simp] theorem ofM2_mul_ofM3 (y : M2) (z : M3) :
     ofM2 T he₂ he₃ y * ofM3 T he₂ he₃ z = T.triality_prod_yz y z := by
   simp only [mul_def, LinearEquiv.symm_apply_apply]
+  rfl
 
 @[simp] theorem ofM2_symm_one : (ofM2 T he₂ he₃).symm 1 = e₂ :=
   (ofM2 T he₂ he₃).symm_apply_eq.mpr rfl

@@ -91,7 +91,8 @@ noncomputable def ofPreserving (hν : ∀ i, Function.Injective (F.ν i))
   ⟨fun i => liftDer (hν i) d (fun x => hd i _ ⟨x, rfl⟩), by
     intro i j α x
     apply hν j
-    rw [liftDer_spec, F.ν_map, F.ν_map, liftDer_spec]⟩
+    beta_reduce
+    rw [liftDer_spec (hν j), F.ν_map, F.ν_map, liftDer_spec (hν i)]⟩
 
 theorem evDer_ofPreserving (hν : ∀ i, Function.Injective (F.ν i))
     (d : JordanDerivation R F.J) (hd : ∀ i, ∀ y ∈ F.image i, d y ∈ F.image i) :

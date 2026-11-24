@@ -72,8 +72,9 @@ section Restriction
 
 variable {I' : Type*} [Category I']
 
-/-- Restriction of a diagram along a functor `u : I' ⥤ I` (Lemma 3.11). -/
-def restrict (F : JordanDiagram.{u, v} R I) (u : I' ⥤ I) : JordanDiagram.{u, v} R I' where
+/-- Restriction of a diagram along a functor `u : I' ⥤ I` (Lemma 3.11). Reducible, so that its
+nodes are seen as `F.obj (u.obj j)` by rewriting and instance search. -/
+@[reducible] def restrict (F : JordanDiagram.{u, v} R I) (u : I' ⥤ I) : JordanDiagram.{u, v} R I' where
   obj j := F.obj (u.obj j)
   map α := F.map (u.map α)
   map_id j x := by rw [u.map_id]; exact F.map_id _ x
@@ -101,7 +102,7 @@ theorem ν_map {i j : I} (α : i ⟶ j) (x : F.obj i) : F.ν j (F.map α x) = F.
   rw [ν, ν, ← F.map_comp, comp_toTop]
 
 /-- The image `Aᵢ = νᵢ(F(i)) ⊆ J`. -/
-def image (i : I) : Set F.J := Set.range (F.ν i)
+abbrev image (i : I) : Set F.J := Set.range (F.ν i)
 
 end Terminal
 

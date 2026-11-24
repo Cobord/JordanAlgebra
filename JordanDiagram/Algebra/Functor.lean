@@ -44,7 +44,6 @@ omit [Invertible (2 : R)] in
 theorem tensorMap_smul (φ : S →ₐ[R] T) (s : S) (x : S ⊗[R] A) :
     tensorMap A φ (s • x) = φ s • tensorMap A φ x := by
   induction x with
-  | zero => simp only [smul_zero, map_zero]
   | add x y hx hy => rw [smul_add, map_add, hx, hy, map_add, smul_add]
   | tmul s' a =>
     rw [TensorProduct.smul_tmul', tensorMap_tmul, tensorMap_tmul, TensorProduct.smul_tmul',
@@ -54,11 +53,9 @@ omit [Invertible (2 : R)] in
 theorem tensorMap_mul (φ : S →ₐ[R] T) (x y : S ⊗[R] A) :
     tensorMap A φ (x * y) = tensorMap A φ x * tensorMap A φ y := by
   induction x with
-  | zero => simp
   | add x z hx hz => rw [add_mul, map_add, hx, hz, map_add, add_mul]
   | tmul s a =>
     induction y with
-    | zero => simp
     | add y z hy hz => rw [mul_add, map_add, hy, hz, map_add, mul_add]
     | tmul t b =>
       simp only [Algebra.TensorProduct.tmul_mul_tmul, tensorMap_tmul, map_mul]
@@ -66,7 +63,6 @@ theorem tensorMap_mul (φ : S →ₐ[R] T) (x y : S ⊗[R] A) :
 omit [Invertible (2 : R)] in
 theorem tensorMap_id (x : S ⊗[R] A) : tensorMap A (AlgHom.id R S) x = x := by
   induction x with
-  | zero => simp
   | add x y hx hy => rw [map_add, hx, hy]
   | tmul s a => rfl
 
@@ -74,7 +70,6 @@ omit [Invertible (2 : R)] in
 theorem tensorMap_comp (φ : S →ₐ[R] T) (χ : T →ₐ[R] U) (x : S ⊗[R] A) :
     tensorMap A (χ.comp φ) x = tensorMap A χ (tensorMap A φ x) := by
   induction x with
-  | zero => simp
   | add x y hx hy => rw [map_add, hx, hy, map_add, map_add]
   | tmul s a => rfl
 
@@ -82,7 +77,6 @@ omit [Invertible (2 : R)] in
 theorem tensorMap_baseChangeHom (φ : S →ₐ[R] T) (f : A →ₙₐ[R] B) (x : S ⊗[R] A) :
     tensorMap B φ (baseChangeHom S f x) = baseChangeHom T f (tensorMap A φ x) := by
   induction x with
-  | zero => simp only [map_zero]
   | add x y hx hy => rw [map_add, map_add, hx, hy, map_add, map_add]
   | tmul s a => rfl
 
@@ -126,7 +120,6 @@ omit [Invertible (2 : R)] in
 theorem mapLin_tensorMap (f : S ⊗[R] A →ₗ[S] S ⊗[R] A) (x : S ⊗[R] A) :
     mapLin φ f (tensorMap A φ x) = tensorMap A φ (f x) := by
   induction x with
-  | zero => simp only [map_zero]
   | add x y hx hy => rw [map_add, map_add, hx, hy, map_add, map_add]
   | tmul s a =>
     have e : s ⊗ₜ[R] a = s • ((1 : S) ⊗ₜ[R] a) := by
@@ -170,11 +163,9 @@ omit [Invertible (2 : R)] in
 theorem mapLin_mul (f : S ⊗[R] A →ₗ[S] S ⊗[R] A) (hf : ∀ x y, f (x * y) = f x * f y)
     (x y : T ⊗[R] A) : mapLin φ f (x * y) = mapLin φ f x * mapLin φ f y := by
   induction x with
-  | zero => simp
   | add x z hx hz => rw [add_mul, map_add, hx, hz, map_add, add_mul]
   | tmul t a =>
     induction y with
-    | zero => simp
     | add y z hy hz => rw [mul_add, map_add, hy, hz, map_add, mul_add]
     | tmul t' b =>
       rw [Algebra.TensorProduct.tmul_mul_tmul, mapLin_tmul, mapLin_tmul, mapLin_tmul,
@@ -260,11 +251,9 @@ noncomputable def mapDer (d : JordanDerivation S (S ⊗[R] A)) : JordanDerivatio
   toLinearMap := mapLin φ (d : S ⊗[R] A →ₗ[S] S ⊗[R] A)
   leibniz' x y := by
     induction x with
-    | zero => simp
     | add x z hx hz => simp only [add_mul, map_add, hx, hz]; abel
     | tmul t a =>
       induction y with
-      | zero => simp
       | add y z hy hz => simp only [mul_add, map_add, hy, hz]; abel
       | tmul t' b =>
         have ea : t ⊗ₜ[R] a = t • ((1 : T) ⊗ₜ[R] a) := by

@@ -119,13 +119,13 @@ theorem autEquivOrthogonal_mem_stabImages_iff (g : orthogonalGroup (B.restrict (
     (autEquivOrthogonal g : jordanAut R (spinDiagram B W).J) ∈ stabImages (spinDiagram B W) ↔
       g ∈ orthStab B W := by
   refine mem_stabImages.trans ?_
-  simp only [jordanAut.image_eq_self_iff]
   constructor
   · intro h i u
-    have := h i (SpinFactor.mk (B.restrict (W ⊤)) u 0)
+    have := (jordanAut.image_eq_self_iff _).1 (h i) (SpinFactor.mk (B.restrict (W ⊤)) u 0)
     rw [spinDiagram_image] at this
     exact this
-  · intro h i z
+  · intro h i
+    refine (jordanAut.image_eq_self_iff _).2 fun z => ?_
     rw [spinDiagram_image]
     exact h i z.1
 

@@ -114,7 +114,8 @@ noncomputable def ofStab (hν : ∀ i, Function.Injective (F.ν i)) (h : jordanA
   ⟨fun i => liftAut (hν i) h (mem_stabImages.1 hh i), by
     intro i j α x
     apply hν j
-    rw [liftAut_spec, F.ν_map, F.ν_map, liftAut_spec]⟩
+    beta_reduce
+    rw [liftAut_spec (hν j), F.ν_map, F.ν_map, liftAut_spec (hν i)]⟩
 
 theorem ν_ofStab (hν : ∀ i, Function.Injective (F.ν i)) (h : jordanAut R F.J)
     (hh : h ∈ stabImages F) (i : I) (x : F.obj i) :

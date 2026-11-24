@@ -391,13 +391,13 @@ set_option linter.unusedSectionVars false in
 Re(yx)`, even though `xy` and `yx` themselves genuinely differ. Same brute-force technique as
 `re_mul_mul_eq_re_mul_mul` below. -/
 theorem re_mul_comm (x y : Octonion R a b c) : (x * y).1.re = (y * x).1.re := by
-  obtain ⟨x1, x2⟩ := x
-  obtain ⟨y1, y2⟩ := y
+  obtain ⟨x1, x2, rfl⟩ : ∃ p q, x = mk p q := ⟨x.1, x.2, rfl⟩
+  obtain ⟨y1, y2, rfl⟩ : ∃ p q, y = mk p q := ⟨y.1, y.2, rfl⟩
   obtain ⟨x1a, x1b, x1c, x1d⟩ := x1
   obtain ⟨x2a, x2b, x2c, x2d⟩ := x2
   obtain ⟨y1a, y1b, y1c, y1d⟩ := y1
   obtain ⟨y2a, y2b, y2c, y2d⟩ := y2
-  simp only [mul_fst, QuaternionAlgebra.mk_mul_mk, QuaternionAlgebra.mk_sub_mk,
+  simp only [mul_fst, mk_fst, mk_snd, QuaternionAlgebra.mk_mul_mk, QuaternionAlgebra.mk_sub_mk,
     QuaternionAlgebra.star_mk, QuaternionAlgebra.smul_mk, smul_eq_mul]
   ring
 
@@ -414,18 +414,18 @@ claim becomes a polynomial identity `ring` can close directly -- no need for the
 alternative-algebra "associator is alternating" theorem. -/
 theorem re_mul_mul_eq_re_mul_mul (x y z : Octonion R a b c) :
     ((x * y) * z).1.re = (x * (y * z)).1.re := by
-  obtain ⟨x1, x2⟩ := x
-  obtain ⟨y1, y2⟩ := y
-  obtain ⟨z1, z2⟩ := z
+  obtain ⟨x1, x2, rfl⟩ : ∃ p q, x = mk p q := ⟨x.1, x.2, rfl⟩
+  obtain ⟨y1, y2, rfl⟩ : ∃ p q, y = mk p q := ⟨y.1, y.2, rfl⟩
+  obtain ⟨z1, z2, rfl⟩ : ∃ p q, z = mk p q := ⟨z.1, z.2, rfl⟩
   obtain ⟨x1a, x1b, x1c, x1d⟩ := x1
   obtain ⟨x2a, x2b, x2c, x2d⟩ := x2
   obtain ⟨y1a, y1b, y1c, y1d⟩ := y1
   obtain ⟨y2a, y2b, y2c, y2d⟩ := y2
   obtain ⟨z1a, z1b, z1c, z1d⟩ := z1
   obtain ⟨z2a, z2b, z2c, z2d⟩ := z2
-  simp only [mul_fst, mul_snd, QuaternionAlgebra.mk_mul_mk, QuaternionAlgebra.mk_add_mk,
-    QuaternionAlgebra.mk_sub_mk, QuaternionAlgebra.star_mk, QuaternionAlgebra.smul_mk,
-    smul_eq_mul]
+  simp only [mul_fst, mul_snd, mk_fst, mk_snd, QuaternionAlgebra.mk_mul_mk,
+    QuaternionAlgebra.mk_add_mk, QuaternionAlgebra.mk_sub_mk, QuaternionAlgebra.star_mk,
+    QuaternionAlgebra.smul_mk, smul_eq_mul]
   ring
 
 set_option linter.unusedSectionVars false in

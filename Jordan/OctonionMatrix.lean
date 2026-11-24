@@ -292,30 +292,11 @@ def ofSymmetricMatricesOne :
         rw [star_scalarEmbed]
       let xmat : OctonionMatrix (R:=R) (a:=a) (b:=b) (c:=c) := ![![x]]
       have hxmat : xmat = star xmat := by
-        simp only [star]
         apply Matrix.ext
         intro i j
-        have hi : i = (0 : Fin 1) := by
-          exact Subsingleton.elim _ _
-        have hj : j = 0 := by
-          exact Subsingleton.elim _ _
-        rw [hi,hj]
-        unfold xmat
-        simp
-        have hx2 : x.2 = 0 := by
-          exact diag_no_2 x r (rfl)
-        have hx1I : x.1.imI = 0 := by
-          exact diag_no_1i x r (rfl)
-        have hx1J : x.1.imJ = 0 := by
-          exact diag_no_1j x r (rfl)
-        have hx1K : x.1.imK = 0 := by
-          exact diag_no_1k x r (rfl)
-        rw [hx2, hx1I, hx1J, hx1K]
-        simp
-        change x = scalarEmbed x.1.re
-        have hx11 : x.1.re = r := by
-          exact diag_just_11 x r (rfl)
-        rw [hx11]
+        obtain rfl : i = 0 := Subsingleton.elim _ _
+        obtain rfl : j = 0 := Subsingleton.elim _ _
+        exact hx
       have key : xmat ∈ {M | star M = M} := by
         simp
         exact hxmat.symm
