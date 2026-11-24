@@ -17,7 +17,9 @@ Cayley-Dickson doubling applied to the quaternion algebra `ℍ[R, a, 0, b]`, by 
 
 This is the fully general `3`-parameter family: each of `a`, `b`, `c` is one independent
 Cayley-Dickson doubling step (`R → R[i] → ℍ → 𝕆`), and Hamilton/Cayley's octonions are just the
-specialization `R = ℝ`, `a = b = c = -1`. There is no loss of generality in building the
+specialization `R = ℝ`, `a = b = -1`, `c = 1` (the product below has `- c • (star s * q)`, so
+the norm is `N(p) + c N(q)` and the usual sign convention for the third parameter is `-c`). There
+is no loss of generality in building the
 intermediate quaternion stage as `ℍ[R, a, 0, b]` (no `c₂` deformation term) rather than the fully
 general `ℍ[R, a, c₂, b]`: with `2` invertible we can always "complete the square" to eliminate
 that term, so `ℍ[R, a, 0, b]` already realizes every quaternion algebra in this family up to
