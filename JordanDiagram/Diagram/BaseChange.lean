@@ -1,6 +1,7 @@
 import JordanDiagram.Diagram.Group
 import JordanDiagram.Diagram.Derivation
 import JordanDiagram.Algebra.BaseChange
+import JordanDiagram.Algebra.Tower
 
 /-!
 # Scalar extension of diagrams (Lemma 2.11, Proposition 3.3, Proposition 7.9(b))
@@ -158,5 +159,39 @@ theorem derBaseChange_lie (D E : F.derAlgebra) :
   Subtype.ext (funext fun i => baseChangeDer_lie (D.1 i) (E.1 i))
 
 end Der
+
+section Tower
+
+variable {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+  [Invertible (2 : S)]
+
+theorem cancelJordanEquiv_symm_baseChangeHom {A B : Type*} [JordanAlgebra R A] [JordanAlgebra R B]
+    (f : A →ₙₐ[R] B) (x : T ⊗[R] A) :
+    (cancelJordanEquiv R S T B).symm (baseChangeHom T f x) =
+      baseChangeHom T (baseChangeHom S f) ((cancelJordanEquiv R S T A).symm x) := by
+  apply (cancelJordanEquiv R S T B).injective
+  rw [JordanEquiv.apply_symm_apply, cancelJordanEquiv_baseChangeHom, JordanEquiv.apply_symm_apply]
+
+variable (S T F) in
+/-- **Proposition 3.3** (functoriality in the base): `G_F(S) → G_F(T)` for `R → S → T`,
+`(gᵢ) ↦ (β ∘ (id_T ⊗ gᵢ) ∘ β⁻¹)` with `β : T ⊗[S] (S ⊗[R] F(i)) ≃ T ⊗[R] F(i)`. -/
+noncomputable def autTowerDiagram : (F.baseChange S).autGroup →* (F.baseChange T).autGroup where
+  toFun g := ⟨fun i => autTower S T (g.1 i), by
+    intro i j α x
+    change cancelJordanEquiv R S T (F.obj j) (baseChangeAut T (g.1 j)
+        ((cancelJordanEquiv R S T (F.obj j)).symm (baseChangeHom T (F.map α) x))) =
+      baseChangeHom T (F.map α) (cancelJordanEquiv R S T (F.obj i) (baseChangeAut T (g.1 i)
+        ((cancelJordanEquiv R S T (F.obj i)).symm x)))
+    rw [cancelJordanEquiv_symm_baseChangeHom,
+      baseChangeAut_comm (fun a => autGroup_naturality g α a), cancelJordanEquiv_baseChangeHom]⟩
+  map_one' := Subtype.ext (funext fun _ => map_one (autTower S T))
+  map_mul' g h := Subtype.ext (funext fun i => map_mul (autTower S T) (g.1 i) (h.1 i))
+
+/-- **Proposition 3.3** (compatibility): `G_F(R) → G_F(S) → G_F(T)` is `G_F(R) → G_F(T)`. -/
+theorem autTowerDiagram_comp_autBaseChange :
+    (autTowerDiagram S F T).comp (autBaseChange S F) = autBaseChange T F :=
+  MonoidHom.ext fun g => Subtype.ext (funext fun i => autTower_baseChangeAut (g.1 i))
+
+end Tower
 
 end JordanDiagram

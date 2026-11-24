@@ -7,6 +7,7 @@ import JordanDiagram.Algebra.BaseChange
 import JordanDiagram.Algebra.Equiv
 import JordanDiagram.Algebra.Generation
 import JordanDiagram.Algebra.SpinFactor
+import JordanDiagram.Algebra.Tower
 
 -- The diagram layer: terminally pointed diagrams and their symmetry groups.
 import JordanDiagram.Diagram.BaseChange
