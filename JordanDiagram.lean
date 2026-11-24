@@ -6,6 +6,7 @@ import JordanDiagram.Algebra.Automorphism
 import JordanDiagram.Algebra.BaseChange
 import JordanDiagram.Algebra.Equiv
 import JordanDiagram.Algebra.Generation
+import JordanDiagram.Algebra.Orthogonal
 import JordanDiagram.Algebra.SpinFactor
 import JordanDiagram.Algebra.Tower
 
