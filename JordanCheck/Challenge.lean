@@ -61,6 +61,16 @@ theorem inner_derivation [Invertible (2 : R)] (x y a b : M) :
       a * (x * (y * b) - y * (x * b)) + (x * (y * a) - y * (x * a)) * b := by
   sorry
 
+/-- **Jordan triple identity**: with `2` invertible, the triple product
+`{x, y, z} = (x * y*) * z + (z * y*) * x - (x * z) * y*` of a Jordan algebra with involution
+(antilinear in `y`) satisfies
+`{x, y, {u, v, w}} - {u, v, {x, y, w}} = {{x, y, u}, v, w} - {u, {y, x, v}, w}`. -/
+theorem jordan_triple_identity [Invertible (2 : R)] [StarRing R] [StarRing M] [StarModule R M]
+    (x y u v w : M) :
+    tripleProduct x y (tripleProduct u v w) - tripleProduct u v (tripleProduct x y w) =
+      tripleProduct (tripleProduct x y u) v w - tripleProduct u (tripleProduct y x v) w := by
+  sorry
+
 /-- **Scalars of a formally real Jordan algebra**: if a nontrivial Jordan `R`-algebra is formally
 real, then `-1` is not a sum of squares in `R`, and `R` has characteristic zero. -/
 theorem formallyReal_scalars [IsFormallyReal R M] [Nontrivial M] :

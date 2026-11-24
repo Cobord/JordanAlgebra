@@ -6,6 +6,7 @@
         "JordanCheck.linearized_fundamental_formula",
         "JordanCheck.powers_operator_commute",
         "JordanCheck.inner_derivation",
+        "JordanCheck.jordan_triple_identity",
         "JordanCheck.formallyReal_scalars",
         "JordanCheck.spinFactor_jordan",
         "JordanCheck.spinFactor_formallyReal",

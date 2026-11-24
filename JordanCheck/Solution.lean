@@ -46,6 +46,13 @@ theorem inner_derivation [Invertible (2 : R)] (x y a b : M) :
       a * (x * (y * b) - y * (x * b)) + (x * (y * a) - y * (x * a)) * b :=
   (JordanDerivation.inner (R := R) x y).leibniz a b
 
+theorem jordan_triple_identity [Invertible (2 : R)] [StarRing R] [StarRing M] [StarModule R M]
+    (x y u v w : M) :
+    tripleProduct x y (tripleProduct u v w) - tripleProduct u v (tripleProduct x y w) =
+      tripleProduct (tripleProduct x y u) v w - tripleProduct u (tripleProduct y x v) w := by
+  simp only [tripleProduct_eq_box, star_box, star_star]
+  exact congrArg (fun f : AddMonoid.End M => f w) (box_commutator (R := R) x (star y) u (star v))
+
 theorem formallyReal_scalars [IsFormallyReal R M] [Nontrivial M] :
     IsSemireal R ∧ CharZero R :=
   ⟨IsFormallyReal.neg_one_not_sum_squares (R := R) (M := M),
