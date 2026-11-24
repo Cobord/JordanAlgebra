@@ -14,8 +14,17 @@ name = "Jordan"
 name = "JordanDiagram"
 
 [[lean_lib]]
+name = "JordanCheck"
+roots = ["JordanCheck.Challenge", "JordanCheck.Solution"]
+
+[[lean_lib]]
 name = "JordanDiagramCheck"
 roots = ["JordanDiagramCheck.Challenge", "JordanDiagramCheck.Solution"]
+
+# The aggregate challenge and solution named in `comparator.json` (run `lake comparator`).
+[[lean_lib]]
+name = "Check"
+roots = ["Challenge", "Solution"]
 
 [[lean_exe]]
 name = "jordan"

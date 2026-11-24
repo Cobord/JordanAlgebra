@@ -12,7 +12,11 @@ Built against [Mathlib4](https://github.com/leanprover-community/mathlib4).
 
 ## Jordan algebra diagrams
 
-[`JordanDiagram/`](JordanDiagram/) is a separate library, built on `Jordan`. It formalizes *Symmetries of Jordan Algebra Diagrams over Varying Base Rings*: diagram automorphism groups and compatible derivations; terminal determination of automorphisms, derivations and diagram isomorphisms; wedges; the finite detector criterion and its bound via generating configurations; scalar extension of Jordan algebras and the functoriality of the automorphism group in the base ring; and automorphisms and derivations of spin factors and of spin-factor diagrams, together with isomorphisms of spin-factor diagrams. See the [subfolder README](JordanDiagram/README.md). [`JordanDiagramCheck/`](JordanDiagramCheck/) checks its main statements: run `lake comparator` in the project root, configured by [`comparator.json`](comparator.json) (add `--paranoid` for every bundled external kernel).
+[`JordanDiagram/`](JordanDiagram/) is a separate library, built on `Jordan`. It formalizes *Symmetries of Jordan Algebra Diagrams over Varying Base Rings*: diagram automorphism groups and compatible derivations; terminal determination of automorphisms, derivations and diagram isomorphisms; wedges; the finite detector criterion and its bound via generating configurations; scalar extension of Jordan algebras and the functoriality of the automorphism group in the base ring; and automorphisms and derivations of spin factors and of spin-factor diagrams, together with isomorphisms of spin-factor diagrams. See the [subfolder README](JordanDiagram/README.md).
+
+## Checking the main statements
+
+[`JordanCheck/`](JordanCheck/) and [`JordanDiagramCheck/`](JordanDiagramCheck/) hold trusted `Challenge.lean` statements of the main results of `Jordan` and `JordanDiagram`, each with a `Solution.lean` proving them from the library. The top-level [`Challenge.lean`](Challenge.lean) and [`Solution.lean`](Solution.lean) collect both, and [`comparator.json`](comparator.json) names them. Run `lake comparator` in the project root (add `--paranoid` for every bundled external kernel).
 
 ## Computations
 

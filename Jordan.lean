@@ -3,6 +3,7 @@
 module
 
 public import Jordan.AlbertAlgebra
+public import Jordan.AlbertInstance
 public import Jordan.Alternative
 public import Jordan.Basic
 public import Jordan.CommNonAssocNF

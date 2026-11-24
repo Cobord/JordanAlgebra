@@ -5,7 +5,9 @@ A `lake comparator` check of the main results of [`JordanDiagram`](../JordanDiag
 * [`Challenge.lean`](Challenge.lean): the **trusted** statements, each with `sorry`. This is the
   file to review. It says, in Lean, what the formalization claims.
 * [`Solution.lean`](Solution.lean): the same statements, proved from the library.
-* [`comparator.json`](../comparator.json), at the project root: the theorems to compare and the permitted axioms
+* [`comparator.json`](../comparator.json), at the project root, with the aggregate
+  [`Challenge.lean`](../Challenge.lean) and [`Solution.lean`](../Solution.lean) that also collect
+  [`JordanCheck`](../JordanCheck/): the theorems to compare and the permitted axioms
   (`propext`, `Quot.sound`, `Classical.choice`).
 
 A passing run means each Solution theorem has exactly the Challenge statement, uses only the
