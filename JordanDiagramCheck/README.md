@@ -26,6 +26,12 @@ permitted axioms, and is accepted by the kernel.
 | `autMap_functor` | Functor laws for `G_F`, compatibility with `G_F(R) → G_F(S)` |
 | `derMap_functor` | Functor laws for `g_F`, brackets preserved |
 | `product_base_rings` | `(G_F(fst), G_F(snd)) : G_F(S × S') → G_F(S) × G_F(S')` is bijective |
+| `family_functor` | For a family with coherent base-change maps `β_φ`, `G_F(φ)(g) ∘ β_φ = β_φ ∘ g` (likewise `g_F`), and `G_F`, `g_F` satisfy the functor laws |
+| `baseChangeFamily_functor` | The family `S ↦ S ⊗ F` has the `G_F`, `g_F` of scalar extension |
+| `family_base` | Every family is the scalar extension of its fiber over the base: `F_S ≅ S ⊗ F_R` via `1 ⊗ a ↦ β_{ι_S}(a)` |
+| `ordered_coinitial` | An injective morphism of ordered scalars carries the positives onto a coinitial subset of the target's positives |
+| `ordered_power_series` | In the lowest-coefficient order `t` is a positive infinitesimal; the constant-term map `A⟦t⟧ → A` is a morphism of ordered scalars; there is no morphism `A → A⟦t⟧` |
+| `ordered_restriction` | `G_F`, `g_F` restricted to ordered scalars act through the underlying algebra maps |
 | `power_series_specialization` | For finite free nodes and torsion-free `S`, the kernel of `G_F(S⟦X⟧) → G_F(S)` is torsion-free, finite subgroups embed, and the map is split by constant series |
 | `comparison_injective`, `comparison_image` | Injectivity and image of `G_F(R) → G_F(S)` when every `a ↦ 1 ⊗ a` is injective |
 | `spinFactor_aut`, `spinFactor_der` | Spin-factor symmetries, stated elementarily: automorphisms are `(v, r) ↦ (g v, r)` with `g` an isometry, derivations are `(v, r) ↦ (X v, 0)` with `X` skew |

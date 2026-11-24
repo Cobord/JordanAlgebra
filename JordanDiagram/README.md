@@ -60,6 +60,8 @@ The library has three parts:
 | --- | --- |
 | [`LieRingCat.lean`](MathlibMissing/LieRingCat.lean) | `LieRingHom L L'` (`L →⁅⁆ L'`): additive maps with bracket preservation as a field, with `id`, `comp`, `ext`, `map_lie`. `LieRingCat`, the category of Lie rings, with the same API as `GrpCat`. |
 | [`PiLie.lean`](MathlibMissing/PiLie.lean) | The componentwise Lie ring and Lie algebra structures on a Pi type. |
+| [`SemilinearBaseChange.lean`](MathlibMissing/SemilinearBaseChange.lean) | `IsSemilinearBaseChange f`: a `σ`-semilinear `f : M → N` is a base change along `σ : S → T` (universal property of `M → T ⊗_S M`, without making `T` an `S`-algebra). `lift`, `ext`, `extend`/`extendEquiv` of endomorphisms, and `extend_mul`, `extend_leibniz` for Jordan algebras. |
+| [`PowerSeriesOrder.lean`](MathlibMissing/PowerSeriesOrder.lean) | `PowerSeries.lowestCoeff` (multiplicative over a domain) and `PowerSeriesLC A`, the lowest-coefficient order on `A⟦X⟧` as a `LinearOrder` and `IsStrictOrderedRing`, built from the cone of series with nonnegative lowest coefficient. |
 | [`PowerSeriesMatrix.lean`](MathlibMissing/PowerSeriesMatrix.lean) | `Matrix.eq_one_of_pow_eq_one`: over a torsion-free `R`, a matrix over `R⟦X⟧` with constant term `1` and finite order is `1` (the kernel of `GL_n(R⟦X⟧) → GL_n(R)` is torsion-free). |
 
 ### `Diagram/`: the diagram layer
@@ -71,6 +73,9 @@ The library has three parts:
 | [`Derivation.lean`](Diagram/Derivation.lean) | The compatible derivations `derAlgebra` as a Lie subalgebra, the Lie homomorphism `evDer`, `evDer_injective`, `range_evDer` (image `{D : D(Aᵢ) ⊆ Aᵢ}`), and `restrictDer`. |
 | [`Wedge.lean`](Diagram/Wedge.lean) | `IsWedge P₁ P₂` and `autGroupEquivWedge : G_F(R) ≃* G_{F₁}(R) ×_{Aut(J)} G_{F₂}(R)`. For derivations, `wedgeDer_injective` and `range_wedgeDer`. |
 | [`Iso.lean`](Diagram/Iso.lean) | `DiagramIso F F'` (isomorphisms in a fiber) and its terminal determination `terminalEquiv` (isomorphisms `↔` `h : J ≃ⱼ J'` with `h(Aᵢ) = A'ᵢ`). `TwistedIso F u = DiagramIso F (u* F)`. `twistedIdEquiv` identifies the twisted isomorphisms over `𝟭` with `G_F(R)`, the kernel of `G̃_F(R) → Aut(I⁺, +)`. `twistedTerminalEquiv` is terminal determination for twisted automorphisms. |
+| [`Family.lean`](Diagram/Family.lean) | **Families over varying base rings**: `DiagramFamily R I`, a diagram `F_S` over every commutative `R`-algebra `S` with coherent base-change maps `β_φ` (semilinear, multiplicative, natural, base changes, `β_id = id`, `β_{χφ} = β_χ β_φ`). `G_F` and `g_F` as functors `CAlg_R ⥤ Grp`, `CAlg_R ⥤ LieRing` (`autFunctor`, `derFunctor`), with `G_F(φ)(g) ∘ β_φ = β_φ ∘ g`. `baseChangeFamily F` (`S ↦ S ⊗ F`) recovers `autMap`, `derMap`. Conversely `DiagramFamily.baseIso`: every family is the scalar extension of its fiber over the base, `F_S ≅ S ⊗[R] F_R` via `β_{ι_S}`. |
+| [`Ordered.lean`](Diagram/Ordered.lean) | **The ordered scalar category** `OrdScalar k`: totally ordered rings with an order-preserving `k`-algebra structure, morphisms the continuous order-preserving `k`-algebra maps. `OrdScalar.forget` to `CommAlgCat k`, and the ordered symmetry functors (`G_F`, `g_F` restricted along it), for diagrams and for families. `OrdScalar.exists_pos_lt_of_injective`: injective morphisms are coinitial on positives. |
+| [`OrderedPowerSeries.lean`](Diagram/OrderedPowerSeries.lean) | `A⟦t⟧` with the lowest-coefficient order is an ordered scalar object, with `t` a positive infinitesimal. The constant-term map is a morphism (`constTermHom`), the constant-series inclusion is not continuous (`not_continuous_algebraMap`), and there is no morphism `A ⟶ A⟦t⟧` (`isEmpty_hom`): the base is not initial. |
 | [`Product.lean`](Diagram/Product.lean) | `prodAutEquiv : Aut((S × S') ⊗ A) ≃* Aut(S ⊗ A) × Aut(S' ⊗ A)` and **`autGroupProdEquiv : G_F(S × S') ≃* G_F(S) × G_F(S')`**, the map being `(G_F(fst), G_F(snd))` (`autMap_prod_bijective`). |
 | [`PowerSeries.lean`](Diagram/PowerSeries.lean) | The constant-term map `constCoeffAlg : S⟦X⟧ → S`, split by `constAlg`. For finite free nodes and torsion-free `S`: the kernel of `G_F(S⟦X⟧) → G_F(S)` is torsion-free (`autMap_const_eq_one`), finite subgroups embed (`injOn_autMap_const`), and the map is split (`autMap_const_comp_autMap_C`). |
 | [`Twisted.lean`](Diagram/Twisted.lean) | For a shape that is a preorder: `TwistedAut F` (an order automorphism `σ` of the shape with Jordan isomorphisms `F(i) ≃ F(σ i)` compatible with the arrows) and its group structure, **the shape-twisted group `G̃_F(R)`**. `shapeHom : G̃_F(R) →* Aut(I)` and `ofAut : G_F(R) →* G̃_F(R)`, with `ofAut_injective` and `range_ofAut`: `1 → G_F(R) → G̃_F(R) → Aut(I)` is exact. `toTwistedIso`/`ofTwistedIso` relate it to `TwistedIso`. |
@@ -85,7 +90,6 @@ are no `sorry`s. The headline results use only `propext`, `Classical.choice` and
 
 ## Next steps
 
-1. General families `{F_S}` over varying base rings, with arbitrary coherences `β_f` packaged as
-   data, and `G_F`, `g_F` for them.
-2. The shape-twisted group for shapes that are general categories rather than preorders.
-3. The ordered layer. `IsFormallyReal` already exists separately in `Jordan/`.
+1. The shape-twisted group for shapes that are general categories rather than preorders.
+2. The rest of the ordered layer: the ordered fraction field, the comparison fields (Scott
+   completion, real closure) and the continuity criterion for `R → E`.

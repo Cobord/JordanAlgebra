@@ -163,6 +163,67 @@ theorem comparison_image
 
 end Functor
 
+section Family
+
+variable {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
+
+/-- **`G_F` and `g_F` for families of diagrams over varying base rings**. For a family with
+coherent base-change maps `β_φ`, `G_F(φ)(g)` is characterized by `G_F(φ)(g) ∘ β_φ = β_φ ∘ g` (and
+likewise for `g_F`), and `G_F`, `g_F` satisfy the functor laws. -/
+theorem family_functor (F : JordanDiagram.DiagramFamily.{u, u', v} R I)
+    {S T U : CommAlgCat.{u'} R} (φ : S ⟶ T) (χ : T ⟶ U) :
+    (∀ g i x, (F.autMap φ g).1 i (F.β φ i x) = F.β φ i (g.1 i x)) ∧
+      (∀ D i x, (F.derMap φ D).1 i (F.β φ i x) = F.β φ i (D.1 i x)) ∧
+      F.autMap (𝟙 S) = MonoidHom.id _ ∧ F.autMap (φ ≫ χ) = (F.autMap χ).comp (F.autMap φ) ∧
+      F.derMap (𝟙 S) = LieRingHom.id ∧ F.derMap (φ ≫ χ) = (F.derMap χ).comp (F.derMap φ) := by
+  sorry
+
+/-- **The family of scalar extensions** `S ↦ S ⊗[R] F` of one diagram, with `β_φ = φ ⊗ 1`, has
+the `G_F` and `g_F` of scalar extension. -/
+theorem baseChangeFamily_functor [Invertible (2 : R)] (F : JordanDiagram.{u, v} R I)
+    {S T : CommAlgCat.{u'} R} (φ : S ⟶ T) :
+    (JordanDiagram.baseChangeFamily F).autMap φ = JordanDiagram.autMap F φ.hom ∧
+      (JordanDiagram.baseChangeFamily F).derMap φ = JordanDiagram.derMap F φ.hom := by
+  sorry
+
+/-- **Every family is a scalar extension of its fiber over the base**: the coherence map along
+`ι_S : R → S` identifies `F_S` with `S ⊗[R] F_R`, as diagrams, via `1 ⊗ a ↦ β_{ι_S}(a)`. -/
+theorem family_base [Invertible (2 : R)] (F : JordanDiagram.DiagramFamily.{u, u, max u v} R I)
+    (S : CommAlgCat.{u} R) :
+    ∃ θ : JordanDiagram.DiagramIso ((F.base).baseChange S) (F.obj S),
+      ∀ i a, θ.app i ((1 : S) ⊗ₜ[R] a) = F.β (JordanDiagram.unitHom R S) i a := by
+  sorry
+
+/-- **Ordered scalars and injective morphisms**: an injective morphism of ordered scalars carries
+the positives of the source onto a coinitial subset of the positives of the target. -/
+theorem ordered_coinitial [LinearOrder R] [Invertible (2 : R)]
+    {A B : JordanDiagram.OrdScalar.{u, u'} R} (f : A ⟶ B) (hf : Function.Injective f.hom)
+    (s : B) (hs : 0 < s) : ∃ r : A, 0 < r ∧ 0 < f.hom r ∧ f.hom r < s := by
+  sorry
+
+/-- **Power series as ordered scalars**. In the lowest-coefficient order on `A⟦t⟧`, `t` is a
+positive infinitesimal. The constant-term map `A⟦t⟧ → A` is a morphism of ordered scalars, while
+(for `2` invertible) there is no morphism `A → A⟦t⟧`: `A` is not initial. -/
+theorem ordered_power_series {A : Type u} [CommRing A] [LinearOrder A] [IsStrictOrderedRing A]
+    [Invertible (2 : A)] :
+    (0 : PowerSeriesLC A) < JordanDiagram.PowerSeriesLC.t ∧
+      (∀ a : A, 0 < a → JordanDiagram.PowerSeriesLC.t < algebraMap A (PowerSeriesLC A) a) ∧
+      (∃ f : JordanDiagram.PowerSeriesLC.ordScalar A ⟶ JordanDiagram.PowerSeriesLC.baseObj A,
+        ∀ x, f.hom x = PowerSeries.constantCoeff (PowerSeriesLC.toPowerSeries A x)) ∧
+      IsEmpty (JordanDiagram.PowerSeriesLC.baseObj A ⟶ JordanDiagram.PowerSeriesLC.ordScalar A) := by
+  sorry
+
+/-- **Ordered scalars**. `G_F` and `g_F` restricted to the ordered scalar category act on a
+continuous order-preserving morphism through its underlying algebra homomorphism. -/
+theorem ordered_restriction [LinearOrder R] [Invertible (2 : R)] (F : JordanDiagram.{u, v} R I)
+    {A B : JordanDiagram.OrdScalar.{u, u'} R} (f : A ⟶ B) :
+    (JordanDiagram.orderedAutFunctor F).map f = GrpCat.ofHom (JordanDiagram.autMap F f.hom) ∧
+      (JordanDiagram.orderedDerFunctor F).map f =
+        LieRingCat.ofHom (JordanDiagram.derMap F f.hom) := by
+  sorry
+
+end Family
+
 section SpinFactor
 
 variable {R : Type u} [CommRing R] [Invertible (2 : R)] {V : Type v} [AddCommGroup V]

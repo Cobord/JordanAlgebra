@@ -19,6 +19,8 @@ public import JordanDiagram.Algebra.Tower
 public import JordanDiagram.MathlibMissing.LieRingCat
 public import JordanDiagram.MathlibMissing.PiLie
 public import JordanDiagram.MathlibMissing.PowerSeriesMatrix
+public import JordanDiagram.MathlibMissing.PowerSeriesOrder
+public import JordanDiagram.MathlibMissing.SemilinearBaseChange
 
 -- The diagram layer: terminally pointed diagrams and their symmetry groups.
 public import JordanDiagram.Diagram.BaseChange
@@ -27,7 +29,10 @@ public import JordanDiagram.Diagram.Derivation
 public import JordanDiagram.Diagram.Finiteness
 public import JordanDiagram.Diagram.Functor
 public import JordanDiagram.Diagram.Group
+public import JordanDiagram.Diagram.Family
 public import JordanDiagram.Diagram.Iso
+public import JordanDiagram.Diagram.Ordered
+public import JordanDiagram.Diagram.OrderedPowerSeries
 public import JordanDiagram.Diagram.PowerSeries
 public import JordanDiagram.Diagram.Product
 public import JordanDiagram.Diagram.SpinFactor
