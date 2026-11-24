@@ -10,6 +10,10 @@ finite fields as examples.
 
 Built against [Mathlib4](https://github.com/leanprover-community/mathlib4).
 
+## Formalization of the paper
+
+[`JordanDiagram/`](JordanDiagram/) is a separate library, built on `Jordan`. It formalizes *Symmetries of Jordan Algebra Diagrams over Varying Base Rings*: diagram automorphism groups and compatible derivations, terminal determination (Propositions 3.6, 3.8 and 3.14), wedges (Proposition 3.12), the finite detector criterion (Proposition 4.2 and Lemma 4.3), scalar extension (Lemma 2.4, Proposition 3.3), and spin factors and spin-factor diagrams (Lemma 5.5, Propositions 5.6 and 5.7). See the [subfolder README](JordanDiagram/README.md).
+
 ## Computations for the paper
 
 [`computations/`](computations/) holds the Python and GAP code for the computations in *Symmetries of Jordan Algebra Diagrams over Varying Base Rings* (spin-factor diagrams over `Z[1/2]` and integral points of the Baez–Schwahn chain). It is independent of the Lean build; see [`computations/README.md`](computations/README.md).

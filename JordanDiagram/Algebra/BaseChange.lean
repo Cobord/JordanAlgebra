@@ -1,0 +1,279 @@
+import JordanDiagram.Algebra.Automorphism
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.Flat.Basic
+
+/-!
+# Scalar extension of Jordan algebras (Lemma 2.4)
+
+For a commutative `R`-algebra `S` and a Jordan `R`-algebra `A`, with `2` invertible in `R`, the
+`S`-algebra `S ⊗[R] A` is a Jordan algebra (`instJordanAlgebra`).
+
+The proof is the paper's. With `2` invertible the fully linearized Jordan identity
+`lin a b c y = [L_a, L_{bc}] y + [L_b, L_{ca}] y + [L_c, L_{ab}] y = 0` holds in `A`
+(`JordanAlgebra.lie_lmul_lmul_add_add_eq_zero`). It is `R`-multilinear, so it holds in `S ⊗ A`
+because it holds on pure tensors. The Jordan expression `jordanExpr x y = [L_x, L_{x²}] y` is cubic
+in `x`, and `jordanExpr (x + z) = jordanExpr x + jordanExpr z + lin x x z + lin z z x`
+(`jordanExpr_add`), so it vanishes on sums of pure tensors.
+
+Scalar extension is functorial (`baseChangeHom`), and transports automorphisms and derivations
+(`baseChangeAut`, `baseChangeDer`).
+-/
+
+open TensorProduct
+
+namespace JordanAlgebra
+
+section Generic
+
+variable {M : Type*} [NonUnitalNonAssocRing M]
+
+/-- The fully linearized Jordan expression `[L_a, L_{bc}] y + [L_b, L_{ca}] y + [L_c, L_{ab}] y`. -/
+def lin (a b c y : M) : M :=
+  a * ((b * c) * y) - (b * c) * (a * y) + (b * ((c * a) * y) - (c * a) * (b * y)) +
+    (c * ((a * b) * y) - (a * b) * (c * y))
+
+/-- The Jordan expression `[L_x, L_{x²}] y`; the Jordan identity says it vanishes. -/
+def jordanExpr (x y : M) : M := x * ((x * x) * y) - (x * x) * (x * y)
+
+theorem lin_add₁ (a a' b c y : M) : lin (a + a') b c y = lin a b c y + lin a' b c y := by
+  simp only [lin, mul_add, add_mul]; abel
+
+theorem lin_add₂ (a b b' c y : M) : lin a (b + b') c y = lin a b c y + lin a b' c y := by
+  simp only [lin, mul_add, add_mul]; abel
+
+theorem lin_add₃ (a b c c' y : M) : lin a b (c + c') y = lin a b c y + lin a b c' y := by
+  simp only [lin, mul_add, add_mul]; abel
+
+theorem lin_add₄ (a b c y y' : M) : lin a b c (y + y') = lin a b c y + lin a b c y' := by
+  simp only [lin, mul_add]; abel
+
+theorem lin_zero₁ (b c y : M) : lin 0 b c y = 0 := by simp [lin]
+theorem lin_zero₂ (a c y : M) : lin a 0 c y = 0 := by simp [lin]
+theorem lin_zero₃ (a b y : M) : lin a b 0 y = 0 := by simp [lin]
+theorem lin_zero₄ (a b c : M) : lin a b c 0 = 0 := by simp [lin]
+
+theorem jordanExpr_add₂ (x y y' : M) : jordanExpr x (y + y') = jordanExpr x y + jordanExpr x y' := by
+  simp only [jordanExpr, mul_add]; abel
+
+/-- The cubic Jordan expression is additive up to the linearized cross terms. -/
+theorem jordanExpr_add (hcomm : ∀ a b : M, a * b = b * a) (x z y : M) :
+    jordanExpr (x + z) y = jordanExpr x y + jordanExpr z y + lin x x z y + lin z z x y := by
+  simp only [jordanExpr, lin, mul_add, add_mul, hcomm z x]
+  abel
+
+end Generic
+
+variable {R : Type*} [CommRing R] {A : Type*} [JordanAlgebra R A]
+
+attribute [local instance] LieRing.ofAssociativeRing in
+/-- The fully linearized Jordan identity in a Jordan algebra with `2` invertible. -/
+theorem lin_eq_zero [Invertible (2 : R)] (a b c y : A) : lin a b c y = 0 := by
+  have h := congrArg (fun f : AddMonoid.End A => f y) (lie_lmul_lmul_add_add_eq_zero (R := R) a b c)
+  simp only [Ring.lie_def] at h
+  exact h
+
+theorem jordanExpr_eq_zero (x y : A) : jordanExpr x y = 0 := by
+  rw [jordanExpr, sub_eq_zero]
+  exact (jordan_identity x y).symm
+
+namespace BaseChange
+
+variable (S : Type*) [CommRing S] [Algebra R S]
+
+theorem mul_comm' (x y : S ⊗[R] A) : x * y = y * x := by
+  induction x with
+  | zero => simp
+  | tmul s a =>
+    induction y with
+    | zero => simp
+    | tmul t b =>
+      rw [Algebra.TensorProduct.tmul_mul_tmul, Algebra.TensorProduct.tmul_mul_tmul, mul_comm s t,
+        jordan_mul_comm a b]
+    | add y z hy hz => rw [mul_add, add_mul, hy, hz]
+  | add x z hx hz => rw [add_mul, mul_add, hx, hz]
+
+theorem lin_tmul (s t u v : S) (a b c y : A) :
+    lin (s ⊗ₜ[R] a) (t ⊗ₜ b) (u ⊗ₜ c) (v ⊗ₜ y) = (s * t * u * v) ⊗ₜ lin a b c y := by
+  simp only [lin, Algebra.TensorProduct.tmul_mul_tmul, TensorProduct.tmul_sub,
+    TensorProduct.tmul_add]
+  simp only [mul_comm, mul_left_comm]
+
+theorem lin_eq_zero [Invertible (2 : R)] (a b c y : S ⊗[R] A) : lin a b c y = 0 := by
+  induction a with
+  | zero => exact lin_zero₁ b c y
+  | add a a' ha ha' => rw [lin_add₁, ha, ha', add_zero]
+  | tmul s a =>
+    induction b with
+    | zero => exact lin_zero₂ _ c y
+    | add b b' hb hb' => rw [lin_add₂, hb, hb', add_zero]
+    | tmul t b =>
+      induction c with
+      | zero => exact lin_zero₃ _ _ y
+      | add c c' hc hc' => rw [lin_add₃, hc, hc', add_zero]
+      | tmul u c =>
+        induction y with
+        | zero => exact lin_zero₄ _ _ _
+        | add y y' hy hy' => rw [lin_add₄, hy, hy', add_zero]
+        | tmul v y => rw [lin_tmul, JordanAlgebra.lin_eq_zero (R := R), TensorProduct.tmul_zero]
+
+theorem jordanExpr_eq_zero [Invertible (2 : R)] (x y : S ⊗[R] A) : jordanExpr x y = 0 := by
+  induction x with
+  | zero => simp [jordanExpr]
+  | add x z hx hz =>
+    rw [jordanExpr_add (mul_comm' S), hx, hz, lin_eq_zero, lin_eq_zero]
+    simp
+  | tmul s a =>
+    induction y with
+    | zero => simp [jordanExpr]
+    | add y y' hy hy' => rw [jordanExpr_add₂, hy, hy', add_zero]
+    | tmul t b =>
+      have h : jordanExpr (s ⊗ₜ[R] a) (t ⊗ₜ b) = (s * s * s * t) ⊗ₜ jordanExpr a b := by
+        simp only [jordanExpr, Algebra.TensorProduct.tmul_mul_tmul, TensorProduct.tmul_sub]
+        simp only [mul_comm, mul_left_comm]
+      rw [h, JordanAlgebra.jordanExpr_eq_zero, TensorProduct.tmul_zero]
+
+variable [Invertible (2 : R)]
+
+/-- **Lemma 2.4** (scalar extension): with `2` invertible in `R`, `S ⊗[R] A` is a Jordan
+`S`-algebra for every commutative `R`-algebra `S`. -/
+instance instJordanAlgebra : JordanAlgebra S (S ⊗[R] A) :=
+  { (inferInstance : NonAssocRing (S ⊗[R] A)), (inferInstance : Module S (S ⊗[R] A)),
+    (inferInstance : IsScalarTower S (S ⊗[R] A) (S ⊗[R] A)),
+    (inferInstance : SMulCommClass S (S ⊗[R] A) (S ⊗[R] A)) with
+    jordan_mul_comm := mul_comm' S
+    jordan_identity := fun x y => by
+      have h := jordanExpr_eq_zero S x y
+      rw [jordanExpr, sub_eq_zero] at h
+      exact h.symm }
+
+variable {S}
+variable {B : Type*} [JordanAlgebra R B]
+
+omit [Invertible (2 : R)] in
+theorem baseChange_mul (f : A →ₙₐ[R] B) (x y : S ⊗[R] A) :
+    (toLin f).baseChange S (x * y) = (toLin f).baseChange S x * (toLin f).baseChange S y := by
+  induction x with
+  | zero => simp
+  | add x z hx hz => rw [add_mul, map_add, hx, hz, map_add, add_mul]
+  | tmul s a =>
+    induction y with
+    | zero => simp
+    | add y z hy hz => rw [mul_add, map_add, hy, hz, map_add, mul_add]
+    | tmul t b =>
+      simp only [Algebra.TensorProduct.tmul_mul_tmul, LinearMap.baseChange_tmul, toLin_apply,
+        _root_.map_mul]
+
+variable (S) in
+/-- Scalar extension of a morphism of `Jord_R` (functoriality in Lemma 2.4). -/
+noncomputable def baseChangeHom (f : A →ₙₐ[R] B) : S ⊗[R] A →ₙₐ[S] S ⊗[R] B where
+  toFun := (toLin f).baseChange S
+  map_smul' := ((toLin f).baseChange S).map_smul
+  map_zero' := map_zero _
+  map_add' := map_add _
+  map_mul' := baseChange_mul f
+
+omit [Invertible (2 : R)] in
+@[simp]
+theorem baseChangeHom_tmul (f : A →ₙₐ[R] B) (s : S) (a : A) :
+    baseChangeHom S f (s ⊗ₜ a) = s ⊗ₜ f a := rfl
+
+omit [Invertible (2 : R)] in
+theorem baseChangeHom_injective_of_flat [Module.Flat R S] (f : A →ₙₐ[R] B)
+    (hf : Function.Injective f) : Function.Injective (baseChangeHom S f) :=
+  Module.Flat.lTensor_preserves_injective_linearMap (M := S) (toLin f) hf
+
+variable (S) in
+/-- Scalar extension of Jordan automorphisms, a group homomorphism
+`Aut_{Jord_R}(A) → Aut_{Jord_S}(S ⊗ A)`. -/
+noncomputable def baseChangeAut : jordanAut R A →* jordanAut S (S ⊗[R] A) where
+  toFun g := ⟨(g : A ≃ₗ[R] A).baseChange R S A A, by
+    intro x y
+    exact baseChange_mul (jordanAut.toHom g) x y⟩
+  map_one' := Subtype.ext (LinearEquiv.baseChange_one R S A)
+  map_mul' g h := Subtype.ext (LinearEquiv.baseChange_mul R S A g h)
+
+@[simp]
+theorem baseChangeAut_tmul (g : jordanAut R A) (s : S) (a : A) :
+    baseChangeAut S g (s ⊗ₜ a) = s ⊗ₜ g a := rfl
+
+variable (S) in
+/-- Scalar extension of a Jordan derivation. -/
+noncomputable def baseChangeDer (d : JordanDerivation R A) : JordanDerivation S (S ⊗[R] A) where
+  toLinearMap := (d : A →ₗ[R] A).baseChange S
+  leibniz' x y := by
+    induction x with
+    | zero => simp
+    | add x z hx hz => simp only [add_mul, map_add, hx, hz]; abel
+    | tmul s a =>
+      induction y with
+      | zero => simp
+      | add y z hy hz => simp only [mul_add, map_add, hy, hz]; abel
+      | tmul t b =>
+        simp only [Algebra.TensorProduct.tmul_mul_tmul, LinearMap.baseChange_tmul,
+          JordanDerivation.coeFn_coe, JordanDerivation.leibniz, TensorProduct.tmul_add]
+
+@[simp]
+theorem baseChangeDer_tmul (d : JordanDerivation R A) (s : S) (a : A) :
+    baseChangeDer S d (s ⊗ₜ a) = s ⊗ₜ d a := rfl
+
+theorem baseChangeDer_add (d e : JordanDerivation R A) :
+    baseChangeDer S (d + e) = baseChangeDer S d + baseChangeDer S e := by
+  refine JordanDerivation.ext fun x => ?_
+  induction x with
+  | zero => simp only [map_zero]
+  | add x y hx hy =>
+    rw [JordanDerivation.map_add, hx, hy, JordanDerivation.map_add]
+  | tmul s a =>
+    change s ⊗ₜ (d a + e a) = s ⊗ₜ d a + s ⊗ₜ e a
+    rw [TensorProduct.tmul_add]
+
+theorem baseChangeDer_lie (d e : JordanDerivation R A) :
+    baseChangeDer S ⁅d, e⁆ = ⁅baseChangeDer S d, baseChangeDer S e⁆ := by
+  refine JordanDerivation.ext fun x => ?_
+  induction x with
+  | zero => simp only [map_zero]
+  | add x y hx hy =>
+    rw [JordanDerivation.map_add, hx, hy, JordanDerivation.map_add]
+  | tmul s a =>
+    change s ⊗ₜ (d (e a) - e (d a)) = s ⊗ₜ d (e a) - s ⊗ₜ e (d a)
+    rw [TensorProduct.tmul_sub]
+
+/-- Scalar extension preserves the commutation `g' ∘ f = f ∘ g` of automorphisms with a
+morphism. -/
+theorem baseChangeAut_comm {g : jordanAut R A} {g' : jordanAut R B} {f : A →ₙₐ[R] B}
+    (h : ∀ a, g' (f a) = f (g a)) (x : S ⊗[R] A) :
+    baseChangeAut S g' (baseChangeHom S f x) = baseChangeHom S f (baseChangeAut S g x) := by
+  induction x with
+  | zero =>
+    change ((baseChangeAut S g' : jordanAut S (S ⊗[R] B)) : S ⊗[R] B ≃ₗ[S] S ⊗[R] B)
+        (baseChangeHom S f 0) =
+      baseChangeHom S f (((baseChangeAut S g : jordanAut S (S ⊗[R] A)) :
+        S ⊗[R] A ≃ₗ[S] S ⊗[R] A) 0)
+    simp only [map_zero]
+  | add x y hx hy =>
+    change ((baseChangeAut S g' : jordanAut S (S ⊗[R] B)) : S ⊗[R] B ≃ₗ[S] S ⊗[R] B)
+        (baseChangeHom S f (x + y)) =
+      baseChangeHom S f (((baseChangeAut S g : jordanAut S (S ⊗[R] A)) :
+        S ⊗[R] A ≃ₗ[S] S ⊗[R] A) (x + y))
+    rw [map_add, map_add, map_add, map_add]
+    exact congrArg₂ (· + ·) hx hy
+  | tmul s a =>
+    change s ⊗ₜ g' (f a) = s ⊗ₜ f (g a)
+    rw [h]
+
+/-- Scalar extension preserves the commutation `d' ∘ f = f ∘ d` of derivations with a
+morphism. -/
+theorem baseChangeDer_comm {d : JordanDerivation R A} {d' : JordanDerivation R B}
+    {f : A →ₙₐ[R] B} (h : ∀ a, d' (f a) = f (d a)) (x : S ⊗[R] A) :
+    baseChangeDer S d' (baseChangeHom S f x) = baseChangeHom S f (baseChangeDer S d x) := by
+  induction x with
+  | zero => simp only [map_zero]
+  | add x y hx hy =>
+    rw [map_add, JordanDerivation.map_add, hx, hy, JordanDerivation.map_add, map_add]
+  | tmul s a =>
+    change s ⊗ₜ d' (f a) = s ⊗ₜ f (d a)
+    rw [h]
+
+end BaseChange
+
+end JordanAlgebra
