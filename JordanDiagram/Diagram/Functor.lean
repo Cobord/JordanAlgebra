@@ -7,7 +7,7 @@ public import Mathlib.Algebra.Category.Grp.Basic
 public import JordanDiagram.MathlibMissing.LieRingCat
 
 /-!
-# The diagram group functor `G_F : CAlg_R → Grp` (Proposition 3.3)
+# The diagram group functor `G_F : CAlg_R → Grp`
 
 For a diagram `F : I → Jord_R`, with `2` invertible in `R`, the groups `G_F(S)` of the scalar
 extensions `S ⊗[R] F` form a functor on commutative `R`-algebras:
@@ -18,9 +18,8 @@ extensions `S ⊗[R] F` form a functor on commutative `R`-algebras:
 * `autMap_comp_autBaseChange`: compatibility with `G_F(R) → G_F(S)`;
 * `autFunctor F : CommAlgCat R ⥤ GrpCat`, the functor `G_F` itself.
 
-For `R = Z[1/2]` the category `CommAlgCat R` is `CAlg_{Z[1/2]}` of the paper (Lemma 2.2), and
-`autFunctor F` is the group-valued functor of Proposition 3.3 for the family `F_S = S ⊗ F`
-(Lemma 2.11).
+For example, for `R = Z[1/2]` the category `CommAlgCat R` is `CAlg_{Z[1/2]}`, and
+`autFunctor F` is the group-valued functor `S ↦ G_F(S)` for the family `F_S = S ⊗ F`.
 -/
 
 @[expose] public section
@@ -36,7 +35,7 @@ variable (F : JordanDiagram.{u, v} R I)
 variable {S T U : Type u'} [CommRing S] [Algebra R S] [CommRing T] [Algebra R T]
   [CommRing U] [Algebra R U]
 
-/-- **Proposition 3.3**: `G_F(φ) : G_F(S) →* G_F(T)` for `φ : S →ₐ[R] T`. -/
+/-- `G_F(φ) : G_F(S) →* G_F(T)` for `φ : S →ₐ[R] T`. -/
 noncomputable def autMap (φ : S →ₐ[R] T) : (F.baseChange S).autGroup →* (F.baseChange T).autGroup where
   toFun g := ⟨fun i => mapAut φ (g.1 i), fun α x =>
     mapLin_baseChangeHom_comm φ (F.map α) _ _ (fun y => autGroup_naturality g α y) x⟩
@@ -60,7 +59,7 @@ theorem autMap_comp_autBaseChange (φ : S →ₐ[R] T) :
     (autMap F φ).comp (autBaseChange S F) = autBaseChange T F :=
   MonoidHom.ext fun g => Subtype.ext (funext fun i => mapAut_baseChangeAut φ (g.1 i))
 
-/-- **Proposition 3.3**: the diagram automorphism group functor
+/-- The diagram automorphism group functor
 `G_F : CAlg_R → Grp`, `S ↦ Aut(S ⊗[R] F)`. -/
 noncomputable def autFunctor : CommAlgCat.{u'} R ⥤ GrpCat.{max u' v w} where
   obj S := GrpCat.of (F.baseChange S).autGroup
@@ -83,7 +82,7 @@ theorem autFunctor_map {S T : CommAlgCat.{u'} R} (φ : S ⟶ T) :
 
 section Der
 
-/-- **Proposition 3.8** (functoriality): the Lie ring homomorphism `g_F(φ) : g_F(S) →⁅⁆ g_F(T)`
+/-- The Lie ring homomorphism `g_F(φ) : g_F(S) →⁅⁆ g_F(T)`
 for `φ : S →ₐ[R] T`, transporting each component derivation along `φ`. Bracket preservation
 (`mapDer_lie`) is part of the data. -/
 noncomputable def derMap (φ : S →ₐ[R] T) :
@@ -111,7 +110,7 @@ theorem derMap_derBaseChange (φ : S →ₐ[R] T) (D : F.derAlgebra) :
     derMap F φ (derBaseChange S D) = derBaseChange T D :=
   Subtype.ext (funext fun i => mapDer_baseChangeDer φ (D.1 i))
 
-/-- **Proposition 3.8**: the compatible-derivation functor `g_F : CAlg_R → LieRing`,
+/-- The compatible-derivation functor `g_F : CAlg_R → LieRing`,
 `S ↦ Der(S ⊗[R] F)`. -/
 noncomputable def derFunctor : CommAlgCat.{u'} R ⥤ LieRingCat.{max u' v w} where
   obj S := LieRingCat.of (F.baseChange S).derAlgebra

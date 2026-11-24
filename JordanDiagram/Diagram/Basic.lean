@@ -5,17 +5,17 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Preorder
 
 /-!
-# Terminally pointed Jordan diagrams (Section 2.2)
+# Terminally pointed Jordan diagrams
 
-A *terminally pointed indexing category* `(I⁺, +)` (Definition 2.5) is a small category with a
+A *terminally pointed indexing category* `(I⁺, +)` is a small category with a
 specified terminal object; `TerminallyPointed I` records the choice. A Jordan diagram over a fixed
 commutative ring `R` is a functor `I⁺ → Jord_R`, where `Jord_R` has Jordan algebras as objects and
 non-unital algebra homomorphisms (`R`-linear maps preserving the product, units ignored) as
 morphisms. Rather than bundling `Jord_R` as a Mathlib category, `JordanDiagram R I` records the
 functor concretely: a family of Jordan algebras `obj i` with maps `map α` satisfying functoriality.
 
-The terminal algebra is `J = obj ⊤` and the terminal maps are `ν i = map (! i) : obj i → J`
-(Definition 2.8). The scalar-extension coherence (the family over varying `R`) is not part of this
+The terminal algebra is `J = obj ⊤` and the terminal maps are `ν i = map (! i) : obj i → J`.
+The scalar-extension coherence (the family over varying `R`) is not part of this
 file: everything here is fiberwise, over one ring.
 -/
 
@@ -48,14 +48,14 @@ theorem comp_toTop {i j : I} (α : i ⟶ j) : α ≫ toTop j = toTop i := hom_ex
 end TerminallyPointed
 
 /-- A preorder with a greatest element, as a category, is terminally pointed by `⊤`; e.g. a poset
-`P` with a greatest element adjoined, `WithTop P` (Definition 5.3). -/
+`P` with a greatest element adjoined, `WithTop P`. -/
 instance TerminallyPointed.ofOrderTop (I : Type w) [Preorder I] [OrderTop I] :
     TerminallyPointed I :=
   ⟨⊤, Preorder.isTerminalTop I⟩
 
 /-- A diagram `I → Jord_R` of Jordan algebras over a fixed commutative ring `R`. Arrows are
 non-unital algebra homomorphisms: a unit need not exist, and need not be preserved when it does
-(e.g. corner inclusions, Lemma 8.14). -/
+(e.g. corner inclusions). -/
 structure JordanDiagram (R : Type u) [CommRing R] (I : Type w) [Category.{w'} I] where
   /-- The Jordan algebra at node `i`. -/
   obj : I → Type v
@@ -76,7 +76,7 @@ section Restriction
 
 variable {I' : Type*} [Category I']
 
-/-- Restriction of a diagram along a functor `u : I' ⥤ I` (Lemma 3.11). Reducible, so that its
+/-- Restriction of a diagram along a functor `u : I' ⥤ I`. Reducible, so that its
 nodes are seen as `F.obj (u.obj j)` by rewriting and instance search. -/
 @[reducible] def restrict (F : JordanDiagram.{u, v} R I) (u : I' ⥤ I) : JordanDiagram.{u, v} R I' where
   obj j := F.obj (u.obj j)

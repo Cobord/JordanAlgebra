@@ -4,18 +4,18 @@ public import JordanDiagram.Diagram.Group
 public import JordanDiagram.Algebra.Equiv
 
 /-!
-# Isomorphisms of diagrams and shape-twisted automorphisms (Section 3.4)
+# Isomorphisms of diagrams and shape-twisted automorphisms
 
 `DiagramIso F F'`: natural isomorphisms between two diagrams over the same indexing category, i.e.
-the isomorphisms in the fiber of the Grothendieck construction over `(I⁺, R)` (Proposition 2.7).
+the isomorphisms in the fiber of the Grothendieck construction over `(I⁺, R)`.
 
 * `DiagramIso.terminalEquiv`: **terminal determination for isomorphisms**. When the terminal maps
   of both diagrams are injective, an isomorphism `F ≅ F'` is the same as a Jordan isomorphism
-  `h : J ≃ⱼ J'` with `h(Aᵢ) = A'ᵢ` for every `i`. This is the argument of Propositions 3.6, 3.14
-  and 5.7.
+  `h : J ≃ⱼ J'` with `h(Aᵢ) = A'ᵢ` for every `i`. The same argument gives terminal determination for
+  automorphisms, for twisted automorphisms, and for isomorphisms of spin-factor diagrams.
 * `TwistedIso F u`: for an endofunctor `u` of `I⁺`, an isomorphism `F ≅ u* F = F ∘ u`. For
-  `u ∈ Aut(I⁺, +)` these are the elements of the shape-twisted group `G̃_F(R)` lying over `u`
-  (Definition 3.13). `twistedTerminalEquiv` is the second statement of **Proposition 3.14**: such
+  `u ∈ Aut(I⁺, +)` these are the elements of the shape-twisted group `G̃_F(R)` lying over `u`.
+  `twistedTerminalEquiv` is **terminal determination for twisted automorphisms**: such
   a `θ` is determined by its terminal component, which may be any Jordan isomorphism
   `h : F(+) ≃ⱼ F(u +)` with `h(Aᵢ) = νᵘᵢ(F(u i))`. For `u = 𝟭`, twisted isomorphisms are
   the diagram automorphisms (`twistedIdEquiv`), which gives the kernel of `G̃_F(R) → Aut(I⁺, +)`.
@@ -126,18 +126,18 @@ section Twisted
 variable (F : JordanDiagram.{u, v} R I)
 
 /-- For an endofunctor `u` of the shape, a *twisted automorphism over `u`* is an isomorphism
-`F ≅ u* F` (Definition 3.13): Jordan isomorphisms `θᵢ : F(i) ≃ F(u i)` with
+`F ≅ u* F`: Jordan isomorphisms `θᵢ : F(i) ≃ F(u i)` with
 `θⱼ ∘ F(α) = F(u α) ∘ θᵢ`. -/
 abbrev TwistedIso (u : I ⥤ I) := DiagramIso F (F.restrict u)
 
 /-- Twisted isomorphisms over the identity are the diagram automorphisms: the kernel of
-`G̃_F(R) → Aut(I⁺, +)` is `G_F(R)` (**Proposition 3.14**, exactness). -/
+`G̃_F(R) → Aut(I⁺, +)` is `G_F(R)`. -/
 def twistedIdEquiv : TwistedIso F (𝟭 I) ≃ F.autGroup := DiagramIso.autEquiv F
 
 variable [TerminallyPointed I] {F}
 
-/-- **Proposition 3.14** (terminal determination): if the terminal maps of `F` and of `u* F` are
-injective, a twisted automorphism over `u` is determined by its terminal component
+/-- **Terminal determination for twisted automorphisms**: if the terminal maps of `F` and of
+`u* F` are injective, a twisted automorphism over `u` is determined by its terminal component
 `θ₊ : F(+) ≃ⱼ F(u +)`, which may be any Jordan isomorphism carrying `Aᵢ` onto the image of
 `F(u i) → F(u +)`. -/
 noncomputable def twistedTerminalEquiv (u : I ⥤ I) (hν : ∀ i, Function.Injective (F.ν i))

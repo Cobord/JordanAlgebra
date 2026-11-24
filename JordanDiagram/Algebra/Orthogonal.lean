@@ -5,7 +5,7 @@ public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.Projection
 
 /-!
-# Orthogonal splittings and stabilizers (the core of Corollary 5.10)
+# Orthogonal splittings and stabilizers (automorphisms of spin-factor flags)
 
 Let `B` be a symmetric bilinear form on an `R`-module `V`, and `W ⊆ V` a submodule on which `B`
 is *nonsingular*: `w ↦ B(w, ·)|_W` identifies `W` with its dual (`IsNonsingularOn`). Then:
@@ -15,9 +15,11 @@ is *nonsingular*: `w ↦ B(w, ·)|_W` identifies `W` with its dual (`IsNonsingul
 * `stabEquivProd`: the stabilizer of `W` in `O(V, B)(R)` is `O(W, B) × O(W⊥, B)`, by
   restriction to the two pieces; an isometry preserving `W` also preserves `W⊥`.
 
-This is the one-member case of Corollary 5.10. With Proposition 5.6 it says the automorphism group
-of the spin-factor diagram `J(W, B) ↪ J(V, B)` is `O(W) × O(W⊥)`. Iterating over a flag gives the
-product `∏ⱼ O(Uⱼ)` of the corollary.
+This is the one-member case of the description of automorphism groups of nonsingular spin-factor
+flags. Together with the identification of a spin-factor diagram's automorphism group with a
+stabilizer in the orthogonal group (`spinDiagramAutEquiv`), it says the automorphism group of the
+spin-factor diagram `J(W, B) ↪ J(V, B)` is `O(W) × O(W⊥)`. Iterating over a flag gives a product
+`∏ⱼ O(Uⱼ)`.
 -/
 
 @[expose] public section
@@ -238,7 +240,7 @@ theorem stabToProd_glueStab : stabToProd hB (glueStab hB hW g₁ g₂) = (g₁, 
 
 end Glue
 
-/-- **Corollary 5.10** (one nonsingular member): the stabilizer of `W` in `O(V, B)(R)` is
+/-- **Stabilizer of a nonsingular submodule**: the stabilizer of `W` in `O(V, B)(R)` is
 `O(W, B) × O(W⊥, B)`, by restriction. -/
 noncomputable def stabEquivProd :
     stabSub B W ≃* orthogonalGroup (B.restrict W) × orthogonalGroup (B.restrict (B.orthogonal W)) :=

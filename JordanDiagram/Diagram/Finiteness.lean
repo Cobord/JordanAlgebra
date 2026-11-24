@@ -5,13 +5,13 @@ public import JordanDiagram.Algebra.Generation
 public import Mathlib.Data.Finite.Perm
 
 /-!
-# Detecting configurations (Section 4)
+# Detecting configurations
 
-* `card_le_factorial_of_faithful`: the finite detector criterion (Proposition 4.2) — a group
+* `card_le_factorial_of_faithful`: the finite detector criterion — a group
   acting faithfully on a finite set `X` embeds in `Perm X`, so `|G| ≤ |X|!`.
-* `JordanDiagram.card_autGroup_le`: generating configurations (Lemma 4.3) combined with
-  Proposition 4.2. If `X ⊆ J` is finite, stable under `G_F(R)`, Jordan-generates `J`, and the
-  terminal maps are injective, then `G_F(R)` is finite of order at most `|X|!`. The
+* `JordanDiagram.card_autGroup_le`: generating configurations combined with the finite detector
+  criterion. If `X ⊆ J` is finite, stable under `G_F(R)`, Jordan-generates `J`, and the terminal
+  maps are injective, then `G_F(R)` is finite of order at most `|X|!`. The
   single-algebra input, that an automorphism is determined on a generating set, is
   `jordanAut.ext_of_adjoin_eq_top` in `JordanDiagram/Algebra/Generation.lean`.
 -/
@@ -22,7 +22,7 @@ universe u v w w'
 
 open CategoryTheory TerminallyPointed JordanAlgebra
 
-/-- **Finite detector criterion** (Proposition 4.2). -/
+/-- **Finite detector criterion**. -/
 theorem card_le_factorial_of_faithful (G X : Type*) [Group G] [MulAction G X] [FaithfulSMul G X]
     [Finite X] : Finite G ∧ Nat.card G ≤ (Nat.card X).factorial := by
   have hinj : Function.Injective (MulAction.toPermHom G X) := MulAction.toPerm_injective
@@ -50,7 +50,7 @@ def permOfStable {X : Set F.J} (hX : ∀ g : F.autGroup, ∀ x ∈ X, ev F g x �
   map_one' := rfl
   map_mul' _ _ := rfl
 
-/-- **Generating configurations** (Lemma 4.3), with the bound of Proposition 4.2: a finite,
+/-- **Generating configurations**, with the bound of the finite detector criterion: a finite,
 `G_F(R)`-stable, Jordan-generating subset `X ⊆ J` is a detecting configuration, so `G_F(R)` is
 finite of order at most `|X|!`. -/
 theorem card_autGroup_le (hν : ∀ i, Function.Injective (F.ν i)) {X : Set F.J} [Finite X]

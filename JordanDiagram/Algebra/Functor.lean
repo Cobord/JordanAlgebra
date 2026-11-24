@@ -3,7 +3,7 @@ module
 public import JordanDiagram.Algebra.BaseChange
 
 /-!
-# Transport of automorphisms along algebra maps (functoriality of Proposition 3.3)
+# Transport of automorphisms along algebra maps (functoriality of the automorphism group functor)
 
 For commutative `R`-algebras `S`, `T` and `φ : S →ₐ[R] T`, write `φ ⊗ 1 : S ⊗[R] A → T ⊗[R] A`
 (`tensorMap φ`). An `S`-linear endomorphism `f` of `S ⊗[R] A` transports to the `T`-linear
@@ -199,7 +199,7 @@ section MapAut
 variable (φ : S →ₐ[R] T)
 
 /-- Transport of Jordan automorphisms along `φ : S →ₐ[R] T`, a group homomorphism
-`Aut_{Jord_S}(S ⊗[R] A) → Aut_{Jord_T}(T ⊗[R] A)` (Proposition 3.3). -/
+`Aut_{Jord_S}(S ⊗[R] A) → Aut_{Jord_T}(T ⊗[R] A)`. -/
 noncomputable def mapAut : jordanAut S (S ⊗[R] A) →* jordanAut T (T ⊗[R] A) where
   toFun g := ⟨LinearEquiv.ofLinearMap (mapLin φ (g : S ⊗[R] A ≃ₗ[S] S ⊗[R] A).toLinearMap)
       (mapLin φ ((g⁻¹ : jordanAut S (S ⊗[R] A)) : S ⊗[R] A ≃ₗ[S] S ⊗[R] A).toLinearMap)

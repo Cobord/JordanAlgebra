@@ -10,16 +10,16 @@ public import Mathlib.Algebra.Module.Submodule.Range
 /-!
 # Jordan automorphisms, stabilizers, and lifting along injective homomorphisms
 
-Morphisms of `Jord_R` (Definition 2.3 of the paper) are `R`-linear maps preserving the Jordan
+Morphisms of `Jord_R` are `R`-linear maps preserving the Jordan
 product, with no unit condition; in Mathlib these are the non-unital algebra homomorphisms
 `A →ₙₐ[R] B`. Mathlib has no group structure on bijective such maps, so the automorphism group
 `Aut_{Jord_R}(A)` is taken to be `jordanAut R A`, the subgroup of the linear automorphism group
 `A ≃ₗ[R] A` cut out by multiplicativity.
 
-The main technical tool for terminal determination (Propositions 3.6 and 3.8) is lifting along an
-injective homomorphism `ν : A →ₙₐ[R] J`: an automorphism `h` of `J` preserving `range ν` setwise
-transports to a unique automorphism `g` of `A` with `ν ∘ g = h ∘ ν` (`liftAut`), and a derivation
-of `J` preserving `range ν` transports to a derivation of `A` (`liftDer`).
+The main technical tool for terminal determination (of automorphisms and of derivations) is
+lifting along an injective homomorphism `ν : A →ₙₐ[R] J`: an automorphism `h` of `J` preserving
+`range ν` setwise transports to a unique automorphism `g` of `A` with `ν ∘ g = h ∘ ν` (`liftAut`),
+and a derivation of `J` preserving `range ν` transports to a derivation of `A` (`liftDer`).
 -/
 
 @[expose] public section

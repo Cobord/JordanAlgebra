@@ -5,19 +5,19 @@ public import Jordan.SpinFactor
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
-# Isomorphisms, automorphisms and derivations of spin factors (Lemma 5.5)
+# Isomorphisms, automorphisms and derivations of spin factors
 
 For free `R`-modules `V`, `V'` with arbitrary symmetric bilinear forms `B`, `B'` (possibly
 degenerate), over a commutative ring with `2` invertible:
 
 * `Isometry B B'`, the isometries `(V, B) ≃ (V', B')`, and `isometryEquiv`: every Jordan
-  isomorphism `J(V, B) ≃ⱼ J(V', B')` is `g ⊕ id` for a unique isometry `g` (Lemma 5.5);
-* `orthogonalGroup B`, the group `O(V, B)(R)` (Definition 5.2), and `autEquivOrthogonal`:
+  isomorphism `J(V, B) ≃ⱼ J(V', B')` is `g ⊕ id` for a unique isometry `g`;
+* `orthogonalGroup B`, the group `O(V, B)(R)`, and `autEquivOrthogonal`:
   `O(V, B)(R) ≃* Aut_{Jord_R} J(V, B)`, `g ↦ g ⊕ id`, the case `V = V'`;
 * `IsSkew B X` (`X ∈ o(V, B)(R)`), and `derEquivSkew`: derivations of `J(V, B)` are exactly the
-  maps `X ⊕ 0` with `X` skew for `B` (Lemma 5.5).
+  maps `X ⊕ 0` with `X` skew for `B`.
 
-The proof follows the paper's: an isomorphism `e` fixes the unit. For a basis vector `v`, write
+Proof sketch: an isomorphism `e` fixes the unit. For a basis vector `v`, write
 `e(v) = (u, t)`; applying `e⁻¹` to the quadratic relation `x² = T(x) x - N(x) 1` gives `2 t v = 0`,
 so `e(V) ⊆ V'`. Multiplicativity on `v * w = B(v, w) 1` then gives the isometry property directly,
 with no polarization.
@@ -42,7 +42,7 @@ noncomputable scoped instance instJordanAlgebraOfFact [Fact B.IsSymm] :
     JordanAlgebra R (SpinFactor R V B) :=
   jordanAlgebra B Fact.out
 
-/-- The orthogonal group `O(V, B)(R)` (Definition 5.2). -/
+/-- The orthogonal group `O(V, B)(R)`. -/
 def orthogonalGroup : Subgroup (V ≃ₗ[R] V) where
   carrier := {g | ∀ v w, B (g v) (g w) = B v w}
   one_mem' _ _ := rfl
@@ -54,7 +54,7 @@ def orthogonalGroup : Subgroup (V ≃ₗ[R] V) where
     conv_rhs => rw [← g.apply_symm_apply v, ← g.apply_symm_apply w]
     exact (hg _ _).symm
 
-/-- `X ∈ o(V, B)(R)`: `B (X v) w + B v (X w) = 0` (Definition 5.2). -/
+/-- `X ∈ o(V, B)(R)`: `B (X v) w + B v (X w) = 0`. -/
 def IsSkew (X : V →ₗ[R] V) : Prop := ∀ v w, B (X v) w + B v (X w) = 0
 
 @[simp] theorem mk_mul_mk (x y : V) (a b : R) :
@@ -210,7 +210,7 @@ theorem equivOfIsometry_isometryOfEquiv (e : SpinFactor R V B ≃ⱼ[R] SpinFact
   obtain ⟨v, r⟩ := z
   exact (apply_mk e v r).symm
 
-/-- **Lemma 5.5** (isomorphisms): for `V`, `V'` free and `B`, `B'` any symmetric bilinear forms,
+/-- **Isomorphisms of spin factors**: for `V`, `V'` free and `B`, `B'` any symmetric bilinear forms,
 with `2` invertible, every Jordan isomorphism `J(V, B) ≃ⱼ J(V', B')` is `g ⊕ id` for a unique
 isometry `g : (V, B) ≃ (V', B')`. -/
 def isometryEquiv : Isometry B B' ≃ (SpinFactor R V B ≃ⱼ[R] SpinFactor R V' B') where
@@ -264,7 +264,7 @@ theorem autOfOrthogonal_orthogonalOfAut (a : jordanAut R (SpinFactor R V B)) :
   exact congrArg (fun e : SpinFactor R V B ≃ⱼ[R] SpinFactor R V B => e z)
     (equivOfIsometry_isometryOfEquiv (JordanEquiv.ofAut a))
 
-/-- **Lemma 5.5** (automorphisms): for `V` free and `B` any symmetric bilinear form, with `2`
+/-- **Automorphisms of spin factors**: for `V` free and `B` any symmetric bilinear form, with `2`
 invertible, `g ↦ g ⊕ id` is an isomorphism `O(V, B)(R) ≃* Aut_{Jord_R} J(V, B)`. -/
 noncomputable def autEquivOrthogonal : orthogonalGroup B ≃* jordanAut R (SpinFactor R V B) :=
   MulEquiv.ofBijective autOfOrthogonalHom
@@ -349,7 +349,7 @@ theorem derOfSkew_derVecPart (d : JordanDerivation R (SpinFactor R V B)) :
   rw [der_apply_mk]
   rfl
 
-/-- **Lemma 5.5** (derivations): for `V` free and `B` any symmetric bilinear form, with `2`
+/-- **Derivations of spin factors**: for `V` free and `B` any symmetric bilinear form, with `2`
 invertible, every derivation of `J(V, B)` is `X ⊕ 0` for a unique `X ∈ o(V, B)(R)`. -/
 noncomputable def derEquivSkew :
     {X : V →ₗ[R] V // IsSkew B X} ≃ JordanDerivation R (SpinFactor R V B) where

@@ -3,19 +3,19 @@ module
 public import JordanDiagram.Diagram.Basic
 
 /-!
-# The diagram automorphism group (Section 3.1)
+# The diagram automorphism group
 
-`G_F(R) = Aut_{Fun(I⁺, Jord_R)}(F_R)` (Definition 3.1): families `(gᵢ)` of Jordan automorphisms
+`G_F(R) = Aut_{Fun(I⁺, Jord_R)}(F_R)`: families `(gᵢ)` of Jordan automorphisms
 with `gⱼ ∘ F(α) = F(α) ∘ gᵢ` for every arrow `α : i ⟶ j`. Here it is `F.autGroup`, a subgroup of
 the product `∀ i, jordanAut R (F.obj i)`.
 
-* `ev`: terminal evaluation `G_F(R) → Aut(J)` (Definition 3.4).
-* `ev_injective`, `range_ev`: terminal determination (Proposition 3.6). When every terminal map
+* `ev`: terminal evaluation `G_F(R) → Aut(J)`.
+* `ev_injective`, `range_ev`: terminal determination. When every terminal map
   `νᵢ` is injective, `ev` is injective with image `⋂ᵢ Stab(Aᵢ)`, `Aᵢ = νᵢ(F(i))`.
-* `restrictHom`: restriction along a functor `u : I' ⥤ I` (Lemma 3.11).
+* `restrictHom`: restriction along a functor `u : I' ⥤ I`.
 
-The paper's hypothesis is that each `νᵢ` is a monomorphism of `Jord_R`; the paper's first step
-shows monomorphisms are injective, and here injectivity is taken as the hypothesis directly.
+One could instead assume that each `νᵢ` is a monomorphism of `Jord_R`; monomorphisms are
+injective, and here injectivity is taken as the hypothesis directly.
 -/
 
 @[expose] public section
@@ -29,7 +29,7 @@ namespace JordanDiagram
 variable {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
 variable (F : JordanDiagram.{u, v} R I)
 
-/-- The diagram automorphism group `G_F(R)` (Definition 3.1). -/
+/-- The diagram automorphism group `G_F(R)`. -/
 def autGroup : Subgroup (∀ i, jordanAut R (F.obj i)) where
   carrier := {g | ∀ {i j : I} (α : i ⟶ j) (x : F.obj i), g j (F.map α x) = F.map α (g i x)}
   one_mem' _ _ := rfl
@@ -55,7 +55,7 @@ section Restriction
 
 variable {I' : Type*} [Category I']
 
-/-- Restriction `G_F(R) → Aut(F ∘ u)` along a functor `u : I' ⥤ I` (Lemma 3.11). -/
+/-- Restriction `G_F(R) → Aut(F ∘ u)` along a functor `u : I' ⥤ I`. -/
 def restrictHom (u : I' ⥤ I) : F.autGroup →* (F.restrict u).autGroup where
   toFun g := ⟨fun j => g.1 (u.obj j), fun α x => g.2 (u.map α) x⟩
   map_one' := rfl
@@ -72,7 +72,7 @@ section Terminal
 variable [TerminallyPointed I]
 
 variable (F) in
-/-- Terminal evaluation `ev₊ : G_F(R) → Aut(J)` (Definition 3.4). -/
+/-- Terminal evaluation `ev₊ : G_F(R) → Aut(J)`. -/
 def ev : F.autGroup →* jordanAut R F.J :=
   (Pi.evalMonoidHom (fun i => jordanAut R (F.obj i)) top).comp F.autGroup.subtype
 
@@ -101,7 +101,7 @@ theorem mem_stabImages {h : jordanAut R F.J} :
     h ∈ stabImages F ↔ ∀ i, h '' F.image i = F.image i := by
   simp [stabImages, Subgroup.mem_iInf, jordanAut.mem_stab]
 
-/-- **Terminal determination**, injectivity (Proposition 3.6): when the terminal maps are
+/-- **Terminal determination**, injectivity: when the terminal maps are
 injective, a diagram automorphism is determined by its terminal component. -/
 theorem ev_injective (hν : ∀ i, Function.Injective (F.ν i)) :
     Function.Injective (ev F) := by
@@ -132,7 +132,7 @@ theorem ev_ofStab (hν : ∀ i, Function.Injective (F.ν i)) (h : jordanAut R F.
   have := ν_ofStab hν h hh top x
   rwa [F.ν_top, F.ν_top] at this
 
-/-- **Terminal determination**, image (Proposition 3.6): when the terminal maps are injective,
+/-- **Terminal determination**, image: when the terminal maps are injective,
 the image of terminal evaluation is the intersection of the stabilizers of the images `Aᵢ`. -/
 theorem range_ev (hν : ∀ i, Function.Injective (F.ν i)) : (ev F).range = stabImages F := by
   ext h
@@ -142,7 +142,7 @@ theorem range_ev (hν : ∀ i, Function.Injective (F.ν i)) : (ev F).range = sta
   · intro hh
     exact ⟨ofStab hν h hh, ev_ofStab hν h hh⟩
 
-/-- **Terminal determination** (Proposition 3.6): `G_F(R) ≃* ⋂ᵢ Stab(Aᵢ)`. -/
+/-- **Terminal determination**: `G_F(R) ≃* ⋂ᵢ Stab(Aᵢ)`. -/
 noncomputable def autGroupEquivStab (hν : ∀ i, Function.Injective (F.ν i)) :
     F.autGroup ≃* stabImages F :=
   (MonoidHom.ofInjective (ev_injective hν)).trans (MulEquiv.subgroupCongr (range_ev hν))

@@ -4,15 +4,15 @@ public import JordanDiagram.Algebra.BaseChange
 public import JordanDiagram.Algebra.Equiv
 
 /-!
-# Scalar extension in towers (the coherences `β_f` of Definition 2.8)
+# Scalar extension in towers (the coherences `β_f`)
 
 For `R → S → T`, scalar extension in two steps agrees with scalar extension in one:
 `cancelJordanEquiv : T ⊗[S] (S ⊗[R] A) ≃ⱼ[T] T ⊗[R] A` is a Jordan isomorphism. This is the
-coherence `β_f` for `f : S → T` of the family `S ↦ S ⊗[R] A` of Lemma 2.11.
+coherence `β_f` for `f : S → T` of the scalar-extension family `S ↦ S ⊗[R] A`.
 
 Through it, an automorphism of `S ⊗[R] A` extends to one of `T ⊗[R] A` (`autTower`). This map
 extends `Aut(A) → Aut(S ⊗ A)`: `autTower ∘ baseChangeAut S = baseChangeAut T`
-(`autTower_baseChangeAut`). This is the functoriality of `G_F` (Proposition 3.3) for one-node
+(`autTower_baseChangeAut`). This is the functoriality of `G_F` for one-node
 diagrams; `JordanDiagram.autTowerDiagram` does the same for diagrams.
 
 `[Invertible (2 : S)]` is taken as a separate hypothesis. It follows from `Invertible (2 : R)`,
@@ -82,7 +82,7 @@ variable (S T) in
 noncomputable def autTower : jordanAut S (S ⊗[R] A) →* jordanAut T (T ⊗[R] A) :=
   (conjAut (cancelJordanEquiv R S T A)).comp (baseChangeAut T)
 
-/-- **Proposition 3.3** (functoriality, one node): extending `Aut(A) → Aut(S ⊗ A)` further to
+/-- **Functoriality, one node**: extending `Aut(A) → Aut(S ⊗ A)` further to
 `T` is extending `Aut(A) → Aut(T ⊗ A)` directly. -/
 theorem autTower_baseChangeAut (h : jordanAut R A) :
     autTower S T (baseChangeAut S h) = baseChangeAut T h := by

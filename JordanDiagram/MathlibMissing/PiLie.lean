@@ -7,7 +7,7 @@ public import Mathlib.Algebra.Lie.Basic
 
 Mathlib has no Lie ring structure on a product `∀ i, L i` of Lie rings. This file provides the
 componentwise one (`Pi.instLieRing`, `Pi.instLieAlgebra`, `Pi.lie_apply`). It is used for the
-compatible derivations `g_F(R) ⊆ ∀ i, Der(F(i))` of a diagram (Definition 3.7), and is generic.
+compatible derivations `g_F(R) ⊆ ∀ i, Der(F(i))` of a diagram, and is generic.
 -/
 
 @[expose] public section

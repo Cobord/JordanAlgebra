@@ -6,19 +6,19 @@ public import JordanDiagram.Diagram.Iso
 public import JordanDiagram.Algebra.SpinFactor
 
 /-!
-# Diagrams of spin factors (Section 5)
+# Diagrams of spin factors
 
 Let `I` be a preorder with a greatest element `⊤`, regarded as a category with one arrow `i ⟶ j`
 when `i ≤ j`. A monotone family `W : I →o Submodule R V` of submodules of a module `V` with a
-symmetric bilinear form `B` gives the *spin-factor diagram* (Definition 5.3)
+symmetric bilinear form `B` gives the *spin-factor diagram*
 `i ↦ J(Wᵢ, B|_{Wᵢ})`, with the inclusions `J(Wᵢ, B) ↪ J(Wⱼ, B)` as arrows (`spinDiagram`).
-The paper's case is `I = P⁺ = WithTop P`, with `W₊ = V`.
+For example `I = P⁺ = WithTop P`, with `W₊ = V`.
 
-* `spinDiagram_ν_injective`: the arrows to the terminal node are injective (Lemma 5.4), and the
+* `spinDiagram_ν_injective`: the arrows to the terminal node are injective, and the
   image of node `i` is `R 1 ⊕ Wᵢ` (`spinDiagram_image`).
-* `spinDiagramAutEquiv`: **Proposition 5.6** for groups. With `U = W ⊤` free and `2`
-  invertible, `G_F(R) ≃* Stab_{O(U, B)}(W)`, the isometries of `U` preserving every `Wᵢ`.
-* `spinDiagramDerEquiv`: **Proposition 5.6** for Lie algebras. `g_F(R)` corresponds to the
+* `spinDiagramAutEquiv`: the automorphism group of a spin-factor diagram. With `U = W ⊤` free
+  and `2` invertible, `G_F(R) ≃* Stab_{O(U, B)}(W)`, the isometries of `U` preserving every `Wᵢ`.
+* `spinDiagramDerEquiv`: the Lie algebra analogue. `g_F(R)` corresponds to the
   `B`-skew endomorphisms of `U` preserving every `Wᵢ`.
 
 The terminal node is `J(W ⊤, B|)`, so the statements live inside `O(W ⊤, B|)`. When `W ⊤ = ⊤`
@@ -69,7 +69,7 @@ theorem spinInclusion_injective {W W' : Submodule R V} (h : W ≤ W') :
 
 variable [Fact B.IsSymm]
 
-/-- The **spin-factor diagram** of `(V, B, W)` (Definition 5.3). -/
+/-- The **spin-factor diagram** of `(V, B, W)`. -/
 def spinDiagram (W : I →o Submodule R V) : JordanDiagram.{u, u} R I where
   obj i := SpinNode B (W i)
   jordan _ := inferInstance
@@ -79,7 +79,7 @@ def spinDiagram (W : I →o Submodule R V) : JordanDiagram.{u, u} R I where
 
 variable (W : I →o Submodule R V)
 
-/-- **Lemma 5.4**: the terminal maps of a spin-factor diagram are injective. -/
+/-- The terminal maps of a spin-factor diagram are injective. -/
 theorem spinDiagram_ν_injective (i : I) : Function.Injective ((spinDiagram B W).ν i) :=
   spinInclusion_injective B _
 
@@ -146,7 +146,7 @@ theorem stabImages_eq_map :
   · rintro ⟨g, hg, rfl⟩
     exact (autEquivOrthogonal_mem_stabImages_iff B W g).2 hg
 
-/-- **Proposition 5.6** (groups): the automorphism group of the spin-factor diagram of
+/-- **Spin-factor diagram automorphisms**: the automorphism group of the spin-factor diagram of
 `(V, B, W)` is the stabilizer in `O(W ⊤, B)` of the pieces `Wᵢ`, via `g ↦ g ⊕ id` at the
 terminal node. -/
 noncomputable def spinDiagramAutEquiv : (spinDiagram B W).autGroup ≃* orthStab B W :=
@@ -195,7 +195,7 @@ def derToSkew (D : (spinDiagram B W).derAlgebra) : SkewStab B W :=
   ⟨derVecPart (evDer _ D), derVecPart_isSkew _,
     (der_preserves_iff B W _).1 ((range_evDer (spinDiagram_ν_injective B W)).subset ⟨D, rfl⟩)⟩
 
-/-- **Proposition 5.6** (Lie algebras): compatible derivations of the spin-factor diagram of
+/-- **Spin-factor diagram derivations**: compatible derivations of the spin-factor diagram of
 `(V, B, W)` are the `B`-skew endomorphisms `X` of `W ⊤` with `X(Wᵢ) ⊆ Wᵢ`, via `X ↦ X ⊕ 0` at
 the terminal node. -/
 noncomputable def spinDiagramDerEquiv : (spinDiagram B W).derAlgebra ≃ SkewStab B W :=
@@ -242,10 +242,10 @@ theorem configIsometry_iff (g : Isometry (B.restrict (W ⊤)) (B'.restrict (W' �
     rw [spinDiagram_image, spinDiagram_image] at this
     exact this
 
-/-- **Proposition 5.7**: isomorphisms between spin-factor diagrams of the same shape are the
-isometries of the terminal modules carrying every `Wᵢ` onto `W'ᵢ`, via `g ↦ g ⊕ id` at the
-terminal node. So `(V, B, W) ↦ F_{V,B,W}` is an equivalence from configurations with isometries
-onto spin-factor diagrams with isomorphisms. -/
+/-- **Spin-factor diagram isomorphisms**: isomorphisms between spin-factor diagrams of the same
+shape are the isometries of the terminal modules carrying every `Wᵢ` onto `W'ᵢ`, via `g ↦ g ⊕ id`
+at the terminal node. So `(V, B, W) ↦ F_{V,B,W}` is an equivalence from configurations with
+isometries onto spin-factor diagrams with isomorphisms. -/
 noncomputable def spinDiagramIsoEquiv :
     DiagramIso (spinDiagram B W) (spinDiagram B' W') ≃ ConfigIsometry (B := B) (B' := B') W W' :=
   (DiagramIso.terminalEquiv (spinDiagram_ν_injective B W) (spinDiagram_ν_injective B' W')).trans

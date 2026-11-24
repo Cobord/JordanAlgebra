@@ -5,16 +5,16 @@ public import JordanDiagram.MathlibMissing.PiLie
 public import Mathlib.Algebra.Lie.Subalgebra
 
 /-!
-# Compatible derivations of a diagram (Section 3.2)
+# Compatible derivations of a diagram
 
-`g_F(R) = Der(F_R)` (Definition 3.7): families `(Dᵢ)` of Jordan derivations with
+`g_F(R) = Der(F_R)`: families `(Dᵢ)` of Jordan derivations with
 `Dⱼ ∘ F(α) = F(α) ∘ Dᵢ` for every arrow `α`. Here it is `F.derAlgebra`, a Lie subalgebra of the
 product Lie algebra `∀ i, JordanDerivation R (F.obj i)`.
 
 * `evDer`: evaluation at the terminal dot, a Lie algebra homomorphism `g_F(R) → Der(J)`.
-* `evDer_injective`, `range_evDer`: Proposition 3.8. When every terminal map `νᵢ` is injective,
-  `evDer` is injective with image `{D : D(Aᵢ) ⊆ Aᵢ for every i}`.
-* `restrictDer`: restriction along a functor `u : I' ⥤ I` (Lemma 3.11).
+* `evDer_injective`, `range_evDer`: terminal determination for derivations. When every
+  terminal map `νᵢ` is injective, `evDer` is injective with image `{D : D(Aᵢ) ⊆ Aᵢ for every i}`.
+* `restrictDer`: restriction along a functor `u : I' ⥤ I`.
 
 The componentwise Lie structure on the product is in `JordanDiagram/MathlibMissing/PiLie.lean`.
 -/
@@ -30,7 +30,7 @@ namespace JordanDiagram
 variable {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
 variable (F : JordanDiagram.{u, v} R I)
 
-/-- The Lie algebra `g_F(R)` of compatible derivations (Definition 3.7). -/
+/-- The Lie algebra `g_F(R)` of compatible derivations. -/
 def derAlgebra : LieSubalgebra R (∀ i, JordanDerivation R (F.obj i)) where
   carrier := {D | ∀ {i j : I} (α : i ⟶ j) (x : F.obj i), D j (F.map α x) = F.map α (D i x)}
   zero_mem' _ _ := by simp
@@ -51,7 +51,7 @@ section Restriction
 
 variable {I' : Type*} [Category I']
 
-/-- Restriction `g_F(R) → Der(F ∘ u)` along a functor `u : I' ⥤ I` (Lemma 3.11). -/
+/-- Restriction `g_F(R) → Der(F ∘ u)` along a functor `u : I' ⥤ I`. -/
 def restrictDer (u : I' ⥤ I) : F.derAlgebra →ₗ⁅R⁆ (F.restrict u).derAlgebra where
   toFun D := ⟨fun j => D.1 (u.obj j), fun α x => D.2 (u.map α) x⟩
   map_add' _ _ := rfl
@@ -65,7 +65,7 @@ section Terminal
 variable [TerminallyPointed I]
 
 variable (F) in
-/-- Evaluation at the terminal dot, `g_F(R) → Der_R(J)`, `(Dᵢ) ↦ D₊` (Proposition 3.8). -/
+/-- Evaluation at the terminal dot, `g_F(R) → Der_R(J)`, `(Dᵢ) ↦ D₊`. -/
 def evDer : F.derAlgebra →ₗ⁅R⁆ JordanDerivation R F.J where
   toFun D := D.1 top
   map_add' _ _ := rfl
@@ -79,7 +79,7 @@ theorem evDer_ν (D : F.derAlgebra) (i : I) (x : F.obj i) :
     evDer F D (F.ν i x) = F.ν i (D.1 i x) :=
   D.2 (toTop i) x
 
-/-- Injectivity of terminal evaluation on compatible derivations (Proposition 3.8). -/
+/-- Injectivity of terminal evaluation on compatible derivations. -/
 theorem evDer_injective (hν : ∀ i, Function.Injective (F.ν i)) :
     Function.Injective (evDer F) := by
   intro D E hDE
@@ -105,8 +105,8 @@ theorem evDer_ofPreserving (hν : ∀ i, Function.Injective (F.ν i))
   have := liftDer_spec (hν top) d (fun x => hd top _ ⟨x, rfl⟩) x
   rwa [F.ν_top, F.ν_top] at this
 
-/-- **Proposition 3.8**: when the terminal maps are injective, the image of terminal evaluation on
-compatible derivations is `{D ∈ Der_R(J) : D(Aᵢ) ⊆ Aᵢ for every i}`. -/
+/-- **Terminal determination for derivations**: when the terminal maps are injective, the image
+of terminal evaluation on compatible derivations is `{D ∈ Der_R(J) : D(Aᵢ) ⊆ Aᵢ for every i}`. -/
 theorem range_evDer (hν : ∀ i, Function.Injective (F.ν i)) :
     Set.range (evDer F) = {d | ∀ i, ∀ y ∈ F.image i, d y ∈ F.image i} := by
   ext d

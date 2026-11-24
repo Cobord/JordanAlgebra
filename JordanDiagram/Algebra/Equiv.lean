@@ -11,7 +11,7 @@ isomorphisms of `Jord_R`. `jordanAut R A` is the group of such self-maps (`toAut
 `JordanEquiv.lift`: lifting along injective homomorphisms `ν : A →ₙₐ J`, `ν' : A' →ₙₐ J'`. A
 Jordan isomorphism `h : J ≃ⱼ J'` with `h(range ν) = range ν'` transports to a unique
 `g : A ≃ⱼ A'` with `ν' ∘ g = h ∘ ν`. This is the input for terminal determination of diagram
-isomorphisms and of shape-twisted automorphisms (Propositions 3.14 and 5.7).
+isomorphisms and of shape-twisted automorphisms.
 -/
 
 @[expose] public section

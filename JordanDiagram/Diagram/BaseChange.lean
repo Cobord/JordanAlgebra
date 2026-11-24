@@ -6,19 +6,18 @@ public import JordanDiagram.Algebra.BaseChange
 public import JordanDiagram.Algebra.Tower
 
 /-!
-# Scalar extension of diagrams (Lemma 2.11, Proposition 3.3, Proposition 7.9(b))
+# Scalar extension of diagrams
 
 For a diagram `F : I → Jord_R` and a commutative `R`-algebra `S`, with `2` invertible in `R`,
 `F.baseChange S : I → Jord_S` is `i ↦ S ⊗[R] F(i)` with the scalar-extended arrows. This is the
-family `F_S = F_R ⊗_R S` of Lemma 2.11, here for one base map `R → S`.
+scalar-extension family `F_S = F_R ⊗_R S`, here for one base map `R → S`.
 
 * `baseChange_ν`: the terminal maps of `S ⊗ F` are the scalar extensions of those of `F`. They
   stay injective when `S` is flat over `R` (`baseChange_ν_injective`).
-* `autBaseChange`: the group homomorphism `G_F(R) → G_F(S)`, `(gᵢ) ↦ (id ⊗ gᵢ)` (Proposition 3.3).
-* `autBaseChange_injective`: if every `F(i) → S ⊗ F(i)` is injective, so is `G_F(R) → G_F(S)`
-  (**Proposition 7.9(b)**).
-* `derBaseChange`: the corresponding map `g_F(R) → g_F(S)` on compatible derivations
-  (Proposition 3.8), additive and bracket-preserving.
+* `autBaseChange`: the group homomorphism `G_F(R) → G_F(S)`, `(gᵢ) ↦ (id ⊗ gᵢ)`.
+* `autBaseChange_injective`: if every `F(i) → S ⊗ F(i)` is injective, so is `G_F(R) → G_F(S)`.
+* `derBaseChange`: the corresponding map `g_F(R) → g_F(S)` on compatible derivations,
+  additive and bracket-preserving.
 -/
 
 @[expose] public section
@@ -33,7 +32,7 @@ variable {R : Type u} [CommRing R] [Invertible (2 : R)] {I : Type w} [Category.{
 variable (S : Type u') [CommRing S] [Algebra R S]
 variable (F : JordanDiagram.{u, v} R I)
 
-/-- The scalar extension `S ⊗[R] F` of a diagram (Lemma 2.11). Reducible, so that its nodes are
+/-- The scalar extension `S ⊗[R] F` of a diagram. Reducible, so that its nodes are
 seen as the tensor products `S ⊗[R] F(i)` by rewriting and instance search. -/
 @[reducible] noncomputable def baseChange : JordanDiagram.{u', max u' v} S I where
   obj i := S ⊗[R] F.obj i
@@ -57,7 +56,7 @@ theorem baseChange_map_tmul {i j : I} (α : i ⟶ j) (s : S) (a : F.obj i) :
 section Aut
 
 variable (S F) in
-/-- **Proposition 3.3**: scalar extension of diagram automorphisms, a group homomorphism
+/-- Scalar extension of diagram automorphisms, a group homomorphism
 `G_F(R) → G_F(S)`, `(gᵢ) ↦ (id_S ⊗ gᵢ)`. -/
 noncomputable def autBaseChange : F.autGroup →* (F.baseChange S).autGroup where
   toFun g := ⟨fun i => baseChangeAut S (g.1 i), fun α x =>
@@ -69,8 +68,8 @@ noncomputable def autBaseChange : F.autGroup →* (F.baseChange S).autGroup wher
 theorem autBaseChange_tmul (g : F.autGroup) (i : I) (s : S) (a : F.obj i) :
     (autBaseChange S F g).1 i (s ⊗ₜ a) = s ⊗ₜ g.1 i a := rfl
 
-/-- **Proposition 7.9(b)**: if every `F(i) → S ⊗[R] F(i)` is injective (e.g. `F(i)` free and
-`R → S` injective), then `G_F(R) → G_F(S)` is injective. -/
+/-- **Injectivity of scalar extension**: if every `F(i) → S ⊗[R] F(i)` is injective (e.g. `F(i)`
+free and `R → S` injective), then `G_F(R) → G_F(S)` is injective. -/
 theorem autBaseChange_injective
     (h : ∀ i, Function.Injective (fun a : F.obj i => (1 : S) ⊗ₜ[R] a)) :
     Function.Injective (autBaseChange S F) := by
@@ -82,9 +81,9 @@ theorem autBaseChange_injective
   have := congrArg (fun k : (F.baseChange S).autGroup => k.1 i ((1 : S) ⊗ₜ a)) hgg'
   exact this
 
-/-- **Proposition 7.9(c)**: if every `a ↦ 1 ⊗ a : F(i) → S ⊗[R] F(i)` is injective (e.g. `F(i)`
-free and `R → S` injective), then, identifying `F(i)` with its image `1 ⊗ F(i)`, the image of
-`G_F(R) → G_F(S)` consists of the automorphisms preserving every `F(i)` setwise. -/
+/-- **Image of scalar extension**: if every `a ↦ 1 ⊗ a : F(i) → S ⊗[R] F(i)` is injective
+(e.g. `F(i)` free and `R → S` injective), then, identifying `F(i)` with its image `1 ⊗ F(i)`,
+the image of `G_F(R) → G_F(S)` consists of the automorphisms preserving every `F(i)` setwise. -/
 theorem range_autBaseChange (hι : ∀ i, Function.Injective (incl (A := F.obj i) S)) :
     Set.range (autBaseChange S F) =
       {g | ∀ i, g.1 i '' Set.range (incl (A := F.obj i) S) = Set.range (incl S)} := by
@@ -119,7 +118,7 @@ theorem range_autBaseChange (hι : ∀ i, Function.Injective (incl (A := F.obj i
       rw [h1, autGroup_naturality g α, h2, incl_descendAut]
     · exact Subtype.ext (funext fun i => baseChangeAut_descendAut (hι i) _ _ _)
 
-/-- **Corollary 7.10**: under the hypothesis of Proposition 7.9(c), `G_F(R)` is isomorphic to the
+/-- If every `a ↦ 1 ⊗ a : F(i) → S ⊗[R] F(i)` is injective, `G_F(R)` is isomorphic to the
 subgroup of `G_F(S)` preserving every `F(i)`. -/
 noncomputable def autGroupEquivPreserving (hι : ∀ i, Function.Injective (incl (A := F.obj i) S)) :
     F.autGroup ≃* (autBaseChange S F).range :=
@@ -134,7 +133,7 @@ variable [TerminallyPointed I]
 theorem baseChange_ν (i : I) : (F.baseChange S).ν i = baseChangeHom S (F.ν i) := rfl
 
 /-- Scalar extension along a flat `R → S` keeps the terminal maps injective, so terminal
-determination (Proposition 3.6) applies to `S ⊗ F` as well. -/
+determination applies to `S ⊗ F` as well. -/
 theorem baseChange_ν_injective [Module.Flat R S] (hν : ∀ i, Function.Injective (F.ν i)) (i : I) :
     Function.Injective ((F.baseChange S).ν i) :=
   baseChangeHom_injective_of_flat (F.ν i) (hν i)
@@ -144,7 +143,7 @@ end Terminal
 section Der
 
 variable (S) in
-/-- Scalar extension of compatible derivations, `g_F(R) → g_F(S)` (Proposition 3.8). -/
+/-- Scalar extension of compatible derivations, `g_F(R) → g_F(S)`. -/
 noncomputable def derBaseChange (D : F.derAlgebra) : (F.baseChange S).derAlgebra :=
   ⟨fun i => baseChangeDer S (D.1 i), fun α x => baseChangeDer_comm (fun a => D.2 α a) x⟩
 
@@ -175,7 +174,7 @@ theorem cancelJordanEquiv_symm_baseChangeHom {A B : Type*} [JordanAlgebra R A] [
   rw [JordanEquiv.apply_symm_apply, cancelJordanEquiv_baseChangeHom, JordanEquiv.apply_symm_apply]
 
 variable (S T F) in
-/-- **Proposition 3.3** (functoriality in the base): `G_F(S) → G_F(T)` for `R → S → T`,
+/-- **Functoriality in the base**: `G_F(S) → G_F(T)` for `R → S → T`,
 `(gᵢ) ↦ (β ∘ (id_T ⊗ gᵢ) ∘ β⁻¹)` with `β : T ⊗[S] (S ⊗[R] F(i)) ≃ T ⊗[R] F(i)`. -/
 noncomputable def autTowerDiagram : (F.baseChange S).autGroup →* (F.baseChange T).autGroup where
   toFun g := ⟨fun i => autTower S T (g.1 i), by
@@ -189,7 +188,7 @@ noncomputable def autTowerDiagram : (F.baseChange S).autGroup →* (F.baseChange
   map_one' := Subtype.ext (funext fun _ => map_one (autTower S T))
   map_mul' g h := Subtype.ext (funext fun i => map_mul (autTower S T) (g.1 i) (h.1 i))
 
-/-- **Proposition 3.3** (compatibility): `G_F(R) → G_F(S) → G_F(T)` is `G_F(R) → G_F(T)`. -/
+/-- **Compatibility of base extensions**: `G_F(R) → G_F(S) → G_F(T)` is `G_F(R) → G_F(T)`. -/
 theorem autTowerDiagram_comp_autBaseChange :
     (autTowerDiagram S F T).comp (autBaseChange S F) = autBaseChange T F :=
   MonoidHom.ext fun g => Subtype.ext (funext fun i => autTower_baseChangeAut (g.1 i))

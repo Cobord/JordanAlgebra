@@ -5,7 +5,7 @@ public import JordanDiagram.Diagram.Derivation
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
-# Wedges (Proposition 3.12)
+# Wedges
 
 Suppose `I⁺` is the union of two full subcategories `I₁⁺`, `I₂⁺` (given by object properties
 `P₁`, `P₂`) that both contain `+`, meet only in `+`, and have no arrows between `I₁⁺ \ {+}` and
@@ -27,7 +27,7 @@ namespace JordanDiagram
 
 variable {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I] [TerminallyPointed I]
 
-/-- The wedge hypotheses of Proposition 3.12 on two object properties of `I`. -/
+/-- The wedge hypotheses on two object properties of `I`. -/
 structure IsWedge (P₁ P₂ : ObjectProperty I) : Prop where
   cover : ∀ i, P₁ i ∨ P₂ i
   top₁ : P₁ top
@@ -99,7 +99,7 @@ theorem wedgeHom_wedgeGlue (hc : WedgeCompatible hW (g₁, g₂)) :
 
 end Glue
 
-/-- **Proposition 3.12** (groups): the image of restriction to the two halves of a wedge is the
+/-- **Wedge decomposition** (groups): the image of restriction to the two halves of a wedge is the
 fiber product over `Aut(J)`. -/
 theorem range_wedgeHom (hW : IsWedge P₁ P₂) :
     Set.range (wedgeHom (F := F) P₁ P₂) = {p | WedgeCompatible hW p} := by
@@ -119,7 +119,7 @@ def wedgeFiberProduct (hW : IsWedge P₁ P₂) :
     congrArg₂ (fun a b : jordanAut R (F.obj top) => a * b) hp hq
   inv_mem' hp := congrArg (fun a : jordanAut R (F.obj top) => a⁻¹) hp
 
-/-- **Proposition 3.12** (groups): `G_F(R) ≃* G_{F₁}(R) ×_{Aut(J)} G_{F₂}(R)`. -/
+/-- **Wedge decomposition** (groups): `G_F(R) ≃* G_{F₁}(R) ×_{Aut(J)} G_{F₂}(R)`. -/
 noncomputable def autGroupEquivWedge (hW : IsWedge P₁ P₂) :
     F.autGroup ≃* wedgeFiberProduct (F := F) hW :=
   (MonoidHom.ofInjective (wedgeHom_injective hW)).trans
@@ -167,7 +167,7 @@ theorem wedgePickDer₂ (hc : D₁.1 ⟨top, hW.top₁⟩ = D₂.1 ⟨top, hW.to
   · unfold wedgePickDer
     simp only [h₁, dite_false]
 
-/-- **Proposition 3.12** (derivations): the image of restriction to the two halves of a wedge is
+/-- **Wedge decomposition** (derivations): the image of restriction to the two halves of a wedge is
 the fiber product over `Der(J)`. -/
 theorem range_wedgeDer :
     Set.range (wedgeDer (F := F) P₁ P₂) =

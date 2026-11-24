@@ -8,7 +8,7 @@ public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 
 `jordanAut.ext_of_adjoin_eq_top`: a Jordan automorphism of a single algebra is determined by its
 values on a set that generates the algebra as a (non-unital) subalgebra. This is the
-single-algebra input to Lemma 4.3 (generating configurations).
+single-algebra input to the statement about generating configurations.
 -/
 
 @[expose] public section

@@ -5,12 +5,12 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.RingTheory.Flat.Basic
 
 /-!
-# Scalar extension of Jordan algebras (Lemma 2.4)
+# Scalar extension of Jordan algebras
 
 For a commutative `R`-algebra `S` and a Jordan `R`-algebra `A`, with `2` invertible in `R`, the
 `S`-algebra `S ⊗[R] A` is a Jordan algebra (`instJordanAlgebra`).
 
-The proof is the paper's. With `2` invertible the fully linearized Jordan identity
+Proof: with `2` invertible the fully linearized Jordan identity
 `lin a b c y = [L_a, L_{bc}] y + [L_b, L_{ca}] y + [L_c, L_{ab}] y = 0` holds in `A`
 (`JordanAlgebra.lie_lmul_lmul_add_add_eq_zero`). It is `R`-multilinear, so it holds in `S ⊗ A`
 because it holds on pure tensors. The Jordan expression `jordanExpr x y = [L_x, L_{x²}] y` is cubic
@@ -130,7 +130,7 @@ theorem jordanExpr_eq_zero [Invertible (2 : R)] (x y : S ⊗[R] A) : jordanExpr 
 
 variable [Invertible (2 : R)]
 
-/-- **Lemma 2.4** (scalar extension): with `2` invertible in `R`, `S ⊗[R] A` is a Jordan
+/-- **Scalar extension**: with `2` invertible in `R`, `S ⊗[R] A` is a Jordan
 `S`-algebra for every commutative `R`-algebra `S`. -/
 instance instJordanAlgebra : JordanAlgebra S (S ⊗[R] A) :=
   { (inferInstance : NonAssocRing (S ⊗[R] A)), (inferInstance : Module S (S ⊗[R] A)),
@@ -158,7 +158,7 @@ theorem baseChange_mul (f : A →ₙₐ[R] B) (x y : S ⊗[R] A) :
         _root_.map_mul]
 
 variable (S) in
-/-- Scalar extension of a morphism of `Jord_R` (functoriality in Lemma 2.4). -/
+/-- Scalar extension of a morphism of `Jord_R` (functoriality of scalar extension). -/
 noncomputable def baseChangeHom (f : A →ₙₐ[R] B) : S ⊗[R] A →ₙₐ[S] S ⊗[R] B where
   toFun := (toLin f).baseChange S
   map_smul' := ((toLin f).baseChange S).map_smul
@@ -259,7 +259,7 @@ theorem baseChangeDer_comm {d : JordanDerivation R A} {d' : JordanDerivation R B
 
 section Descent
 
-/-! ### Descent of automorphisms (input to Proposition 7.9(c))
+/-! ### Descent of automorphisms (input to the image of scalar extension on automorphisms)
 
 An `E`-automorphism `g` of `E ⊗[R] A` that preserves `1 ⊗ A` (as does its inverse) restricts,
 along the injective map `incl : a ↦ 1 ⊗ a`, to an `R`-automorphism `h` of `A`, and

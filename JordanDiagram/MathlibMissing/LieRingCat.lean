@@ -15,8 +15,8 @@ a homomorphism of Lie rings and no category of Lie rings.
   homomorphisms. The API follows `GrpCat`: `LieRingCat.of`, `LieRingCat.ofHom`, `Hom.hom`,
   `hom_ext`, and a `ConcreteCategory` instance.
 
-This is the target of the compatible-derivation functor `g_F : CAlg_R → LieRing` of
-Proposition 3.8 (`JordanDiagram.derFunctor`). It is generic and could be upstreamed.
+This is the target of the compatible-derivation functor `g_F : CAlg_R → LieRing`
+(`JordanDiagram.derFunctor`). It is generic and could be upstreamed.
 -/
 
 @[expose] public section
