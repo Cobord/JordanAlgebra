@@ -237,4 +237,75 @@ theorem mapAut_baseChangeAut (h : jordanAut R A) :
 
 end MapAut
 
+section MapDer
+
+variable (φ : S →ₐ[R] T)
+
+omit [Invertible (2 : R)] in
+theorem mapLin_add (f g : S ⊗[R] A →ₗ[S] S ⊗[R] A) :
+    mapLin φ (f + g) = mapLin φ f + mapLin φ g := by
+  refine ext_one_tmul fun a => ?_
+  rw [LinearMap.add_apply, mapLin_one_tmul, mapLin_one_tmul, mapLin_one_tmul,
+    LinearMap.add_apply, map_add]
+
+omit [Invertible (2 : R)] in
+theorem mapLin_sub (f g : S ⊗[R] A →ₗ[S] S ⊗[R] A) :
+    mapLin φ (f - g) = mapLin φ f - mapLin φ g := by
+  refine ext_one_tmul fun a => ?_
+  rw [LinearMap.sub_apply, mapLin_one_tmul, mapLin_one_tmul, mapLin_one_tmul,
+    LinearMap.sub_apply, map_sub]
+
+/-- Transport of a Jordan derivation of `S ⊗[R] A` along `φ : S →ₐ[R] T`. -/
+noncomputable def mapDer (d : JordanDerivation S (S ⊗[R] A)) : JordanDerivation T (T ⊗[R] A) where
+  toLinearMap := mapLin φ (d : S ⊗[R] A →ₗ[S] S ⊗[R] A)
+  leibniz' x y := by
+    induction x with
+    | zero => simp
+    | add x z hx hz => simp only [add_mul, map_add, hx, hz]; abel
+    | tmul t a =>
+      induction y with
+      | zero => simp
+      | add y z hy hz => simp only [mul_add, map_add, hy, hz]; abel
+      | tmul t' b =>
+        have ea : t ⊗ₜ[R] a = t • ((1 : T) ⊗ₜ[R] a) := by
+          rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+        have eb : t' ⊗ₜ[R] b = t' • ((1 : T) ⊗ₜ[R] b) := by
+          rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+        have eab : (1 : S) ⊗ₜ[R] (a * b) = ((1 : S) ⊗ₜ[R] a) * ((1 : S) ⊗ₜ[R] b) := by
+          rw [Algebra.TensorProduct.tmul_mul_tmul, mul_one]
+        rw [Algebra.TensorProduct.tmul_mul_tmul, mapLin_tmul, mapLin_tmul, mapLin_tmul, ea, eb,
+          smul_mul_smul_comm, smul_mul_smul_comm, ← smul_add, eab, d.leibniz', map_add,
+          tensorMap_mul, tensorMap_mul, tensorMap_one_tmul, tensorMap_one_tmul]
+
+theorem mapDer_add (d e : JordanDerivation S (S ⊗[R] A)) :
+    mapDer φ (d + e) = mapDer φ d + mapDer φ e :=
+  JordanDerivation.ext fun x =>
+    LinearMap.congr_fun (mapLin_add φ (d : S ⊗[R] A →ₗ[S] S ⊗[R] A) e) x
+
+theorem mapDer_lie (d e : JordanDerivation S (S ⊗[R] A)) :
+    mapDer φ ⁅d, e⁆ = ⁅mapDer φ d, mapDer φ e⁆ := by
+  refine JordanDerivation.ext fun x => ?_
+  have h : mapLin φ ((d : S ⊗[R] A →ₗ[S] S ⊗[R] A) ∘ₗ (e : S ⊗[R] A →ₗ[S] S ⊗[R] A) -
+      (e : S ⊗[R] A →ₗ[S] S ⊗[R] A) ∘ₗ (d : S ⊗[R] A →ₗ[S] S ⊗[R] A)) =
+      mapLin φ (d : _ →ₗ[S] _) ∘ₗ mapLin φ (e : _ →ₗ[S] _) -
+        mapLin φ (e : _ →ₗ[S] _) ∘ₗ mapLin φ (d : _ →ₗ[S] _) := by
+    rw [mapLin_sub, mapLin_comp, mapLin_comp]
+  exact LinearMap.congr_fun h x
+
+theorem mapDer_id_alg (d : JordanDerivation S (S ⊗[R] A)) : mapDer (AlgHom.id R S) d = d :=
+  JordanDerivation.ext fun x =>
+    LinearMap.congr_fun (mapLin_id_alg (d : S ⊗[R] A →ₗ[S] S ⊗[R] A)) x
+
+theorem mapDer_comp_alg (χ : T →ₐ[R] U) (d : JordanDerivation S (S ⊗[R] A)) :
+    mapDer (χ.comp φ) d = mapDer χ (mapDer φ d) :=
+  JordanDerivation.ext fun x =>
+    LinearMap.congr_fun (mapLin_comp_alg φ χ (d : S ⊗[R] A →ₗ[S] S ⊗[R] A)) x
+
+/-- Transport along `φ` extends scalar extension of derivations from `R`. -/
+theorem mapDer_baseChangeDer (d : JordanDerivation R A) :
+    mapDer φ (baseChangeDer S d) = baseChangeDer T d :=
+  JordanDerivation.ext fun x => LinearMap.congr_fun (mapLin_baseChange φ (d : A →ₗ[R] A)) x
+
+end MapDer
+
 end JordanAlgebra.BaseChange
