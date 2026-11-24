@@ -274,6 +274,124 @@ theorem baseChangeDer_comm {d : JordanDerivation R A} {d' : JordanDerivation R B
     change s ⊗ₜ d' (f a) = s ⊗ₜ f (d a)
     rw [h]
 
+section Descent
+
+/-! ### Descent of automorphisms (input to Proposition 7.9(c))
+
+An `E`-automorphism `g` of `E ⊗[R] A` that preserves `1 ⊗ A` (as does its inverse) restricts,
+along the injective map `incl : a ↦ 1 ⊗ a`, to an `R`-automorphism `h` of `A`, and
+`id_E ⊗ h = g` because `1 ⊗ A` spans `E ⊗ A` over `E`. -/
+
+variable {E : Type*} [CommRing E] [Algebra R E]
+
+variable (E) in
+/-- The map `A → E ⊗[R] A`, `a ↦ 1 ⊗ a`. -/
+def incl (a : A) : E ⊗[R] A := (1 : E) ⊗ₜ a
+
+omit [Invertible (2 : R)] in
+theorem incl_add (a b : A) : incl E (a + b) = incl E a + incl E b := TensorProduct.tmul_add _ _ _
+
+omit [Invertible (2 : R)] in
+theorem incl_smul (r : R) (a : A) : incl E (r • a) = r • incl E a := TensorProduct.tmul_smul _ _ _
+
+omit [Invertible (2 : R)] in
+theorem incl_mul (a b : A) : incl E (a * b) = incl E a * incl E b := by
+  simp only [incl, Algebra.TensorProduct.tmul_mul_tmul, mul_one]
+
+@[simp]
+theorem baseChangeAut_incl (h : jordanAut R A) (a : A) :
+    baseChangeAut E h (incl E a) = incl E (h a) := rfl
+
+theorem jordanAut_map_add (g : jordanAut E (E ⊗[R] A)) (x y : E ⊗[R] A) :
+    g (x + y) = g x + g y :=
+  (g : E ⊗[R] A ≃ₗ[E] E ⊗[R] A).map_add x y
+
+theorem jordanAut_map_smul_of_tower (g : jordanAut E (E ⊗[R] A)) (r : R) (x : E ⊗[R] A) :
+    g (r • x) = r • g x := by
+  rw [← algebraMap_smul E r x, ← algebraMap_smul E r (g x)]
+  exact (g : E ⊗[R] A ≃ₗ[E] E ⊗[R] A).map_smul _ _
+
+variable (hι : Function.Injective (incl (A := A) E))
+
+/-- `g` maps `1 ⊗ A` into itself. -/
+def PreservesIncl (g : jordanAut E (E ⊗[R] A)) : Prop := ∀ a, ∃ b, g (incl E a) = incl E b
+
+/-- The restriction of `g` to `A`, as a function. -/
+noncomputable def descendFun (g : jordanAut E (E ⊗[R] A)) (hg : PreservesIncl g) (a : A) : A :=
+  (hg a).choose
+
+theorem incl_descendFun (g : jordanAut E (E ⊗[R] A)) (hg : PreservesIncl g) (a : A) :
+    incl E (descendFun g hg a) = g (incl E a) :=
+  ((hg a).choose_spec).symm
+
+/-- The restriction of `g` to `A`, as a linear map. -/
+noncomputable def descendLin (g : jordanAut E (E ⊗[R] A)) (hg : PreservesIncl g) : A →ₗ[R] A where
+  toFun := descendFun g hg
+  map_add' a b := hι <| calc
+    incl E (descendFun g hg (a + b)) = g (incl E a + incl E b) := by
+      rw [incl_descendFun, incl_add]
+    _ = incl E (descendFun g hg a + descendFun g hg b) := by
+      rw [jordanAut_map_add, incl_add, incl_descendFun, incl_descendFun]
+  map_smul' r a := hι <| calc
+    incl E (descendFun g hg (r • a)) = g (r • incl E a) := by
+      rw [incl_descendFun, incl_smul]
+    _ = incl E (r • descendFun g hg a) := by
+      rw [jordanAut_map_smul_of_tower, incl_smul, incl_descendFun]
+
+theorem incl_descendLin (g : jordanAut E (E ⊗[R] A)) (hg : PreservesIncl g) (a : A) :
+    incl E (descendLin hι g hg a) = g (incl E a) :=
+  incl_descendFun g hg a
+
+theorem descendLin_mul (g : jordanAut E (E ⊗[R] A)) (hg : PreservesIncl g) (a b : A) :
+    descendLin hι g hg (a * b) = descendLin hι g hg a * descendLin hι g hg b :=
+  hι <| by rw [incl_mul, incl_descendLin, incl_descendLin, incl_descendLin, incl_mul,
+    jordanAut.map_mul]
+
+theorem descendLin_inv (g : jordanAut E (E ⊗[R] A)) (hg : PreservesIncl g)
+    (hg' : PreservesIncl g⁻¹) (a : A) :
+    descendLin hι g hg (descendLin hι g⁻¹ hg' a) = a :=
+  hι <| by rw [incl_descendLin, incl_descendLin, jordanAut.apply_inv_self]
+
+/-- **Descent**: an automorphism of `E ⊗[R] A` preserving `1 ⊗ A` together with its inverse
+comes from an automorphism of `A`. -/
+noncomputable def descendAut (g : jordanAut E (E ⊗[R] A)) (hg : PreservesIncl g)
+    (hg' : PreservesIncl g⁻¹) : jordanAut R A :=
+  ⟨LinearEquiv.ofLinear (descendLin hι g hg) (descendLin hι g⁻¹ hg')
+      (LinearMap.ext fun a => descendLin_inv hι g hg hg' a)
+      (LinearMap.ext fun a => by
+        have := descendLin_inv hι g⁻¹ hg' (by simpa using hg) a
+        simpa using this),
+    descendLin_mul hι g hg⟩
+
+theorem incl_descendAut (g : jordanAut E (E ⊗[R] A)) (hg : PreservesIncl g)
+    (hg' : PreservesIncl g⁻¹) (a : A) :
+    incl E (descendAut hι g hg hg' a) = g (incl E a) :=
+  incl_descendLin hι g hg a
+
+theorem baseChangeAut_descendAut (g : jordanAut E (E ⊗[R] A)) (hg : PreservesIncl g)
+    (hg' : PreservesIncl g⁻¹) : baseChangeAut E (descendAut hι g hg hg') = g := by
+  refine jordanAut.ext fun x => ?_
+  induction x with
+  | zero =>
+    change ((baseChangeAut E _ : jordanAut E (E ⊗[R] A)) : E ⊗[R] A ≃ₗ[E] E ⊗[R] A) 0 =
+      ((g : jordanAut E (E ⊗[R] A)) : E ⊗[R] A ≃ₗ[E] E ⊗[R] A) 0
+    rw [map_zero, map_zero]
+  | add x y hx hy =>
+    change ((baseChangeAut E _ : jordanAut E (E ⊗[R] A)) : E ⊗[R] A ≃ₗ[E] E ⊗[R] A) (x + y) =
+      g (x + y)
+    rw [map_add, jordanAut_map_add]
+    exact congrArg₂ (· + ·) hx hy
+  | tmul s a =>
+    have hs : s ⊗ₜ[R] a = s • incl E a := by
+      rw [incl, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+    rw [hs]
+    change ((baseChangeAut E _ : jordanAut E (E ⊗[R] A)) : E ⊗[R] A ≃ₗ[E] E ⊗[R] A)
+        (s • incl E a) = ((g : jordanAut E (E ⊗[R] A)) : E ⊗[R] A ≃ₗ[E] E ⊗[R] A) (s • incl E a)
+    rw [map_smul, map_smul]
+    exact congrArg (s • ·) (incl_descendAut hι g hg hg' a)
+
+end Descent
+
 end BaseChange
 
 end JordanAlgebra

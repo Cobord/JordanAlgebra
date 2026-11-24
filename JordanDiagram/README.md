@@ -43,7 +43,7 @@ The library has two parts:
 | [`Automorphism.lean`](Algebra/Automorphism.lean) | Def. 2.3 | `jordanAut R A`, setwise stabilizers `jordanAut.stab`, and lifting along an injective homomorphism: an automorphism or derivation of `J` that preserves `range ν` transports to `A` (`liftAut`, `liftDer`). |
 | [`Equiv.lean`](Algebra/Equiv.lean) | Def. 2.3 | `JordanEquiv` (`A ≃ⱼ[R] B`) with `refl`, `symm`, `trans`. `JordanEquiv.lift`: an isomorphism `J ≃ⱼ J'` carrying `range ν` onto `range ν'` lifts along injective `ν`, `ν'`. |
 | [`Generation.lean`](Algebra/Generation.lean) | input to Lemma 4.3 | `jordanAut.ext_of_adjoin_eq_top`: an automorphism is determined by its values on a generating set. |
-| [`BaseChange.lean`](Algebra/BaseChange.lean) | Lemma 2.4 | With `2` invertible in `R`, `S ⊗[R] A` is a Jordan `S`-algebra (`instJordanAlgebra`). The proof goes through the fully linearized identity `lin`, which is multilinear, and `jordanExpr_add`. Also scalar extension of morphisms (`baseChangeHom`, injective for flat `S`), of automorphisms (`baseChangeAut`) and of derivations (`baseChangeDer`). |
+| [`BaseChange.lean`](Algebra/BaseChange.lean) | Lemma 2.4 | With `2` invertible in `R`, `S ⊗[R] A` is a Jordan `S`-algebra (`instJordanAlgebra`). The proof goes through the fully linearized identity `lin`, which is multilinear, and `jordanExpr_add`. Also scalar extension of morphisms (`baseChangeHom`, injective for flat `S`), of automorphisms (`baseChangeAut`) and of derivations (`baseChangeDer`). Descent (`descendAut`): an automorphism of `E ⊗ A` preserving `1 ⊗ A` is `id ⊗ h` for an automorphism `h` of `A`, when `a ↦ 1 ⊗ a` is injective. |
 | [`SpinFactor.lean`](Algebra/SpinFactor.lean) | Def. 5.2; Lemma 5.5 | For `V`, `V'` free, `2` invertible and any symmetric forms, including degenerate ones: `isometryEquiv : Isometry B B' ≃ (J(V, B) ≃ⱼ J(V', B'))` (`g ↦ g ⊕ id`), `autEquivOrthogonal : O(V, B)(R) ≃* Aut J(V, B)`, and `derEquivSkew : o(V, B)(R) ≃ Der J(V, B)` (`X ↦ X ⊕ 0`). |
 
 ### `Diagram/`: the diagram layer
@@ -57,7 +57,7 @@ The library has two parts:
 | [`Iso.lean`](Diagram/Iso.lean) | Prop. 2.7 (fibers); Def. 3.13; Prop. 3.14 | `DiagramIso F F'` and its terminal determination `terminalEquiv` (isomorphisms `↔` `h : J ≃ⱼ J'` with `h(Aᵢ) = A'ᵢ`). `TwistedIso F u = DiagramIso F (u* F)`. `twistedIdEquiv` identifies the twisted isomorphisms over `𝟭` with `G_F(R)`, the kernel in Prop. 3.14. `twistedTerminalEquiv` is the terminal description in Prop. 3.14. |
 | [`Finiteness.lean`](Diagram/Finiteness.lean) | Prop. 4.2; Lemma 4.3 | The finite detector criterion: a faithful action on a finite `X` gives `\|G\| ≤ \|X\|!`. `card_autGroup_le`: a finite, stable, Jordan-generating `X ⊆ J` bounds `\|G_F(R)\|` by `\|X\|!`. |
 | [`SpinFactor.lean`](Diagram/SpinFactor.lean) | Def. 5.3; Lemma 5.4; Props. 5.6, 5.7 | `spinDiagram B W` for monotone `W : I →o Submodule R V`. Its terminal maps are injective, with image `R 1 ⊕ Wᵢ`. `spinDiagramAutEquiv : G_F(R) ≃* Stab_{O(W ⊤, B)}(W)`, `spinDiagramDerEquiv : g_F(R) ≃ Stab_{o(W ⊤, B)}(W)`, and `spinDiagramIsoEquiv`: isomorphisms of spin-factor diagrams are isometries of the configurations. |
-| [`BaseChange.lean`](Diagram/BaseChange.lean) | Lemma 2.11; Props. 3.3, 7.9(b) | `F.baseChange S = S ⊗[R] F`. `autBaseChange : G_F(R) →* G_F(S)`, injective when every `F(i) → S ⊗ F(i)` is (`autBaseChange_injective`). `derBaseChange` on compatible derivations, additive and bracket-preserving. Terminal maps stay injective along flat `R → S`. |
+| [`BaseChange.lean`](Diagram/BaseChange.lean) | Lemma 2.11; Props. 3.3, 7.9(b), 7.9(c); Cor. 7.10 | `F.baseChange S = S ⊗[R] F`. `autBaseChange : G_F(R) →* G_F(S)`, injective when every `F(i) → S ⊗ F(i)` is (`autBaseChange_injective`). Its image is the set of automorphisms preserving every `1 ⊗ F(i)` (`range_autBaseChange`, Prop. 7.9(c)), with `autGroupEquivPreserving` (Cor. 7.10). `derBaseChange` on compatible derivations, additive and bracket-preserving. Terminal maps stay injective along flat `R → S`. |
 
 Build with `lake build JordanDiagram`. The default target is still the `jordan` executable. There
 are no `sorry`s. The headline results use only `propext`, `Classical.choice` and `Quot.sound`.
@@ -66,7 +66,6 @@ are no `sorry`s. The headline results use only `propext`, `Classical.choice` and
 
 1. Functoriality in the base: the coherence isomorphisms `T ⊗_S (S ⊗_R F) ≅ T ⊗_R F` as Jordan
    isomorphisms, giving `G_F : CAlg_R → Grp` (Prop. 3.3) and the families of Def. 2.8.
-   Prop. 7.9(c), the image of `G_F(R) → G_F(E)` for finite free nodes.
 2. Spin-factor flags: Corollary 5.10 (orthogonal decomposition, `G_F ≅ ∏ O(Uⱼ)`) and the wreath
    product of Example 5.9.
 3. The group structure on all of `G̃_F(R)`, with `u` ranging over `Aut(I⁺, +)`.

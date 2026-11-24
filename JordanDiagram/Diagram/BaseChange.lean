@@ -28,8 +28,9 @@ variable {R : Type u} [CommRing R] [Invertible (2 : R)] {I : Type w} [Category.{
 variable (S : Type u') [CommRing S] [Algebra R S]
 variable (F : JordanDiagram.{u, v} R I)
 
-/-- The scalar extension `S ⊗[R] F` of a diagram (Lemma 2.11). -/
-noncomputable def baseChange : JordanDiagram.{u', max u' v} S I where
+/-- The scalar extension `S ⊗[R] F` of a diagram (Lemma 2.11). Reducible, so that its nodes are
+seen as the tensor products `S ⊗[R] F(i)` by rewriting and instance search. -/
+@[reducible] noncomputable def baseChange : JordanDiagram.{u', max u' v} S I where
   obj i := S ⊗[R] F.obj i
   jordan _ := inferInstance
   map α := baseChangeHom S (F.map α)
@@ -77,6 +78,49 @@ theorem autBaseChange_injective
   apply h i
   have := congrArg (fun k : (F.baseChange S).autGroup => k.1 i ((1 : S) ⊗ₜ a)) hgg'
   exact this
+
+/-- **Proposition 7.9(c)**: if every `a ↦ 1 ⊗ a : F(i) → S ⊗[R] F(i)` is injective (e.g. `F(i)`
+free and `R → S` injective), then, identifying `F(i)` with its image `1 ⊗ F(i)`, the image of
+`G_F(R) → G_F(S)` consists of the automorphisms preserving every `F(i)` setwise. -/
+theorem range_autBaseChange (hι : ∀ i, Function.Injective (incl (A := F.obj i) S)) :
+    Set.range (autBaseChange S F) =
+      {g | ∀ i, g.1 i '' Set.range (incl (A := F.obj i) S) = Set.range (incl S)} := by
+  ext g
+  constructor
+  · rintro ⟨h, rfl⟩ i
+    ext y
+    constructor
+    · rintro ⟨_, ⟨a, rfl⟩, rfl⟩
+      exact ⟨h.1 i a, rfl⟩
+    · rintro ⟨b, rfl⟩
+      refine ⟨incl S ((h.1 i)⁻¹ b), ⟨_, rfl⟩, ?_⟩
+      change incl S (h.1 i ((h.1 i)⁻¹ b)) = incl S b
+      rw [jordanAut.apply_inv_self]
+  · intro hg
+    have pres : ∀ i, PreservesIncl (g.1 i) := fun i a => by
+      have hmem : g.1 i (incl S a) ∈ g.1 i '' Set.range (incl S) := ⟨incl S a, ⟨a, rfl⟩, rfl⟩
+      rw [hg i] at hmem
+      obtain ⟨b, hb⟩ := hmem
+      exact ⟨b, hb.symm⟩
+    have pres' : ∀ i, PreservesIncl (g.1 i)⁻¹ := fun i a => by
+      have hmem : incl S a ∈ g.1 i '' Set.range (incl S) := (hg i).symm ▸ ⟨a, rfl⟩
+      obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hmem
+      exact ⟨b, by rw [← hb, jordanAut.inv_apply_self]⟩
+    refine ⟨⟨fun i => descendAut (hι i) (g.1 i) (pres i) (pres' i), ?_⟩, ?_⟩
+    · intro i j α a
+      apply hι j
+      rw [incl_descendAut]
+      have h1 : incl S (F.map α a) = (F.baseChange S).map α (incl S a) := rfl
+      have h2 : incl S (F.map α (descendAut (hι i) (g.1 i) (pres i) (pres' i) a)) =
+          (F.baseChange S).map α (incl S (descendAut (hι i) (g.1 i) (pres i) (pres' i) a)) := rfl
+      rw [h1, autGroup_naturality g α, h2, incl_descendAut]
+    · exact Subtype.ext (funext fun i => baseChangeAut_descendAut (hι i) _ _ _)
+
+/-- **Corollary 7.10**: under the hypothesis of Proposition 7.9(c), `G_F(R)` is isomorphic to the
+subgroup of `G_F(S)` preserving every `F(i)`. -/
+noncomputable def autGroupEquivPreserving (hι : ∀ i, Function.Injective (incl (A := F.obj i) S)) :
+    F.autGroup ≃* (autBaseChange S F).range :=
+  MonoidHom.ofInjective (autBaseChange_injective hι)
 
 end Aut
 
