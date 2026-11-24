@@ -5,6 +5,7 @@
 import JordanDiagram.Algebra.Automorphism
 import JordanDiagram.Algebra.BaseChange
 import JordanDiagram.Algebra.Equiv
+import JordanDiagram.Algebra.Functor
 import JordanDiagram.Algebra.Generation
 import JordanDiagram.Algebra.Orthogonal
 import JordanDiagram.Algebra.SpinFactor
@@ -15,6 +16,7 @@ import JordanDiagram.Diagram.BaseChange
 import JordanDiagram.Diagram.Basic
 import JordanDiagram.Diagram.Derivation
 import JordanDiagram.Diagram.Finiteness
+import JordanDiagram.Diagram.Functor
 import JordanDiagram.Diagram.Group
 import JordanDiagram.Diagram.Iso
 import JordanDiagram.Diagram.SpinFactor
