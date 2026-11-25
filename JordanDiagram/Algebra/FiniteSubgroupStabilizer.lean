@@ -26,7 +26,8 @@ generated and `Z[1/2] L = M`, and write `stabilizer ρ L` for the subgroup of `G
   **the maximal finite subgroups are the maximal members among these stabilizers**.
 
 For a diagram group, finiteness of these stabilizers comes from discreteness of integer matrices
-inside the compact group of real points; it is a hypothesis here.
+inside the compact group of real points; it is a hypothesis here, discharged in
+`Algebra/StabilizerFinite.lean` under an invariant positive form.
 -/
 
 @[expose] public section
