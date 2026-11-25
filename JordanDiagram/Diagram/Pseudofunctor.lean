@@ -3,6 +3,7 @@ module
 public import JordanDiagram.Diagram.BaseChange
 public import JordanDiagram.Algebra.Dyadic
 public import Mathlib.CategoryTheory.FiberedCategory.Grothendieck
+public import JordanDiagram.MathlibMissing.GrothendieckCocartesian
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 
@@ -25,11 +26,12 @@ preserving the chosen terminal object, and `CAlg_{Z[1/2]}` for `CommAlgCat Z[1/2
   the associativity and unit laws (`compHom_assoc`, `compHom_idHom`, `idHom_compHom`).
 * `JordanDiagram.baseChangePseudofunctor`: for a fixed shape, **scalar extension is a pseudofunctor**
   `CAlg_{Z[1/2]} → Cat`.
+* `JordanDiagram.exists_isStronglyCocartesian_baseChange`: for a fixed shape its Grothendieck
+  construction is an **opfibration** over `CAlg_{Z[1/2]}`, the lifts being `F ⟶ S ⊗[R] F`. Mathlib
+  has no class of opfibrations, so this is stated as the existence of strongly cocartesian lifts
+  (`JordanDiagram/MathlibMissing/GrothendieckCocartesian.lean`).
 * `JordanDiagram.diagramPseudofunctor`: **`D : Cat₊ᵒᵖ × CAlg_{Z[1/2]} → Cat`,
   `(I, R) ↦ Fun(I, Jord_R)`, is a pseudofunctor**, acting on `(u, f)` by `F ↦ S ⊗[R] u*F`.
-
-That for a fixed shape the Grothendieck construction is an opfibration over `CAlg_{Z[1/2]}` is not
-stated: Mathlib has no notion of cofibered category to state it with.
 -/
 
 @[expose] public section
@@ -402,6 +404,16 @@ noncomputable def baseChangePseudofunctor :
       refine hom_ext fun i x => ?_
       let := f.hom.toRingHom.toAlgebra
       exact idHom_compHom S F i x)
+
+open Pseudofunctor.Grothendieck in
+/-- **For a fixed shape, the Grothendieck construction of scalar extension is an opfibration over
+`CAlg_{Z[1/2]}`**: every base map `f : R ⟶ S` out of the base ring of a diagram `F` has a strongly
+cocartesian lift, namely `F ⟶ S ⊗[R] F`. -/
+theorem exists_isStronglyCocartesian_baseChange (a : ∫ baseChangePseudofunctor.{u, w, w'} I)
+    {S : CommAlgCat.{u} ZHalf} (f : a.base ⟶ S) :
+    ∃ (b : ∫ baseChangePseudofunctor I) (φ : a ⟶ b),
+      (forget (baseChangePseudofunctor I)).IsStronglyCocartesian f φ :=
+  exists_isStronglyCocartesian a f
 
 /-! #### The pseudofunctor `D` on `Cat₊ᵒᵖ × CAlg_{Z[1/2]}` -/
 
