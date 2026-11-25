@@ -7,6 +7,7 @@ module
 public import JordanDiagram.Algebra.Automorphism
 public import JordanDiagram.Algebra.BaseChange
 public import JordanDiagram.Algebra.DualNumber
+public import JordanDiagram.Algebra.DyadicFinite
 public import JordanDiagram.Algebra.Dyadic
 public import JordanDiagram.Algebra.Equiv
 public import JordanDiagram.Algebra.Functor
@@ -24,6 +25,7 @@ public import JordanDiagram.Algebra.SpinFactorFormallyReal
 public import JordanDiagram.Algebra.Tower
 
 -- General constructions missing from Mathlib (candidates for upstreaming).
+public import JordanDiagram.MathlibMissing.AnisotropicBound
 public import JordanDiagram.MathlibMissing.FractionRingOrder
 public import JordanDiagram.MathlibMissing.GrothendieckCocartesian
 public import JordanDiagram.MathlibMissing.LieRingCat
@@ -54,6 +56,7 @@ public import JordanDiagram.Diagram.Representability
 public import JordanDiagram.Diagram.GroupScheme
 public import JordanDiagram.Diagram.Product
 public import JordanDiagram.Diagram.SpinFactor
+public import JordanDiagram.Diagram.SpinFactorFinite
 public import JordanDiagram.Diagram.Twisted
 public import JordanDiagram.Diagram.TwistedGeneral
 public import JordanDiagram.Diagram.Wedge

@@ -64,7 +64,10 @@
         "JordanDiagramCheck.square_zero_automorphisms",
         "JordanDiagramCheck.lie_algebra_dual_numbers",
         "JordanDiagramCheck.finite_stabilizers_of_form",
-        "JordanDiagramCheck.base_change_opfibration"
+        "JordanDiagramCheck.base_change_opfibration",
+        "JordanDiagramCheck.finite_at_two",
+        "JordanDiagramCheck.spin_diagram_finite_at_two",
+        "JordanDiagramCheck.flag_finite_at_two"
     ],
     "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
 }

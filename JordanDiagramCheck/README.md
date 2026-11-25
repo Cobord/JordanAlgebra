@@ -55,6 +55,9 @@ permitted axioms, and is accepted by the kernel.
 | `hermitian_two` | `!![ρ+α, x; x̄, ρ-α] ↦ ((x, α), ρ)` is a linear, multiplicative bijection from Hermitian `2 × 2` octonionic matrices onto the spin factor of `n(x, y) + αβ`; the Cayley–Dickson stages are closed under product and conjugation, and the map restricts to `H₂(Cₖ) ≅ J(Cₖ ⊕ R)` |
 | `finite_subgroups` | For a faithful action on a finite free `Z[1/2]`-module of rank `n`: every finite subgroup preserves a finitely generated additive subgroup `L` with `Z[1/2] L = M`, has order at most `3^(n²)`, and lies in a maximal finite subgroup; if the stabilizers of all such `L` are finite, the maximal finite subgroups are the maximal members among them |
 | `finite_stabilizers_of_form` | In the same setting, under a `G`-invariant `ℚ`-valued form with `β(x, x) > 0` for `x ≠ 0`, the stabilizers of all such `L` are finite, so the maximal finite subgroups are the maximal members among them |
+| `finite_at_two` | A group acting faithfully on a finite free `Z[1/2]`-module and preserving a form positive on nonzero vectors and anisotropic over `ℚ₂` is finite |
+| `spin_diagram_finite_at_two` | A spin-factor diagram over `Z[1/2]` with positive form, whose top piece is anisotropic over `ℚ₂`, has finite `G_F(Z[1/2])` |
+| `flag_finite_at_two` | For an orthogonal flag over `Z[1/2]` with positive form and every piece anisotropic over `ℚ₂`, the flag stabilizer in `O(V, B)(Z[1/2])` is finite |
 | `square_zero_automorphisms` | For `e² = 0` and a compatible derivation `D`, `x ↦ x + e Dᵢ(x)` is a diagram automorphism; for `e² = e'² = 0` the commutator of `1 + e D` and `1 + e' D'` is `1 + e e' [D, D']` |
 | `lie_algebra_dual_numbers` | `D ↦ 1 + ε D` is an isomorphism of abelian groups from `g_F(S)` onto the kernel of `G_F(S[ε]) → G_F(S)` |
 | `base_change_opfibration` | For a fixed shape, the Grothendieck construction of scalar extension over `CAlg_{Z[1/2]}` has strongly cocartesian lifts (an opfibration) |

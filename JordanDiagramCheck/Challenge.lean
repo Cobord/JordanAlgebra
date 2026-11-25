@@ -537,6 +537,50 @@ theorem finite_stabilizers_of_form {M : Type u} [AddCommGroup M] [Module ZHalf M
           Submodule.span ZHalf (L : Set M) = ⊤ ∧ K = ZHalf.stabilizer ρ L) K := by
   sorry
 
+open Matrix in
+/-- **Finiteness at `2` for groups preserving a form**. A group acting faithfully on a finite free
+`Z[1/2]`-module and preserving a form `β` with `β(x, x) > 0` for `x ≠ 0` (read in `ℚ`) that is
+anisotropic over `ℚ₂` (in a basis, `vᵀ G v ≠ 0` for every nonzero `v ∈ ℚ₂^ι`, `G` the Gram matrix)
+is finite. -/
+theorem finite_at_two {M : Type u} [AddCommMonoid M] [Module ZHalf M] {ι : Type} [Fintype ι]
+    [DecidableEq ι] (b : Module.Basis ι ZHalf M) {G : Type v} [Group G] (ρ : G →* (M ≃ₗ[ZHalf] M))
+    (hρ : Function.Injective ρ) (β : LinearMap.BilinForm ZHalf M)
+    (hinv : ∀ g x y, β (ρ g x) (ρ g y) = β x y) (hpos : ∀ x, x ≠ 0 → 0 < ZHalf.toRat (β x x))
+    (h2 : ∀ v : ι → ℚ_[2], v ≠ 0 →
+      v ⬝ᵥ (Matrix.of fun i j => ((ZHalf.toRat (β (b i) (b j)) : ℚ) : ℚ_[2])) *ᵥ v ≠ 0) :
+    Finite G := by
+  sorry
+
+open Matrix in
+/-- **Dyadic points of definite spin-factor diagrams**. For a spin-factor diagram over `Z[1/2]` on
+`(V, B, W)` with `B(v, v) > 0` for `v ≠ 0`, whose top piece `W ⊤` is free with a form anisotropic
+over `ℚ₂`, the diagram group `G_F(Z[1/2])` is finite. -/
+theorem spin_diagram_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
+    (B : LinearMap.BilinForm ZHalf V) [Fact B.IsSymm] {I : Type w} [Preorder I] [OrderTop I]
+    (W : I →o Submodule ZHalf V) {ι : Type} [Fintype ι] [DecidableEq ι]
+    (b : Module.Basis ι ZHalf (W ⊤)) (hpos : ∀ v, v ≠ 0 → 0 < ZHalf.toRat (B v v))
+    (h2 : ∀ v : ι → ℚ_[2], v ≠ 0 →
+      v ⬝ᵥ (Matrix.of fun i j => ((ZHalf.toRat (B (b i) (b j)) : ℚ) : ℚ_[2])) *ᵥ v ≠ 0) :
+    Finite (JordanDiagram.spinDiagram B W).autGroup := by
+  sorry
+
+open Matrix in
+/-- **Orthogonal flags at `2`**. For `V = ⨁ⱼ Uⱼ` over `Z[1/2]` with mutually orthogonal pieces on
+which `B` is nondegenerate, `B(v, v) > 0` for `v ≠ 0`, and every piece free with a form anisotropic
+over `ℚ₂`, the stabilizer in `O(V, B)(Z[1/2])` of the flag `W_j = ⨆_{i ≤ j} Uᵢ` is finite, although
+`B` itself need not be anisotropic over `ℚ₂`. -/
+theorem flag_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
+    (B : LinearMap.BilinForm ZHalf V) {ι : Type} [Fintype ι] [DecidableEq ι] [LinearOrder ι]
+    (U : ι → Submodule ZHalf V) (hU : DirectSum.IsInternal U)
+    (hO : ∀ i j, i ≠ j → ∀ u ∈ U i, ∀ w ∈ U j, B u w = 0)
+    (hN : ∀ i, ∀ u ∈ U i, (∀ w ∈ U i, B u w = 0) → u = 0) {κ : ι → Type} [∀ j, Fintype (κ j)]
+    [∀ j, DecidableEq (κ j)] (b : ∀ j, Module.Basis (κ j) ZHalf (U j))
+    (hpos : ∀ v, v ≠ 0 → 0 < ZHalf.toRat (B v v))
+    (h2 : ∀ j (v : κ j → ℚ_[2]), v ≠ 0 →
+      v ⬝ᵥ (Matrix.of fun k k' => ((ZHalf.toRat (B (b j k) (b j k')) : ℚ) : ℚ_[2])) *ᵥ v ≠ 0) :
+    Finite (SpinFactor.stabFamily B (fun j => ⨆ i : {i : ι // i ≤ j}, U i)) := by
+  sorry
+
 /-- **The diagram group acts faithfully** on the product of the nodes, and on the terminal algebra
 when the terminal maps are injective; so `finite_subgroups` applies to it. -/
 theorem diagram_faithful {I : Type w} [Category.{w'} I] [TerminallyPointed I]

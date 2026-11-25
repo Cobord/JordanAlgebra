@@ -461,6 +461,39 @@ theorem finite_stabilizers_of_form {M : Type u} [AddCommGroup M] [Module ZHalf M
     ZHalf.finite_stabilizer_of_form hρ β hpos hinv ⟨h1, h2⟩
   exact ⟨hfin, (finite_subgroups ρ hρ).2 hfin⟩
 
+open Matrix in
+theorem finite_at_two {M : Type u} [AddCommMonoid M] [Module ZHalf M] {ι : Type} [Fintype ι]
+    [DecidableEq ι] (b : Module.Basis ι ZHalf M) {G : Type v} [Group G] (ρ : G →* (M ≃ₗ[ZHalf] M))
+    (hρ : Function.Injective ρ) (β : LinearMap.BilinForm ZHalf M)
+    (hinv : ∀ g x y, β (ρ g x) (ρ g y) = β x y) (hpos : ∀ x, x ≠ 0 → 0 < ZHalf.toRat (β x x))
+    (h2 : ∀ v : ι → ℚ_[2], v ≠ 0 →
+      v ⬝ᵥ (Matrix.of fun i j => ((ZHalf.toRat (β (b i) (b j)) : ℚ) : ℚ_[2])) *ᵥ v ≠ 0) :
+    Finite G :=
+  ZHalf.finite_of_form b hρ β hinv hpos h2
+
+open Matrix in
+theorem spin_diagram_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
+    (B : LinearMap.BilinForm ZHalf V) [Fact B.IsSymm] {I : Type w} [Preorder I] [OrderTop I]
+    (W : I →o Submodule ZHalf V) {ι : Type} [Fintype ι] [DecidableEq ι]
+    (b : Module.Basis ι ZHalf (W ⊤)) (hpos : ∀ v, v ≠ 0 → 0 < ZHalf.toRat (B v v))
+    (h2 : ∀ v : ι → ℚ_[2], v ≠ 0 →
+      v ⬝ᵥ (Matrix.of fun i j => ((ZHalf.toRat (B (b i) (b j)) : ℚ) : ℚ_[2])) *ᵥ v ≠ 0) :
+    Finite (JordanDiagram.spinDiagram B W).autGroup :=
+  JordanDiagram.finite_spinDiagram B W b hpos h2
+
+open Matrix in
+theorem flag_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
+    (B : LinearMap.BilinForm ZHalf V) {ι : Type} [Fintype ι] [DecidableEq ι] [LinearOrder ι]
+    (U : ι → Submodule ZHalf V) (hU : DirectSum.IsInternal U)
+    (hO : ∀ i j, i ≠ j → ∀ u ∈ U i, ∀ w ∈ U j, B u w = 0)
+    (hN : ∀ i, ∀ u ∈ U i, (∀ w ∈ U i, B u w = 0) → u = 0) {κ : ι → Type} [∀ j, Fintype (κ j)]
+    [∀ j, DecidableEq (κ j)] (b : ∀ j, Module.Basis (κ j) ZHalf (U j))
+    (hpos : ∀ v, v ≠ 0 → 0 < ZHalf.toRat (B v v))
+    (h2 : ∀ j (v : κ j → ℚ_[2]), v ≠ 0 →
+      v ⬝ᵥ (Matrix.of fun k k' => ((ZHalf.toRat (B (b j k) (b j k')) : ℚ) : ℚ_[2])) *ᵥ v ≠ 0) :
+    Finite (SpinFactor.stabFamily B (fun j => ⨆ i : {i : ι // i ≤ j}, U i)) :=
+  JordanDiagram.finite_stabFlag B hU hO hN b hpos h2
+
 theorem diagram_faithful {I : Type w} [Category.{w'} I] [TerminallyPointed I]
     (F : JordanDiagram.{0, v} ZHalf I) :
     Function.Injective F.nodesRep ∧
