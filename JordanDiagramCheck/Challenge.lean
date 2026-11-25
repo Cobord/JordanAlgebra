@@ -556,4 +556,27 @@ theorem diagram_representable {k : Type u} [CommRing k] [Invertible (2 : k)] {I 
           eGL S (f.comp π) i = ((e S f).1 i : S ⊗[k] F.obj i ≃ₗ[S] S ⊗[k] F.obj i) := by
   sorry
 
+open AlgebraicGeometry MonObj in
+/-- **The diagram group scheme.** For a diagram with finite free nodes (everything in one universe)
+there are `k`-algebras `B`, `A` such that `Spec B` and `Spec A` are group schemes over `Spec k`
+whose groups of `T`-points are `G_F(Γ(T))` and `∏ᵢ GL(Γ(T) ⊗ F(i))`, naturally in `T`, together
+with a homomorphism of group schemes `Spec B ⟶ Spec A` that is a closed immersion and takes a
+diagram automorphism to its components; `B` is of finite type for finitely many objects. -/
+theorem diagram_group_scheme {k : Type u} [CommRing k] [Invertible (2 : k)] {I : Type u}
+    [Category.{w'} I] (F : JordanDiagram.{u, u} k I) [∀ i, Module.Free k (F.obj i)]
+    [∀ i, Module.Finite k (F.obj i)] :
+    ∃ (B A : Type u) (_ : CommRing B) (_ : Algebra k B) (_ : CommRing A) (_ : Algebra k A)
+      (_ : GrpObj (JordanDiagram.specOver (k := k) B))
+      (_ : GrpObj (JordanDiagram.specOver (k := k) A))
+      (eB : yonedaGrpObj (JordanDiagram.specOver (k := k) B) ≅ JordanDiagram.pointsFunctor F)
+      (eA : yonedaGrpObj (JordanDiagram.specOver (k := k) A) ≅ JordanDiagram.glPoints F)
+      (j : JordanDiagram.specOver (k := k) B ⟶ JordanDiagram.specOver A),
+      IsMonHom j ∧ IsClosedImmersion j.left ∧
+      (∀ (T : Over (JordanDiagram.baseScheme k)) (x : T ⟶ JordanDiagram.specOver (k := k) B),
+        (eA.hom.app (Opposite.op T)).hom (x ≫ j) =
+          JordanDiagram.components F (JordanDiagram.sectionsAlg T)
+            ((eB.hom.app (Opposite.op T)).hom x)) ∧
+      (Finite I → Algebra.FiniteType k B) := by
+  sorry
+
 end JordanDiagramCheck

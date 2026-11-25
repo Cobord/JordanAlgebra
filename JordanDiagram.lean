@@ -45,6 +45,7 @@ public import JordanDiagram.Diagram.OrderedPowerSeries
 public import JordanDiagram.Diagram.PowerSeries
 public import JordanDiagram.Diagram.Pseudofunctor
 public import JordanDiagram.Diagram.Representability
+public import JordanDiagram.Diagram.GroupScheme
 public import JordanDiagram.Diagram.Product
 public import JordanDiagram.Diagram.SpinFactor
 public import JordanDiagram.Diagram.Twisted

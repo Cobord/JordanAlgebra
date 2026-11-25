@@ -468,4 +468,22 @@ theorem diagram_representable {k : Type u} [CommRing k] [Invertible (2 : k)] {I 
           eGL S (f.comp π) i = ((e S f).1 i : S ⊗[k] F.obj i ≃ₗ[S] S ⊗[k] F.obj i) :=
   JordanDiagram.representable.{u, u'} F
 
+open AlgebraicGeometry MonObj in
+theorem diagram_group_scheme {k : Type u} [CommRing k] [Invertible (2 : k)] {I : Type u}
+    [Category.{w'} I] (F : JordanDiagram.{u, u} k I) [∀ i, Module.Free k (F.obj i)]
+    [∀ i, Module.Finite k (F.obj i)] :
+    ∃ (B A : Type u) (_ : CommRing B) (_ : Algebra k B) (_ : CommRing A) (_ : Algebra k A)
+      (_ : GrpObj (JordanDiagram.specOver (k := k) B))
+      (_ : GrpObj (JordanDiagram.specOver (k := k) A))
+      (eB : yonedaGrpObj (JordanDiagram.specOver (k := k) B) ≅ JordanDiagram.pointsFunctor F)
+      (eA : yonedaGrpObj (JordanDiagram.specOver (k := k) A) ≅ JordanDiagram.glPoints F)
+      (j : JordanDiagram.specOver (k := k) B ⟶ JordanDiagram.specOver A),
+      IsMonHom j ∧ IsClosedImmersion j.left ∧
+      (∀ (T : Over (JordanDiagram.baseScheme k)) (x : T ⟶ JordanDiagram.specOver (k := k) B),
+        (eA.hom.app (Opposite.op T)).hom (x ≫ j) =
+          JordanDiagram.components F (JordanDiagram.sectionsAlg T)
+            ((eB.hom.app (Opposite.op T)).hom x)) ∧
+      (Finite I → Algebra.FiniteType k B) :=
+  JordanDiagram.groupScheme F
+
 end JordanDiagramCheck

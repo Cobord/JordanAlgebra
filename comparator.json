@@ -59,7 +59,8 @@
         "JordanDiagramCheck.diagram_faithful",
         "JordanDiagramCheck.restriction_strict",
         "JordanDiagramCheck.diagram_pseudofunctor",
-        "JordanDiagramCheck.diagram_representable"
+        "JordanDiagramCheck.diagram_representable",
+        "JordanDiagramCheck.diagram_group_scheme"
     ],
     "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
 }

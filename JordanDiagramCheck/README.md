@@ -57,6 +57,7 @@ permitted axioms, and is accepted by the kernel.
 | `diagram_faithful` | `G_F(Z[1/2])` acts faithfully on `∏ᵢ F(i)`, and on `F(+)` when the terminal maps are injective |
 | `restriction_strict` | Restriction along shapes is strictly functorial and commutes strictly with scalar extension; for a fixed base ring its Grothendieck construction is a fibration over `Cat₊` |
 | `diagram_pseudofunctor` | `D : Cat₊ᵒᵖ × CAlg_{Z[1/2]} → Cat`, `(I, R) ↦ Fun(I, Jord_R)`, acting by restriction then scalar extension, is a pseudofunctor |
+| `diagram_group_scheme` | For finite free nodes (one universe), `Spec B` and `Spec A` are group schemes over `Spec k` with `T`-points `G_F(Γ(T))` and `∏ᵢ GL(Γ(T) ⊗ F(i))` as groups, and a group-scheme homomorphism `Spec B ⟶ Spec A` that is a closed immersion and takes a diagram automorphism to its components |
 | `diagram_representable` | For finite free nodes, `S ↦ G_F(S)` is represented by a `k`-algebra `B` (naturally in `S`), of finite type for finitely many objects, and `B` is a quotient of an algebra representing `∏ᵢ GL(F(i))`, compatibly with `G_F ⊆ ∏ᵢ GL(F(i))` |
 
 The statements use the library's definitions (`JordanDiagram`, `autGroup`, `ev`, `derAlgebra`,
