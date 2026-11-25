@@ -275,6 +275,9 @@ noncomputable def mapDer (d : JordanDerivation S (S ⊗[R] A)) : JordanDerivatio
           smul_mul_smul_comm, smul_mul_smul_comm, ← smul_add, eab, d.leibniz', map_add,
           tensorMap_mul, tensorMap_mul, tensorMap_one_tmul, tensorMap_one_tmul]
 
+theorem mapDer_apply (d : JordanDerivation S (S ⊗[R] A)) (x : T ⊗[R] A) :
+    mapDer φ d x = mapLin φ (d : S ⊗[R] A →ₗ[S] S ⊗[R] A) x := rfl
+
 theorem mapDer_add (d e : JordanDerivation S (S ⊗[R] A)) :
     mapDer φ (d + e) = mapDer φ d + mapDer φ e :=
   JordanDerivation.ext fun x =>
