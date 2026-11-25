@@ -534,4 +534,26 @@ theorem diagram_pseudofunctor :
       (JordanDiagram.diagramPseudofunctor.map f.toLoc).toFunctor = JordanDiagram.diagramMap f := by
   sorry
 
+/-- **Representability of the diagram group functor.** For a diagram with finite free nodes,
+there is a commutative `k`-algebra `B` whose algebra maps to any `S` are naturally the diagram
+automorphisms of `S ⊗ F`; `B` is of finite type when the shape has finitely many objects; and `B`
+is a quotient of an algebra `A` whose algebra maps to `S` are the families of linear automorphisms
+of the `S ⊗ F(i)`, compatibly with taking the components of a diagram automorphism. So the
+diagram group scheme is a closed subgroup scheme of `∏ᵢ GL(F(i))`. -/
+theorem diagram_representable {k : Type u} [CommRing k] [Invertible (2 : k)] {I : Type w}
+    [Category.{w'} I] (F : JordanDiagram.{u, v} k I) [∀ i, Module.Free k (F.obj i)]
+    [∀ i, Module.Finite k (F.obj i)] :
+    ∃ (B : Type (max u v w)) (_ : CommRing B) (_ : Algebra k B)
+      (e : ∀ (S : Type u') [CommRing S] [Algebra k S], (B →ₐ[k] S) ≃ (F.baseChange S).autGroup),
+      (∀ (S T : Type u') [CommRing S] [Algebra k S] [CommRing T] [Algebra k T] (χ : S →ₐ[k] T)
+        (f : B →ₐ[k] S), e T (χ.comp f) = JordanDiagram.autMap F χ (e S f)) ∧
+      (Finite I → Algebra.FiniteType k B) ∧
+      ∃ (A : Type (max u v w)) (_ : CommRing A) (_ : Algebra k A)
+        (eGL : ∀ (S : Type u') [CommRing S] [Algebra k S],
+          (A →ₐ[k] S) ≃ ∀ i, S ⊗[k] F.obj i ≃ₗ[S] S ⊗[k] F.obj i)
+        (π : A →ₐ[k] B), Function.Surjective π ∧
+        ∀ (S : Type u') [CommRing S] [Algebra k S] (f : B →ₐ[k] S) (i : I),
+          eGL S (f.comp π) i = ((e S f).1 i : S ⊗[k] F.obj i ≃ₗ[S] S ⊗[k] F.obj i) := by
+  sorry
+
 end JordanDiagramCheck
