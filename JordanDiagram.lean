@@ -6,6 +6,7 @@ module
 -- Symmetries of a single, already-formalized Jordan algebra (no diagrams).
 public import JordanDiagram.Algebra.Automorphism
 public import JordanDiagram.Algebra.BaseChange
+public import JordanDiagram.Algebra.DualNumber
 public import JordanDiagram.Algebra.Dyadic
 public import JordanDiagram.Algebra.Equiv
 public import JordanDiagram.Algebra.Functor
@@ -17,14 +18,18 @@ public import JordanDiagram.Algebra.Orthogonal
 public import JordanDiagram.Algebra.OrthogonalFlag
 public import JordanDiagram.Algebra.OrthogonalFlagIso
 public import JordanDiagram.Algebra.SpinFactor
+public import JordanDiagram.Algebra.SquareZero
+public import JordanDiagram.Algebra.StabilizerFinite
 public import JordanDiagram.Algebra.SpinFactorFormallyReal
 public import JordanDiagram.Algebra.Tower
 
 -- General constructions missing from Mathlib (candidates for upstreaming).
 public import JordanDiagram.MathlibMissing.FractionRingOrder
+public import JordanDiagram.MathlibMissing.GrothendieckCocartesian
 public import JordanDiagram.MathlibMissing.LieRingCat
 public import JordanDiagram.MathlibMissing.Minkowski
 public import JordanDiagram.MathlibMissing.PiLie
+public import JordanDiagram.MathlibMissing.PosDefIntegerPoints
 public import JordanDiagram.MathlibMissing.PowerSeriesMatrix
 public import JordanDiagram.MathlibMissing.PowerSeriesOrder
 public import JordanDiagram.MathlibMissing.SemilinearBaseChange
@@ -33,6 +38,7 @@ public import JordanDiagram.MathlibMissing.SemilinearBaseChange
 public import JordanDiagram.Diagram.BaseChange
 public import JordanDiagram.Diagram.Basic
 public import JordanDiagram.Diagram.Derivation
+public import JordanDiagram.Diagram.DualNumber
 public import JordanDiagram.Diagram.Finiteness
 public import JordanDiagram.Diagram.Functor
 public import JordanDiagram.Diagram.Group

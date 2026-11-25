@@ -170,6 +170,28 @@ theorem comparison_subgroups
       Nat.card (H.map (JordanDiagram.autBaseChange S F)) = Nat.card H := by
   sorry
 
+/-- **Square-zero automorphisms and their commutators**. For a diagram `G` over `K`, `e ∈ K` with
+`e² = 0` and a compatible derivation `D`, the family `x ↦ x + e Dᵢ(x)` is a diagram automorphism;
+for `e² = e'² = 0` the commutator of `1 + e D` and `1 + e' D'` is `1 + e e' [D, D']`. -/
+theorem square_zero_automorphisms {K : Type u} [CommRing K] (G : JordanDiagram.{u, v} K I) :
+    (∀ e : K, e * e = 0 → ∀ D : G.derAlgebra,
+      ∃ g : G.autGroup, ∀ i x, g.1 i x = x + e • D.1 i x) ∧
+    (∀ e e' : K, e * e = 0 → e' * e' = 0 → ∀ (D D' : G.derAlgebra) (g g' : G.autGroup),
+      (∀ i x, g.1 i x = x + e • D.1 i x) → (∀ i x, g'.1 i x = x + e' • D'.1 i x) →
+        ∀ i x, (g * g' * g⁻¹ * g'⁻¹).1 i x = x + (e * e') • (⁅D, D'⁆ : G.derAlgebra).1 i x) := by
+  sorry
+
+/-- **The Lie algebra of `G_F` via dual numbers**. `D ↦ 1 + ε D` is an isomorphism of abelian
+groups from `g_F(S)` onto the kernel of the reduction `G_F(S[ε]) → G_F(S)`, `ε ↦ 0`, where `D` is
+extended `S[ε]`-linearly. -/
+theorem lie_algebra_dual_numbers (S : Type u') [CommRing S] [Algebra R S] :
+    ∃ e : (F.baseChange S).derAlgebra ≃+
+        Additive (JordanDiagram.autMap F (TrivSqZeroExt.fstHom R S S)).ker,
+      ∀ D i x, (e D).toMul.1.1 i x =
+        x + (DualNumber.eps : DualNumber S) •
+          (JordanDiagram.derMap F (TrivSqZeroExt.inlAlgHom R S S) D).1 i x := by
+  sorry
+
 end Functor
 
 section Family
@@ -500,6 +522,21 @@ theorem finite_subgroups {M : Type u} [AddCommGroup M] [Module ZHalf M] [Module.
           Submodule.span ZHalf (L : Set M) = ⊤ ∧ K = ZHalf.stabilizer ρ L) K) := by
   sorry
 
+/-- **Finite stabilizers under an invariant positive form**. In the setting of `finite_subgroups`,
+suppose `G` preserves a biadditive `ℚ`-valued form `β` on `M` with `β(x, x) > 0` for `x ≠ 0`. Then
+the stabilizer of every finitely generated additive subgroup `L` with `Z[1/2] L = M` is finite, so
+the maximal finite subgroups are the maximal members among these stabilizers. -/
+theorem finite_stabilizers_of_form {M : Type u} [AddCommGroup M] [Module ZHalf M]
+    [Module.Finite ZHalf M] [Module.Free ZHalf M] {G : Type v} [Group G]
+    (ρ : G →* (M ≃ₗ[ZHalf] M)) (hρ : Function.Injective ρ) (β : M →+ M →+ ℚ)
+    (hpos : ∀ x, x ≠ 0 → 0 < β x x) (hinv : ∀ g x y, β (ρ g x) (ρ g y) = β x y) :
+    (∀ L : Submodule ℤ M, L.FG → Submodule.span ZHalf (L : Set M) = ⊤ →
+        Finite (ZHalf.stabilizer ρ L)) ∧
+      ∀ K : Subgroup G, Maximal (fun K : Subgroup G => Finite K) K ↔
+        Maximal (fun K : Subgroup G => ∃ L : Submodule ℤ M, L.FG ∧
+          Submodule.span ZHalf (L : Set M) = ⊤ ∧ K = ZHalf.stabilizer ρ L) K := by
+  sorry
+
 /-- **The diagram group acts faithfully** on the product of the nodes, and on the terminal algebra
 when the terminal maps are injective; so `finite_subgroups` applies to it. -/
 theorem diagram_faithful {I : Type w} [Category.{w'} I] [TerminallyPointed I]
@@ -532,6 +569,16 @@ theorem diagram_pseudofunctor :
         Cat.of (JordanDiagram.{u, u} X.2 X.1.unop.carrier)) ∧
     ∀ {X Y : TPCat.{w, w'}ᵒᵖ × CommAlgCat.{u} ZHalf} (f : X ⟶ Y),
       (JordanDiagram.diagramPseudofunctor.map f.toLoc).toFunctor = JordanDiagram.diagramMap f := by
+  sorry
+
+/-- **For a fixed shape, diagrams over varying base rings form an opfibration over
+`CAlg_{Z[1/2]}`**: in the Grothendieck construction of scalar extension, every base map out of the
+base ring of a diagram has a strongly cocartesian lift. -/
+theorem base_change_opfibration (I : Type w) [Category.{w'} I]
+    (a : Pseudofunctor.Grothendieck (JordanDiagram.baseChangePseudofunctor.{u, w, w'} I))
+    {S : CommAlgCat.{u} ZHalf} (f : a.base ⟶ S) :
+    ∃ (b : Pseudofunctor.Grothendieck (JordanDiagram.baseChangePseudofunctor I)) (φ : a ⟶ b),
+      (Pseudofunctor.Grothendieck.forget _).IsStronglyCocartesian f φ := by
   sorry
 
 /-- **Representability of the diagram group functor.** For a diagram with finite free nodes,

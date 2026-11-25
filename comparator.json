@@ -60,7 +60,11 @@
         "JordanDiagramCheck.restriction_strict",
         "JordanDiagramCheck.diagram_pseudofunctor",
         "JordanDiagramCheck.diagram_representable",
-        "JordanDiagramCheck.diagram_group_scheme"
+        "JordanDiagramCheck.diagram_group_scheme",
+        "JordanDiagramCheck.square_zero_automorphisms",
+        "JordanDiagramCheck.lie_algebra_dual_numbers",
+        "JordanDiagramCheck.finite_stabilizers_of_form",
+        "JordanDiagramCheck.base_change_opfibration"
     ],
     "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
 }

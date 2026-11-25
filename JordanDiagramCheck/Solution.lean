@@ -132,6 +132,29 @@ theorem comparison_subgroups
       Nat.card (H.map (JordanDiagram.autBaseChange S F)) = Nat.card H :=
   ⟨⟨JordanDiagram.subgroupEquivMap h H⟩, JordanDiagram.card_map_autBaseChange h H⟩
 
+theorem square_zero_automorphisms {K : Type u} [CommRing K] (G : JordanDiagram.{u, v} K I) :
+    (∀ e : K, e * e = 0 → ∀ D : G.derAlgebra,
+      ∃ g : G.autGroup, ∀ i x, g.1 i x = x + e • D.1 i x) ∧
+    (∀ e e' : K, e * e = 0 → e' * e' = 0 → ∀ (D D' : G.derAlgebra) (g g' : G.autGroup),
+      (∀ i x, g.1 i x = x + e • D.1 i x) → (∀ i x, g'.1 i x = x + e' • D'.1 i x) →
+        ∀ i x, (g * g' * g⁻¹ * g'⁻¹).1 i x = x + (e * e') • (⁅D, D'⁆ : G.derAlgebra).1 i x) := by
+  refine ⟨fun e he D => ⟨JordanDiagram.sqZeroAutGroup G e he D, fun _ _ => rfl⟩,
+    fun e e' he he' D D' g g' hg hg' i x => ?_⟩
+  obtain rfl : g = JordanDiagram.sqZeroAutGroup G e he D :=
+    Subtype.ext (funext fun i => jordanAut.ext (hg i))
+  obtain rfl : g' = JordanDiagram.sqZeroAutGroup G e' he' D' :=
+    Subtype.ext (funext fun i => jordanAut.ext (hg' i))
+  rw [JordanDiagram.sqZeroAutGroup_commutator]
+  rfl
+
+theorem lie_algebra_dual_numbers (S : Type u') [CommRing S] [Algebra R S] :
+    ∃ e : (F.baseChange S).derAlgebra ≃+
+        Additive (JordanDiagram.autMap F (TrivSqZeroExt.fstHom R S S)).ker,
+      ∀ D i x, (e D).toMul.1.1 i x =
+        x + (DualNumber.eps : DualNumber S) •
+          (JordanDiagram.derMap F (TrivSqZeroExt.inlAlgHom R S S) D).1 i x :=
+  ⟨JordanDiagram.dualAutEquiv F S, JordanDiagram.dualAutEquiv_apply F S⟩
+
 end Functor
 
 section Family
@@ -424,6 +447,20 @@ theorem finite_subgroups {M : Type u} [AddCommGroup M] [Module ZHalf M] [Module.
         exact ⟨L, ⟨h1, h2⟩, rfl⟩
     rw [ZHalf.maximal_finite_iff (fun L hL => hfin L hL.fg hL.span_eq_top) K, e]
 
+theorem finite_stabilizers_of_form {M : Type u} [AddCommGroup M] [Module ZHalf M]
+    [Module.Finite ZHalf M] [Module.Free ZHalf M] {G : Type v} [Group G]
+    (ρ : G →* (M ≃ₗ[ZHalf] M)) (hρ : Function.Injective ρ) (β : M →+ M →+ ℚ)
+    (hpos : ∀ x, x ≠ 0 → 0 < β x x) (hinv : ∀ g x y, β (ρ g x) (ρ g y) = β x y) :
+    (∀ L : Submodule ℤ M, L.FG → Submodule.span ZHalf (L : Set M) = ⊤ →
+        Finite (ZHalf.stabilizer ρ L)) ∧
+      ∀ K : Subgroup G, Maximal (fun K : Subgroup G => Finite K) K ↔
+        Maximal (fun K : Subgroup G => ∃ L : Submodule ℤ M, L.FG ∧
+          Submodule.span ZHalf (L : Set M) = ⊤ ∧ K = ZHalf.stabilizer ρ L) K := by
+  have hfin : ∀ L : Submodule ℤ M, L.FG → Submodule.span ZHalf (L : Set M) = ⊤ →
+      Finite (ZHalf.stabilizer ρ L) := fun L h1 h2 =>
+    ZHalf.finite_stabilizer_of_form hρ β hpos hinv ⟨h1, h2⟩
+  exact ⟨hfin, (finite_subgroups ρ hρ).2 hfin⟩
+
 theorem diagram_faithful {I : Type w} [Category.{w'} I] [TerminallyPointed I]
     (F : JordanDiagram.{0, v} ZHalf I) :
     Function.Injective F.nodesRep ∧
@@ -451,6 +488,13 @@ theorem diagram_pseudofunctor :
     ∀ {X Y : TPCat.{w, w'}ᵒᵖ × CommAlgCat.{u} ZHalf} (f : X ⟶ Y),
       (JordanDiagram.diagramPseudofunctor.map f.toLoc).toFunctor = JordanDiagram.diagramMap f :=
   ⟨fun _ => rfl, fun _ => rfl⟩
+
+theorem base_change_opfibration (I : Type w) [Category.{w'} I]
+    (a : Pseudofunctor.Grothendieck (JordanDiagram.baseChangePseudofunctor.{u, w, w'} I))
+    {S : CommAlgCat.{u} ZHalf} (f : a.base ⟶ S) :
+    ∃ (b : Pseudofunctor.Grothendieck (JordanDiagram.baseChangePseudofunctor I)) (φ : a ⟶ b),
+      (Pseudofunctor.Grothendieck.forget _).IsStronglyCocartesian f φ :=
+  JordanDiagram.exists_isStronglyCocartesian_baseChange I a f
 
 theorem diagram_representable {k : Type u} [CommRing k] [Invertible (2 : k)] {I : Type w}
     [Category.{w'} I] (F : JordanDiagram.{u, v} k I) [∀ i, Module.Free k (F.obj i)]
