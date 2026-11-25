@@ -13,6 +13,25 @@ name = "Jordan"
 [[lean_lib]]
 name = "JordanDiagram"
 
+# Files copied unmodified from the Stacks Project in Lean (AxiomMath/Stacks, Apache-2.0); see
+# `Vendored/Stacks/README.md`. Built with that project's own Lean options.
+[[lean_lib]]
+name = "StacksVendored"
+srcDir = "Vendored/Stacks"
+roots = ["StacksFrontier.AlgebraicGeometry.GroupScheme.Examples.GeneralLinear",
+  "StacksFrontier.AlgebraicGeometry.GroupScheme.Subgroups.Defs"]
+globs = ["StacksCore.+", "StacksFrontier.+"]
+
+[lean_lib.leanOptions]
+pp.unicode.fun = true
+autoImplicit = false
+relaxedAutoImplicit = false
+maxSynthPendingDepth = 3
+weak.linter.flexible = true
+weak.linter.mathlibStandardSet = true
+weak.linter.style.header = false
+weak.linter.overlappingInstances = false
+
 [[lean_lib]]
 name = "JordanCheck"
 roots = ["JordanCheck.Challenge", "JordanCheck.Solution"]
