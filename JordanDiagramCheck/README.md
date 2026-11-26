@@ -58,6 +58,7 @@ permitted axioms, and is accepted by the kernel.
 | `finite_at_two` | A group acting faithfully on a finite free `Z[1/2]`-module and preserving a form positive on nonzero vectors and anisotropic over `ℚ₂` is finite |
 | `spin_diagram_finite_at_two` | A spin-factor diagram over `Z[1/2]` with positive form, whose top piece is anisotropic over `ℚ₂`, has finite `G_F(Z[1/2])` |
 | `flag_finite_at_two` | For an orthogonal flag over `Z[1/2]` with positive form and every piece anisotropic over `ℚ₂`, the flag stabilizer in `O(V, B)(Z[1/2])` is finite |
+| `forms_galois_cohomology` | For a finite Galois `L/k`, isomorphism classes of forms of a diagram split by `L` are in bijection with `H¹(Gal(L/k), G_F(L))` via `θ ↦ (σ ↦ θ (σ ⊗ 1) θ⁻¹ (σ⁻¹ ⊗ 1))`; forms are isomorphic exactly when their cocycles are cohomologous |
 | `square_zero_automorphisms` | For `e² = 0` and a compatible derivation `D`, `x ↦ x + e Dᵢ(x)` is a diagram automorphism; for `e² = e'² = 0` the commutator of `1 + e D` and `1 + e' D'` is `1 + e e' [D, D']` |
 | `lie_algebra_dual_numbers` | `D ↦ 1 + ε D` is an isomorphism of abelian groups from `g_F(S)` onto the kernel of `G_F(S[ε]) → G_F(S)` |
 | `base_change_opfibration` | For a fixed shape, the Grothendieck construction of scalar extension over `CAlg_{Z[1/2]}` has strongly cocartesian lifts (an opfibration) |

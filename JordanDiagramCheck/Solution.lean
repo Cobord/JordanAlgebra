@@ -494,6 +494,20 @@ theorem flag_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
     Finite (SpinFactor.stabFamily B (fun j => ⨆ i : {i : ι // i ≤ j}, U i)) :=
   JordanDiagram.finite_stabFlag B hU hO hN b hpos h2
 
+theorem forms_galois_cohomology {k L : Type u} [Field k] [Invertible (2 : k)] [Field L]
+    [Algebra k L] [FiniteDimensional k L] [IsGalois k L] {I : Type w} [Category.{w'} I]
+    (F : JordanDiagram.{u, u} k I) :
+    ∃ e : JordanDiagram.FormClass L F ≃ JordanDiagram.H1 L F,
+      (∀ E : JordanDiagram.Form L F, e ⟦E⟧ = ⟦E.cocycle⟧) ∧
+      (∀ (E : JordanDiagram.Form L F) (σ : L ≃ₐ[k] L) (i : I) (x : L ⊗[k] F.obj i),
+        (E.cocycle.toFun σ).1 i x = E.iso.app i
+          (TensorProduct.map (σ : L →ₐ[k] L).toLinearMap LinearMap.id ((E.iso.app i).symm
+            (TensorProduct.map ((σ⁻¹ : L ≃ₐ[k] L) : L →ₐ[k] L).toLinearMap LinearMap.id x)))) ∧
+      ∀ E E' : JordanDiagram.Form L F,
+        E.cocycle.Cohomologous E'.cocycle ↔ Nonempty (JordanDiagram.DiagramIso E.diag E'.diag) :=
+  ⟨JordanDiagram.formsEquivH1 L F, JordanDiagram.formsEquivH1_mk, fun _ _ _ _ => rfl,
+    JordanDiagram.Form.cohomologous_cocycle_iff⟩
+
 theorem diagram_faithful {I : Type w} [Category.{w'} I] [TerminallyPointed I]
     (F : JordanDiagram.{0, v} ZHalf I) :
     Function.Injective F.nodesRep ∧

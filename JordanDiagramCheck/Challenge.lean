@@ -581,6 +581,24 @@ theorem flag_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
     Finite (SpinFactor.stabFamily B (fun j => ⨆ i : {i : ι // i ≤ j}, U i)) := by
   sorry
 
+/-- **Forms of a diagram and Galois cohomology**. For a finite Galois extension `L/k` and a
+diagram `F` over `k`, the isomorphism classes of forms of `F` split by `L` (diagrams `F'` over `k`
+with `L ⊗ F' ≅ L ⊗ F`) are in bijection with `H¹(Gal(L/k), G_F(L))`, by sending `θ` to the cocycle
+`σ ↦ θ (σ ⊗ 1) θ⁻¹ (σ⁻¹ ⊗ 1)`; two forms are isomorphic exactly when their cocycles are
+cohomologous. -/
+theorem forms_galois_cohomology {k L : Type u} [Field k] [Invertible (2 : k)] [Field L]
+    [Algebra k L] [FiniteDimensional k L] [IsGalois k L] {I : Type w} [Category.{w'} I]
+    (F : JordanDiagram.{u, u} k I) :
+    ∃ e : JordanDiagram.FormClass L F ≃ JordanDiagram.H1 L F,
+      (∀ E : JordanDiagram.Form L F, e ⟦E⟧ = ⟦E.cocycle⟧) ∧
+      (∀ (E : JordanDiagram.Form L F) (σ : L ≃ₐ[k] L) (i : I) (x : L ⊗[k] F.obj i),
+        (E.cocycle.toFun σ).1 i x = E.iso.app i
+          (TensorProduct.map (σ : L →ₐ[k] L).toLinearMap LinearMap.id ((E.iso.app i).symm
+            (TensorProduct.map ((σ⁻¹ : L ≃ₐ[k] L) : L →ₐ[k] L).toLinearMap LinearMap.id x)))) ∧
+      ∀ E E' : JordanDiagram.Form L F,
+        E.cocycle.Cohomologous E'.cocycle ↔ Nonempty (JordanDiagram.DiagramIso E.diag E'.diag) := by
+  sorry
+
 /-- **The diagram group acts faithfully** on the product of the nodes, and on the terminal algebra
 when the terminal maps are injective; so `finite_subgroups` applies to it. -/
 theorem diagram_faithful {I : Type w} [Category.{w'} I] [TerminallyPointed I]
