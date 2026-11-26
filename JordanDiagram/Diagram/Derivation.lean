@@ -66,7 +66,7 @@ variable [TerminallyPointed I]
 
 variable (F) in
 /-- Evaluation at the terminal dot, `g_F(R) → Der_R(J)`, `(Dᵢ) ↦ D₊`. -/
-def evDer : F.derAlgebra →ₗ⁅R⁆ JordanDerivation R F.J where
+def evDer : F.derAlgebra →ₗ⁅R⁆ JordanDerivation R F.TerminalJordanAlgebra where
   toFun D := D.1 top
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -91,7 +91,7 @@ theorem evDer_injective (hν : ∀ i, Function.Injective (F.ν i)) :
 
 /-- The compatible family with terminal component `d`, for `d` preserving every image. -/
 noncomputable def ofPreserving (hν : ∀ i, Function.Injective (F.ν i))
-    (d : JordanDerivation R F.J) (hd : ∀ i, ∀ y ∈ F.image i, d y ∈ F.image i) : F.derAlgebra :=
+    (d : JordanDerivation R F.TerminalJordanAlgebra) (hd : ∀ i, ∀ y ∈ F.image i, d y ∈ F.image i) : F.derAlgebra :=
   ⟨fun i => liftDer (hν i) d (fun x => hd i _ ⟨x, rfl⟩), by
     intro i j α x
     apply hν j
@@ -99,7 +99,7 @@ noncomputable def ofPreserving (hν : ∀ i, Function.Injective (F.ν i))
     rw [liftDer_spec (hν j), F.ν_map, F.ν_map, liftDer_spec (hν i)]⟩
 
 theorem evDer_ofPreserving (hν : ∀ i, Function.Injective (F.ν i))
-    (d : JordanDerivation R F.J) (hd : ∀ i, ∀ y ∈ F.image i, d y ∈ F.image i) :
+    (d : JordanDerivation R F.TerminalJordanAlgebra) (hd : ∀ i, ∀ y ∈ F.image i, d y ∈ F.image i) :
     evDer F (ofPreserving hν d hd) = d := by
   ext x
   have := liftDer_spec (hν top) d (fun x => hd top _ ⟨x, rfl⟩) x

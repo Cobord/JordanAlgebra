@@ -45,7 +45,7 @@ theorem nodesRep_injective : Function.Injective F.nodesRep := by
   simpa [nodesRep] using this
 
 /-- `G_F(Z[1/2])` acting on the terminal algebra. -/
-def terminalRep : F.autGroup →* (F.J ≃ₗ[ZHalf] F.J) := (jordanAut ZHalf F.J).subtype.comp (ev F)
+def terminalRep : F.autGroup →* (F.TerminalJordanAlgebra ≃ₗ[ZHalf] F.TerminalJordanAlgebra) := (jordanAut ZHalf F.TerminalJordanAlgebra).subtype.comp (ev F)
 
 theorem terminalRep_injective (hν : ∀ i, Function.Injective (F.ν i)) :
     Function.Injective F.terminalRep :=
@@ -72,13 +72,13 @@ theorem finite_subgroups_nodes [Finite I] [∀ i, Module.Finite ZHalf (F.obj i)]
 
 /-- **Finite subgroups of a diagram group, through the action on the terminal algebra**, when the
 terminal maps are injective: the same statements with `M` replaced by `F(+)`. -/
-theorem finite_subgroups_terminal [Module.Finite ZHalf F.J] [Module.Free ZHalf F.J]
+theorem finite_subgroups_terminal [Module.Finite ZHalf F.TerminalJordanAlgebra] [Module.Free ZHalf F.TerminalJordanAlgebra]
     (hν : ∀ i, Function.Injective (F.ν i)) :
     (∀ H : Subgroup F.autGroup, Finite H →
-      (∃ L : Submodule ℤ F.J, IsFGSpanning L ∧ H ≤ stabilizer F.terminalRep L) ∧
-      Nat.card H ≤ 3 ^ (finrank ZHalf F.J * finrank ZHalf F.J) ∧
+      (∃ L : Submodule ℤ F.TerminalJordanAlgebra, IsFGSpanning L ∧ H ≤ stabilizer F.terminalRep L) ∧
+      Nat.card H ≤ 3 ^ (finrank ZHalf F.TerminalJordanAlgebra * finrank ZHalf F.TerminalJordanAlgebra) ∧
       ∃ K : Subgroup F.autGroup, H ≤ K ∧ Maximal (fun K : Subgroup F.autGroup => Finite K) K) ∧
-    ((∀ L : Submodule ℤ F.J, IsFGSpanning L → Finite (stabilizer F.terminalRep L)) →
+    ((∀ L : Submodule ℤ F.TerminalJordanAlgebra, IsFGSpanning L → Finite (stabilizer F.terminalRep L)) →
       ∀ K : Subgroup F.autGroup, Maximal (fun K : Subgroup F.autGroup => Finite K) K ↔
         Maximal (fun K => ∃ L, IsFGSpanning L ∧ K = stabilizer F.terminalRep L) K) :=
   ⟨fun H _ => ⟨exists_isFGSpanning_le_stabilizer F.terminalRep H,

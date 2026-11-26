@@ -90,14 +90,14 @@ theorem app_top_image (θ : DiagramIso F F') (i : I) :
 variable (hν : ∀ i, Function.Injective (F.ν i)) (hν' : ∀ i, Function.Injective (F'.ν i))
 
 /-- The isomorphism of diagrams with terminal component `h`, for `h(Aᵢ) = A'ᵢ`. -/
-noncomputable def ofTerminal (h : F.J ≃ⱼ[R] F'.J) (hh : ∀ i, h '' F.image i = F'.image i) :
+noncomputable def ofTerminal (h : F.TerminalJordanAlgebra ≃ⱼ[R] F'.TerminalJordanAlgebra) (hh : ∀ i, h '' F.image i = F'.image i) :
     DiagramIso F F' :=
   ⟨fun i => JordanEquiv.lift (hν i) (hν' i) h (hh i), by
     intro i j α x
     apply hν' j
     rw [JordanEquiv.lift_spec, F.ν_map, F'.ν_map, JordanEquiv.lift_spec]⟩
 
-theorem ofTerminal_app_top (h : F.J ≃ⱼ[R] F'.J) (hh : ∀ i, h '' F.image i = F'.image i) :
+theorem ofTerminal_app_top (h : F.TerminalJordanAlgebra ≃ⱼ[R] F'.TerminalJordanAlgebra) (hh : ∀ i, h '' F.image i = F'.image i) :
     (ofTerminal hν hν' h hh).app top = h := by
   ext x
   have := JordanEquiv.lift_spec (hν top) (hν' top) h (hh top) x
@@ -107,7 +107,7 @@ theorem ofTerminal_app_top (h : F.J ≃ⱼ[R] F'.J) (hh : ∀ i, h '' F.image i 
 injective, isomorphisms `F ≅ F'` correspond to Jordan isomorphisms `J ≃ⱼ J'` carrying every
 `Aᵢ` onto `A'ᵢ`. -/
 noncomputable def terminalEquiv :
-    DiagramIso F F' ≃ {h : F.J ≃ⱼ[R] F'.J // ∀ i, h '' F.image i = F'.image i} where
+    DiagramIso F F' ≃ {h : F.TerminalJordanAlgebra ≃ⱼ[R] F'.TerminalJordanAlgebra // ∀ i, h '' F.image i = F'.image i} where
   toFun θ := ⟨θ.app top, app_top_image θ⟩
   invFun h := ofTerminal hν hν' h.1 h.2
   left_inv θ := by
@@ -143,7 +143,7 @@ variable [TerminallyPointed I] {F}
 noncomputable def twistedTerminalEquiv (u : I ⥤ I) (hν : ∀ i, Function.Injective (F.ν i))
     (hν' : ∀ i, Function.Injective ((F.restrict u).ν i)) :
     TwistedIso F u ≃
-      {h : F.J ≃ⱼ[R] F.obj (u.obj top) // ∀ i, h '' F.image i = (F.restrict u).image i} :=
+      {h : F.TerminalJordanAlgebra ≃ⱼ[R] F.obj (u.obj top) // ∀ i, h '' F.image i = (F.restrict u).image i} :=
   DiagramIso.terminalEquiv hν hν'
 
 /-- The terminal maps `F(u i) → F(u +)` of `u* F` are injective when those of `F` are: composing

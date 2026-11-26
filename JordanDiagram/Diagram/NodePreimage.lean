@@ -29,10 +29,10 @@ open CategoryTheory TerminallyPointed JordanAlgebra
 namespace JordanDiagram
 
 variable {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I] [TerminallyPointed I]
-variable (F : JordanDiagram.{u, v} R I) (L : AddSubgroup F.J)
+variable (F : JordanDiagram.{u, v} R I) (L : AddSubgroup F.TerminalJordanAlgebra)
 
 /-- The preimage `Lᵢ = νᵢ⁻¹(L)` of `L` at the node `i`. -/
-def nodePreimage (i : I) : AddSubgroup (F.obj i) := L.comap (F.ν i : F.obj i →+ F.J)
+def nodePreimage (i : I) : AddSubgroup (F.obj i) := L.comap (F.ν i : F.obj i →+ F.TerminalJordanAlgebra)
 
 variable {F L}
 
@@ -45,7 +45,7 @@ theorem nodePreimage_top : nodePreimage F L top = L := by
 /-- **An additive subgroup at the terminal node determines the integral points**: a diagram
 automorphism preserves `L` at the terminal node exactly when it preserves every preimage `Lᵢ`. -/
 theorem image_top_eq_iff (g : F.autGroup) :
-    g.1 top '' (L : Set F.J) = L ↔
+    g.1 top '' (L : Set F.TerminalJordanAlgebra) = L ↔
       ∀ i, g.1 i '' (nodePreimage F L i : Set (F.obj i)) = nodePreimage F L i := by
   simp only [jordanAut.image_eq_self_iff]
   constructor
@@ -58,7 +58,7 @@ theorem image_top_eq_iff (g : F.autGroup) :
 
 /-- If every element of `J` has a multiple `cᵏ y` in `L`, every element of `F(i)` has a multiple
 `cᵏ x` in `Lᵢ`. -/
-theorem exists_pow_smul_mem_nodePreimage {c : ℕ} (hL : ∀ y : F.J, ∃ k : ℕ, (c ^ k) • y ∈ L)
+theorem exists_pow_smul_mem_nodePreimage {c : ℕ} (hL : ∀ y : F.TerminalJordanAlgebra, ∃ k : ℕ, (c ^ k) • y ∈ L)
     (i : I) (x : F.obj i) : ∃ k : ℕ, (c ^ k) • x ∈ nodePreimage F L i := by
   obtain ⟨k, hk⟩ := hL (F.ν i x)
   exact ⟨k, by rw [mem_nodePreimage, map_nsmul]; exact hk⟩
@@ -70,7 +70,7 @@ theorem finite_nodePreimage [Module.Finite ℤ L] {i : I} (hν : Function.Inject
   let f : nodePreimage F L i →ₗ[ℤ] L :=
     { toFun := fun x => ⟨F.ν i x, x.2⟩
       map_add' := fun x y => Subtype.ext (map_add (F.ν i) (x : F.obj i) y)
-      map_smul' := fun r x => Subtype.ext (map_zsmul (F.ν i : F.obj i →+ F.J) r (x : F.obj i)) }
+      map_smul' := fun r x => Subtype.ext (map_zsmul (F.ν i : F.obj i →+ F.TerminalJordanAlgebra) r (x : F.obj i)) }
   exact Module.Finite.of_injective f fun x y hxy =>
     Subtype.ext (hν (congrArg Subtype.val hxy))
 

@@ -73,7 +73,7 @@ variable [TerminallyPointed I]
 
 variable (F) in
 /-- Terminal evaluation `ev₊ : G_F(R) → Aut(J)`. -/
-def ev : F.autGroup →* jordanAut R F.J :=
+def ev : F.autGroup →* jordanAut R F.TerminalJordanAlgebra :=
   (Pi.evalMonoidHom (fun i => jordanAut R (F.obj i)) top).comp F.autGroup.subtype
 
 @[simp]
@@ -95,9 +95,9 @@ theorem ev_image (g : F.autGroup) (i : I) : ev F g '' F.image i = F.image i := b
 
 variable (F) in
 /-- `⋂ᵢ Stab(Aᵢ)` inside `Aut(J)`. -/
-def stabImages : Subgroup (jordanAut R F.J) := ⨅ i, jordanAut.stab (F.image i)
+def stabImages : Subgroup (jordanAut R F.TerminalJordanAlgebra) := ⨅ i, jordanAut.stab (F.image i)
 
-theorem mem_stabImages {h : jordanAut R F.J} :
+theorem mem_stabImages {h : jordanAut R F.TerminalJordanAlgebra} :
     h ∈ stabImages F ↔ ∀ i, h '' F.image i = F.image i := by
   simp [stabImages, Subgroup.mem_iInf, jordanAut.mem_stab]
 
@@ -113,7 +113,7 @@ theorem ev_injective (hν : ∀ i, Function.Injective (F.ν i)) :
   rw [← ev_ν, ← ev_ν, hgh]
 
 /-- The diagram automorphism with terminal component `h`, for `h` stabilizing every image. -/
-noncomputable def ofStab (hν : ∀ i, Function.Injective (F.ν i)) (h : jordanAut R F.J)
+noncomputable def ofStab (hν : ∀ i, Function.Injective (F.ν i)) (h : jordanAut R F.TerminalJordanAlgebra)
     (hh : h ∈ stabImages F) : F.autGroup :=
   ⟨fun i => liftAut (hν i) h (mem_stabImages.1 hh i), by
     intro i j α x
@@ -121,12 +121,12 @@ noncomputable def ofStab (hν : ∀ i, Function.Injective (F.ν i)) (h : jordanA
     beta_reduce
     rw [liftAut_spec (hν j), F.ν_map, F.ν_map, liftAut_spec (hν i)]⟩
 
-theorem ν_ofStab (hν : ∀ i, Function.Injective (F.ν i)) (h : jordanAut R F.J)
+theorem ν_ofStab (hν : ∀ i, Function.Injective (F.ν i)) (h : jordanAut R F.TerminalJordanAlgebra)
     (hh : h ∈ stabImages F) (i : I) (x : F.obj i) :
     F.ν i ((ofStab hν h hh).1 i x) = h (F.ν i x) :=
   liftAut_spec _ _ _ _
 
-theorem ev_ofStab (hν : ∀ i, Function.Injective (F.ν i)) (h : jordanAut R F.J)
+theorem ev_ofStab (hν : ∀ i, Function.Injective (F.ν i)) (h : jordanAut R F.TerminalJordanAlgebra)
     (hh : h ∈ stabImages F) : ev F (ofStab hν h hh) = h := by
   ext x
   have := ν_ofStab hν h hh top x
@@ -149,7 +149,7 @@ noncomputable def autGroupEquivStab (hν : ∀ i, Function.Injective (F.ν i)) :
 
 @[simp]
 theorem autGroupEquivStab_apply (hν : ∀ i, Function.Injective (F.ν i)) (g : F.autGroup) :
-    (autGroupEquivStab hν g : jordanAut R F.J) = ev F g := rfl
+    (autGroupEquivStab hν g : jordanAut R F.TerminalJordanAlgebra) = ev F g := rfl
 
 end Terminal
 

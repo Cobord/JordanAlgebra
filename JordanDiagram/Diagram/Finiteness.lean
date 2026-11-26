@@ -36,7 +36,7 @@ variable {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I] [TerminallyPoi
 variable {F : JordanDiagram.{u, v} R I}
 
 /-- The permutation of a `G_F(R)`-stable subset `X ⊆ J` induced by a diagram automorphism. -/
-def permOfStable {X : Set F.J} (hX : ∀ g : F.autGroup, ∀ x ∈ X, ev F g x ∈ X) :
+def permOfStable {X : Set F.TerminalJordanAlgebra} (hX : ∀ g : F.autGroup, ∀ x ∈ X, ev F g x ∈ X) :
     F.autGroup →* Equiv.Perm X where
   toFun g :=
     { toFun := fun x => ⟨ev F g x, hX g x x.2⟩
@@ -53,7 +53,7 @@ def permOfStable {X : Set F.J} (hX : ∀ g : F.autGroup, ∀ x ∈ X, ev F g x �
 /-- **Generating configurations**, with the bound of the finite detector criterion: a finite,
 `G_F(R)`-stable, Jordan-generating subset `X ⊆ J` is a detecting configuration, so `G_F(R)` is
 finite of order at most `|X|!`. -/
-theorem card_autGroup_le (hν : ∀ i, Function.Injective (F.ν i)) {X : Set F.J} [Finite X]
+theorem card_autGroup_le (hν : ∀ i, Function.Injective (F.ν i)) {X : Set F.TerminalJordanAlgebra} [Finite X]
     (hX : ∀ g : F.autGroup, ∀ x ∈ X, ev F g x ∈ X)
     (hgen : NonUnitalAlgebra.adjoin R X = ⊤) :
     Finite F.autGroup ∧ Nat.card F.autGroup ≤ (Nat.card X).factorial := by

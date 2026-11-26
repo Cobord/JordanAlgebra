@@ -93,12 +93,12 @@ variable [TerminallyPointed I] (F : JordanDiagram.{u, v} R I)
 open TerminallyPointed
 
 /-- The terminal Jordan algebra `J = F(+)`. -/
-abbrev J : Type v := F.obj top
+abbrev TerminalJordanAlgebra : Type v := F.obj top
 
 /-- The terminal map `νᵢ = F(!ᵢ) : F(i) → J`. -/
-def ν (i : I) : F.obj i →ₙₐ[R] F.J := F.map (toTop i)
+def ν (i : I) : F.obj i →ₙₐ[R] F.TerminalJordanAlgebra := F.map (toTop i)
 
-theorem ν_top (x : F.J) : F.ν top x = x := by
+theorem ν_top (x : F.TerminalJordanAlgebra) : F.ν top x = x := by
   rw [ν, toTop_top, F.map_id]
 
 /-- The terminal relation `ν_j ∘ F(α) = ν_i`. -/
@@ -106,7 +106,7 @@ theorem ν_map {i j : I} (α : i ⟶ j) (x : F.obj i) : F.ν j (F.map α x) = F.
   rw [ν, ν, ← F.map_comp, comp_toTop]
 
 /-- The image `Aᵢ = νᵢ(F(i)) ⊆ J`. -/
-abbrev image (i : I) : Set F.J := Set.range (F.ν i)
+abbrev image (i : I) : Set F.TerminalJordanAlgebra := Set.range (F.ν i)
 
 end Terminal
 

@@ -25,7 +25,7 @@ variable {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I] [TerminallyPoi
 theorem terminal_determination (F : JordanDiagram.{u, v} R I)
     (hν : ∀ i, Function.Injective (F.ν i)) :
     Function.Injective (JordanDiagram.ev F) ∧
-      ∀ h : jordanAut R F.J, h ∈ (JordanDiagram.ev F).range ↔
+      ∀ h : jordanAut R F.TerminalJordanAlgebra, h ∈ (JordanDiagram.ev F).range ↔
         ∀ i, h '' F.image i = F.image i := by
   refine ⟨JordanDiagram.ev_injective hν, fun h => ?_⟩
   rw [JordanDiagram.range_ev hν, JordanDiagram.mem_stabImages]
@@ -34,7 +34,7 @@ theorem compatible_derivations (F : JordanDiagram.{u, v} R I)
     (hν : ∀ i, Function.Injective (F.ν i)) :
     Function.Injective (JordanDiagram.evDer F) ∧
       Set.range (JordanDiagram.evDer F) =
-        {d : JordanDerivation R F.J | ∀ i, ∀ y ∈ F.image i, d y ∈ F.image i} :=
+        {d : JordanDerivation R F.TerminalJordanAlgebra | ∀ i, ∀ y ∈ F.image i, d y ∈ F.image i} :=
   ⟨JordanDiagram.evDer_injective hν, JordanDiagram.range_evDer hν⟩
 
 theorem wedge (F : JordanDiagram.{u, v} R I) {P₁ P₂ : ObjectProperty I}
@@ -47,11 +47,11 @@ theorem wedge (F : JordanDiagram.{u, v} R I) {P₁ P₂ : ObjectProperty I}
 theorem iso_terminal_determination (F F' : JordanDiagram.{u, v} R I)
     (hν : ∀ i, Function.Injective (F.ν i)) (hν' : ∀ i, Function.Injective (F'.ν i)) :
     Nonempty (JordanDiagram.DiagramIso F F' ≃
-      {h : F.J ≃ⱼ[R] F'.J // ∀ i, h '' F.image i = F'.image i}) :=
+      {h : F.TerminalJordanAlgebra ≃ⱼ[R] F'.TerminalJordanAlgebra // ∀ i, h '' F.image i = F'.image i}) :=
   ⟨JordanDiagram.DiagramIso.terminalEquiv hν hν'⟩
 
 theorem finite_detector (F : JordanDiagram.{u, v} R I)
-    (hν : ∀ i, Function.Injective (F.ν i)) {X : Set F.J} [Finite X]
+    (hν : ∀ i, Function.Injective (F.ν i)) {X : Set F.TerminalJordanAlgebra} [Finite X]
     (hX : ∀ g : F.autGroup, ∀ x ∈ X, JordanDiagram.ev F g x ∈ X)
     (hgen : NonUnitalAlgebra.adjoin R X = ⊤) :
     Finite F.autGroup ∧ Nat.card F.autGroup ≤ (Nat.card X).factorial :=
@@ -336,7 +336,7 @@ theorem shape_twisted_group {R : Type u} [CommRing R] {I : Type w} [Category.{w'
         ∀ i, p.2 '' F.image i = F.image (p.1.functor.obj i)) ∧
       ((∀ i, Function.Injective (F.ν i)) →
         ∃ e : JordanDiagram.ShapeTwistedAut F ≃* JordanDiagram.ShapeTwistedAut.terminalPairs F,
-          ∀ a, (e a : JordanDiagram.ShapeAut I × jordanAut R F.J) =
+          ∀ a, (e a : JordanDiagram.ShapeAut I × jordanAut R F.TerminalJordanAlgebra) =
             (a.shape, JordanDiagram.ShapeTwistedAut.topAut a)) :=
   ⟨JordanDiagram.ShapeTwistedAut.ofAut_injective, JordanDiagram.ShapeTwistedAut.range_ofAut,
     fun _ => JordanDiagram.ShapeTwistedAut.mem_terminalPairs,
@@ -371,14 +371,14 @@ theorem fraction_field_order (R : Type u) [CommRing R] [LinearOrder R] [IsStrict
       (FractionRing.le_iff_of_order o₂ h₂ m₂ x y).symm⟩
 
 theorem subgroup_at_terminal {R : Type u} [CommRing R] {I : Type w} [Category.{w'} I]
-    [TerminallyPointed I] (F : JordanDiagram.{u, v} R I) (L : AddSubgroup F.J) :
-    (∀ g : F.autGroup, g.1 top '' (L : Set F.J) = L ↔
-      ∀ i, g.1 i '' (L.comap (F.ν i : F.obj i →+ F.J) : Set (F.obj i)) =
-        L.comap (F.ν i : F.obj i →+ F.J)) ∧
-      (∀ c : ℕ, (∀ y : F.J, ∃ k : ℕ, (c ^ k) • y ∈ L) →
-        ∀ i (x : F.obj i), ∃ k : ℕ, (c ^ k) • x ∈ L.comap (F.ν i : F.obj i →+ F.J)) ∧
+    [TerminallyPointed I] (F : JordanDiagram.{u, v} R I) (L : AddSubgroup F.TerminalJordanAlgebra) :
+    (∀ g : F.autGroup, g.1 top '' (L : Set F.TerminalJordanAlgebra) = L ↔
+      ∀ i, g.1 i '' (L.comap (F.ν i : F.obj i →+ F.TerminalJordanAlgebra) : Set (F.obj i)) =
+        L.comap (F.ν i : F.obj i →+ F.TerminalJordanAlgebra)) ∧
+      (∀ c : ℕ, (∀ y : F.TerminalJordanAlgebra, ∃ k : ℕ, (c ^ k) • y ∈ L) →
+        ∀ i (x : F.obj i), ∃ k : ℕ, (c ^ k) • x ∈ L.comap (F.ν i : F.obj i →+ F.TerminalJordanAlgebra)) ∧
       (Module.Finite ℤ L → ∀ i, Function.Injective (F.ν i) →
-        Module.Finite ℤ (L.comap (F.ν i : F.obj i →+ F.J))) :=
+        Module.Finite ℤ (L.comap (F.ν i : F.obj i →+ F.TerminalJordanAlgebra))) :=
   ⟨JordanDiagram.image_top_eq_iff,
     fun _ hL i x => JordanDiagram.exists_pow_smul_mem_nodePreimage hL i x,
     fun _ _ hν => JordanDiagram.finite_nodePreimage hν⟩

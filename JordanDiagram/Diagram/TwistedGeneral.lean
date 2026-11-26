@@ -262,10 +262,10 @@ theorem map_eqToHom_map_eqToHom {k l m : I} (p : k = l) (q : l = m) (y : F.obj k
   rw [← F.map_comp, eqToHom_trans]
 
 /-- The terminal component `θ₊ : J → J`, after transport along `u(+) = +`. -/
-def topAut (a : ShapeTwistedAut F) : jordanAut R F.J :=
+def topAut (a : ShapeTwistedAut F) : jordanAut R F.TerminalJordanAlgebra :=
   ((a.app top).trans (F.castEquiv' a.shape.obj_top)).toAut
 
-theorem topAut_apply (a : ShapeTwistedAut F) (y : F.J) :
+theorem topAut_apply (a : ShapeTwistedAut F) (y : F.TerminalJordanAlgebra) :
     topAut a y = F.map (eqToHom a.shape.obj_top) (a.app top y) := rfl
 
 /-- The terminal relation `θ₊ ∘ νᵢ = ν_{u(i)} ∘ θᵢ`. -/
@@ -290,23 +290,23 @@ theorem topAut_one : topAut (1 : ShapeTwistedAut F) = 1 :=
 
 variable (F) in
 /-- The pairs `(u, h)` with `u ∈ Aut(I⁺, +)`, `h ∈ Aut(J)` and `h(Aᵢ) = A_{u(i)}` for every `i`. -/
-def terminalPairs : Subgroup (ShapeAut I × jordanAut R F.J) where
+def terminalPairs : Subgroup (ShapeAut I × jordanAut R F.TerminalJordanAlgebra) where
   carrier := {p | ∀ i, p.2 '' F.image i = F.image (p.1.functor.obj i)}
   one_mem' i := by
-    change (fun y => (1 : jordanAut R F.J) y) '' F.image i = F.image i
+    change (fun y => (1 : jordanAut R F.TerminalJordanAlgebra) y) '' F.image i = F.image i
     simp
   mul_mem' {p q} hp hq i := by
     change (p.2 * q.2) '' F.image i = F.image (p.1.functor.obj (q.1.functor.obj i))
     rw [← hp, ← hq, Set.image_image]
     rfl
   inv_mem' {p} hp i := by
-    change ⇑((p.2)⁻¹ : jordanAut R F.J) '' F.image i = F.image (p.1.inv.obj i)
+    change ⇑((p.2)⁻¹ : jordanAut R F.TerminalJordanAlgebra) '' F.image i = F.image (p.1.inv.obj i)
     have := hp (p.1.inv.obj i)
     rw [functor_inv_obj] at this
     rw [← this, Set.image_image]
     simp
 
-theorem mem_terminalPairs {p : ShapeAut I × jordanAut R F.J} :
+theorem mem_terminalPairs {p : ShapeAut I × jordanAut R F.TerminalJordanAlgebra} :
     p ∈ terminalPairs F ↔ ∀ i, p.2 '' F.image i = F.image (p.1.functor.obj i) := Iff.rfl
 
 theorem topAut_image (a : ShapeTwistedAut F) (i : I) :
@@ -367,7 +367,7 @@ noncomputable def terminalEquiv : ShapeTwistedAut F ≃* terminalPairs F :=
 
 omit hν in
 theorem toTerminal_apply (a : ShapeTwistedAut F) :
-    (toTerminal F a : ShapeAut I × jordanAut R F.J) = (a.shape, topAut a) := rfl
+    (toTerminal F a : ShapeAut I × jordanAut R F.TerminalJordanAlgebra) = (a.shape, topAut a) := rfl
 
 end ShapeTwistedAut
 

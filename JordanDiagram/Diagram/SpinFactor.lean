@@ -120,7 +120,7 @@ theorem mem_orthStab_iff_image {g : orthogonalGroup (B.restrict (W ⊤))} :
 variable [Invertible (2 : R)] [Module.Free R (W ⊤)]
 
 theorem autEquivOrthogonal_mem_stabImages_iff (g : orthogonalGroup (B.restrict (W ⊤))) :
-    (autEquivOrthogonal g : jordanAut R (spinDiagram B W).J) ∈ stabImages (spinDiagram B W) ↔
+    (autEquivOrthogonal g : jordanAut R (spinDiagram B W).TerminalJordanAlgebra) ∈ stabImages (spinDiagram B W) ↔
       g ∈ orthStab B W := by
   refine mem_stabImages.trans ?_
   constructor
@@ -137,7 +137,7 @@ theorem autEquivOrthogonal_mem_stabImages_iff (g : orthogonalGroup (B.restrict (
 theorem stabImages_eq_map :
     stabImages (spinDiagram B W) = ((orthStab B W).map
       (autEquivOrthogonal (B := B.restrict (W ⊤))).toMonoidHom :
-        Subgroup (jordanAut R (spinDiagram B W).J)) := by
+        Subgroup (jordanAut R (spinDiagram B W).TerminalJordanAlgebra)) := by
   ext h
   constructor
   · intro hh
@@ -158,7 +158,7 @@ noncomputable def spinDiagramAutEquiv : (spinDiagram B W).autGroup ≃* orthStab
 isometry `g`. -/
 theorem autEquivOrthogonal_spinDiagramAutEquiv (g : (spinDiagram B W).autGroup) :
     (autEquivOrthogonal (spinDiagramAutEquiv B W g : orthogonalGroup (B.restrict (W ⊤))) :
-      jordanAut R (spinDiagram B W).J) = ev _ g :=
+      jordanAut R (spinDiagram B W).TerminalJordanAlgebra) = ev _ g :=
   congrArg Subtype.val
     (((autEquivOrthogonal (B := B.restrict (W ⊤))).subgroupMap (orthStab B W)).apply_symm_apply
       (MulEquiv.subgroupCongr (stabImages_eq_map B W)
@@ -230,7 +230,7 @@ def ConfigIsometry : Type u :=
 omit [Invertible (2 : R)] [Module.Free R (W ⊤)] [Module.Free R (W' ⊤)] in
 theorem configIsometry_iff (g : Isometry (B.restrict (W ⊤)) (B'.restrict (W' ⊤))) :
     (∀ i u, g.1 u ∈ topPiece W' i ↔ u ∈ topPiece W i) ↔
-      ∀ i, (equivOfIsometry g : (spinDiagram B W).J ≃ⱼ[R] (spinDiagram B' W').J) ''
+      ∀ i, (equivOfIsometry g : (spinDiagram B W).TerminalJordanAlgebra ≃ⱼ[R] (spinDiagram B' W').TerminalJordanAlgebra) ''
         (spinDiagram B W).image i = (spinDiagram B' W').image i := by
   constructor
   · intro h i

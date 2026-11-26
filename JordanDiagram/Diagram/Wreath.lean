@@ -458,7 +458,7 @@ theorem ofAut_eq_wreathHom (g : (wreathDiagram BU κ).autGroup) :
     refine ((wreathDiagram BU κ).ν_map _ _).trans ?_
     change (wreathDiagram BU κ).ν i (g.1 i z) = _
     refine (ev_ν g i z).symm.trans ?_
-    refine (congrArg (fun φ : jordanAut R (wreathDiagram BU κ).J =>
+    refine (congrArg (fun φ : jordanAut R (wreathDiagram BU κ).TerminalJordanAlgebra =>
       φ ((wreathDiagram BU κ).ν i z)) hev.symm).trans ?_
     refine SpinFactor.ext ((sumForm BU κ).restrict (wreathW U κ ⊤)) (Subtype.ext ?_) rfl
     exact topMap_eq_coordEquiv (spinDiagramAutEquiv (sumForm BU κ) (wreathW U κ) g).2 z.1
