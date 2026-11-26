@@ -12,6 +12,7 @@ public import JordanDiagram.Algebra.Dyadic
 public import JordanDiagram.Algebra.Equiv
 public import JordanDiagram.Algebra.Functor
 public import JordanDiagram.Algebra.FiniteSubgroupStabilizer
+public import JordanDiagram.Algebra.GaloisTwist
 public import JordanDiagram.Algebra.Generation
 public import JordanDiagram.Algebra.HermitianTwo
 public import JordanDiagram.Algebra.OctonionNorm
@@ -20,6 +21,7 @@ public import JordanDiagram.Algebra.OrthogonalFlag
 public import JordanDiagram.Algebra.OrthogonalFlagIso
 public import JordanDiagram.Algebra.SpinFactor
 public import JordanDiagram.Algebra.SquareZero
+public import JordanDiagram.Algebra.TwistedDescent
 public import JordanDiagram.Algebra.StabilizerFinite
 public import JordanDiagram.Algebra.SpinFactorFormallyReal
 public import JordanDiagram.Algebra.Tower
@@ -27,6 +29,7 @@ public import JordanDiagram.Algebra.Tower
 -- General constructions missing from Mathlib (candidates for upstreaming).
 public import JordanDiagram.MathlibMissing.AnisotropicBound
 public import JordanDiagram.MathlibMissing.FractionRingOrder
+public import JordanDiagram.MathlibMissing.GaloisDescent
 public import JordanDiagram.MathlibMissing.GrothendieckCocartesian
 public import JordanDiagram.MathlibMissing.LieRingCat
 public import JordanDiagram.MathlibMissing.Minkowski
@@ -42,6 +45,7 @@ public import JordanDiagram.Diagram.Basic
 public import JordanDiagram.Diagram.Derivation
 public import JordanDiagram.Diagram.DualNumber
 public import JordanDiagram.Diagram.Finiteness
+public import JordanDiagram.Diagram.Forms
 public import JordanDiagram.Diagram.Functor
 public import JordanDiagram.Diagram.Group
 public import JordanDiagram.Diagram.Family
