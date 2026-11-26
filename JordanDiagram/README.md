@@ -121,12 +121,26 @@ are no `sorry`s. The headline results use only `propext`, `Classical.choice` and
 
 ## Next steps
 
-1. The infiniteness half of the criterion "finite exactly when compact at `2`" (via the
-   Borel–Harish-Chandra theorem); the finiteness half is proved for groups preserving a form
-   (`ZHalf.finite_of_form`). For forms, the general classification by `H¹` is proved
-   (`formsEquivH1`); its specialization to spin-factor diagrams (forms are again spin-factor
-   diagrams, `H¹` of a flag is the product over the pieces) and the classification of the pieces by
-   quadratic-form invariants are not done.
-2. Finiteness of stabilizers is proved under an invariant positive `ℚ`-valued form
-   (`finite_stabilizer_of_form`); deriving such a form (e.g. the trace form) for the diagrams of
-   interest, i.e. compactness of the real points, is not done.
+1. **Compactness.** No topology is put on `G_F(ℝ)` or `G_F(ℚ₂)`. The finiteness half of
+   "finite exactly when compact at `2`" is proved for groups preserving a form anisotropic over
+   `ℚ₂` (`ZHalf.finite_of_form`); the general statement in terms of compactness, compactness of
+   orthogonal groups of anisotropic forms and noncompactness for isotropic ones, and the
+   infiniteness half (via the Borel–Harish-Chandra theorem) are not done. For definite spin-factor
+   diagrams and orthogonal flags only the "anisotropic at `2` ⇒ finite" direction is proved.
+2. **Invariant positive forms.** Finiteness of stabilizers is proved under an invariant positive
+   `ℚ`-valued form (`finite_stabilizer_of_form`). The trace form `tr(L_{x∘y})` (its invariance, its
+   positivity for formally real algebras, and the resulting compactness of the real points) is not
+   done.
+3. **Forms.** The classification by `H¹(Gal(L/k), G_F(L))` is proved for a finite Galois `L/k`
+   (`formsEquivH1`). Not done: forms over a ring (étale descent, `H¹_ét`) and over a separable
+   closure; the specialization to spin-factor diagrams (forms are again spin-factor diagrams, `H¹`
+   of a flag is the product over the pieces); the classification of the pieces by quadratic-form
+   invariants (Hasse–Minkowski over `ℚ`).
+4. **The two-by-two Cayley–Dickson chain.** Its pieces are formalized (`HermitianTwo.lean`,
+   orthogonal flags), but not the assembled chain diagram with its group
+   `O⟨1,1⟩ × μ₂ × O(N_{C₁}) × O(N_{C₂})` and isomorphism criterion.
+5. **Exceptional diagrams.** Beyond formal reality and nonsingularity of the octonion norm, nothing
+   about diagrams in the exceptional algebra is formalized: the type of its automorphism group
+   scheme, the frame diagrams, the Baez–Schwahn chain and its integral points.
+6. **Arbitrary octonion parameters.** The Jordan identity for `H₃` of the Cayley–Dickson algebra is
+   proved for parameters that are not zero divisors, not for all parameters.
