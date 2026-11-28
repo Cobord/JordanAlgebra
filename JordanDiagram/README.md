@@ -65,6 +65,7 @@ The library has three parts:
 | [`GaloisTwist.lean`](Algebra/GaloisTwist.lean) | For `L/k` and `θ : L ⊗ A ≅ L ⊗ B`, the automorphisms `twistAut θ σ = θ (σ ⊗ 1) θ⁻¹ (σ⁻¹ ⊗ 1)` form a cocycle (`twistAut_mul`), changed by coboundaries under change of `θ` (`twistAut_baseChange_trans`, `twistAut_trans_ofAut`); Galois-equivariant isomorphisms descend (`exists_baseChangeEquiv_eq`). |
 | [`TwistedDescent.lean`](Algebra/TwistedDescent.lean) | **Twisted Galois descent**: for a cocycle `a`, the fixed points of `a(σ) ∘ (σ ⊗ 1)` form a Jordan algebra `twistForm a` over `k` (`JordanAlgebra.ofSubmodule`) with `L ⊗ twistForm a ≅ L ⊗ B` (`twistIso`) whose cocycle is `a` (`twistAut_twistIso`). |
 | [`DyadicFinite.lean`](Algebra/DyadicFinite.lean) | **Finiteness at `2`.** `Z[1/2]` is discrete in `ℝ × ℚ₂` (`exists_int_of_norm_le_one`), so a rational form positive on nonzero vectors and anisotropic over `ℚ₂` has finitely many vectors of `Z[1/2]^ι` of a given value (`finite_setOf_zHalf`), and a group acting faithfully on a finite free `Z[1/2]`-module preserving such a form is finite (`finite_of_form`); e.g. `O(V, B)(Z[1/2])` (`finite_orthogonalGroup`). |
+| [`AdelicGenus.lean`](Algebra/AdelicGenus.lean) | **The adelic genus of a chain.** In a `ℚ`-vector space `E` with a form `B`, the members `Lᵢ` are the spans of linearly independent families `bᵢ` (`member`) over `Z[1/2]`, written as the rationals integral at every prime other than `2` (`dyadic`), which are exactly the images of `ZHalf` (`mem_dyadic_iff`). Over the finite adeles `𝔸_f` of `ℚ`: `G(𝔸_f)` (`adelicGroup`) is the group of isometries of `𝔸_f ⊗ E` preserving every `𝔸_f`-span, `Γ` (`ratImage`) its rational points, and `K` (`adelicLevel`) the stabilizer of the spans over the adeles integral at every odd prime (`dyadicAdeles`). The genus is `Γ \ G(𝔸_f) / K` (`genus`), with mass `genusMass`. A vector of `Wᵢ` whose image lies in the integral span lies in `Lᵢ` (`mem_member_of_toAf_mem`), so the stabilizer of the class of `1` has the order of the automorphism group of the chain (`card_classAut_one`). |
 | [`ChainFinite.lean`](Algebra/ChainFinite.lean) | **Chains with anisotropic pieces.** For a chain `L₀ ⊆ ⋯ ⊆ Lₙ = M` whose members need not be direct summands, the pieces are `L₀` and `L_{j+1} ∩ L_j^⊥` (`chainPiece`). Over a domain, with finite free members and an anisotropic form, linear maps agreeing on the pieces agree on every member (`eq_of_forall_chainPiece`, via the adjugate of a Gram matrix). So over `Z[1/2]` the stabilizer of every member (`stabChain`) is finite when every piece is positive and anisotropic over `ℚ₂` (`ZHalf.finite_of_chainPiece`). |
 | [`StabilizerFinite.lean`](Algebra/StabilizerFinite.lean) | Under a `G`-invariant biadditive `ℚ`-valued form with `β(x, x) > 0` for `x ≠ 0`, the stabilizer of every finitely generated spanning subgroup is finite (`finite_stabilizer_of_form`), so `maximal_finite_iff` holds unconditionally (`maximal_finite_iff_of_form`). |
 | [`SquareZero.lean`](Algebra/SquareZero.lean) | For `e² = 0` and a Jordan derivation `D`, `1 + e D` is a Jordan automorphism (`sqZeroAut`), with `(1 + e D)(1 + e D') = 1 + e (D + D')` and, for `e² = e'² = 0`, commutator `1 + e e' [D, D']` (`sqZeroAut_commutator`). |
@@ -82,6 +83,7 @@ The library has three parts:
 | [`PowerSeriesMatrix.lean`](MathlibMissing/PowerSeriesMatrix.lean) | `Matrix.eq_one_of_pow_eq_one`: over a torsion-free `R`, a matrix over `R⟦X⟧` with constant term `1` and finite order is `1` (the kernel of `GL_n(R⟦X⟧) → GL_n(R)` is torsion-free). |
 | [`FractionRingOrder.lean`](MathlibMissing/FractionRingOrder.lean) | The ordered fraction field of a totally ordered ring: `FractionRing R` ordered by the cone `{a / b | ab ≥ 0}` (`posCone`) as an `IsStrictOrderedRing`, extending the order of `R` (`algebraMap_le_iff`), and the unique such order (`le_iff_of_order`). |
 | [`GaloisDescent.lean`](MathlibMissing/GaloisDescent.lean) | Galois descent for vector spaces over a finite Galois `L/k`: invariants of `L ⊗ M` are `1 ⊗ M` (`exists_tmul_of_forall_rTensor_eq`), and **Speiser's lemma** `L ⊗ V^ρ ≅ V` for a semilinear action (`bijective_liftBaseChange_fixedPoints`, via Dedekind's independence of characters). |
+| [`ClassSum.lean`](MathlibMissing/ClassSum.lean) | For subgroups `Γ`, `K` of a group: the stabilizer `Γ ∩ g K g⁻¹` of a double coset (`DoubleCoset.classAut`), whose order depends only on the double coset (`card_classAut_mul_mul`); the class sum `∑_{Γ\G/K} f(g)/#(Γ ∩ gKg⁻¹)` (`classSum`) and the mass (`mass`), independent of representatives for bi-invariant `f` (`classSum_eq_of_rep`). |
 | [`AnisotropicBound.lean`](MathlibMissing/AnisotropicBound.lean) | Over a normed field with compact closed balls (`ℝ`, `ℚ_[p]`), an anisotropic quadratic form satisfies `c ‖v‖² ≤ ‖vᵀ A v‖` with `c > 0` (`Matrix.exists_pos_mul_norm_sq_le_norm`). |
 | [`PosDefIntegerPoints.lean`](MathlibMissing/PosDefIntegerPoints.lean) | A rational quadratic form positive on nonzero integer vectors takes values `≤ C` at only finitely many integer vectors (`Matrix.finite_setOf_int_le`), via positivity over `ℝ` (`Matrix.pos_of_pos_int`) and compactness of the sphere. |
 | [`GrothendieckCocartesian.lean`](MathlibMissing/GrothendieckCocartesian.lean) | In the covariant Grothendieck construction `∫ F` of a pseudofunctor, the lifts `(f, 𝟙)` are strongly cocartesian (`isStronglyCocartesian_cocartesianLift`), so `forget F` is an opfibration (`exists_isStronglyCocartesian`). |
@@ -152,14 +154,20 @@ are no `sorry`s. The headline results use only `propext`, `Classical.choice` and
      (`spinDiagramAutEquiv`).
    * The stabilizer is finite when every piece `L₀`, `L_{j+1} ∩ L_j^⊥` is anisotropic over `ℚ₂`
      (`ZHalf.finite_of_chainPiece`, `finite_spinDiagram_chain`).
+   * The genus is defined adelically, inside one `ℚ`-space, as `Γ \ G(𝔸_f) / K`, with no
+     condition at `2` (`AdelicGenus.genus`). Its mass is the class sum `∑ 1/#(Γ ∩ gKg⁻¹)`
+     (`genusMass`). The class of `1` has stabilizer of the order of the chain's automorphism group
+     (`card_classAut_one`). Working in one `ℚ`-space avoids the Hasse–Minkowski step needed to
+     compare chains that are only locally isometric.
 
-   Not done: the genus (local isometry at `ℝ` and at every odd prime) and the following results
-   about it.
-   * the pieces of chains in one genus are isometric over `ℚ` (Hasse–Minkowski);
+   Not done:
+   * the other classes: `g ↦` the chain with local members `gᵢ Lᵢ`, with stabilizer
+     `Γ ∩ gKg⁻¹` equal to its automorphism group, and every chain locally equal to one of these.
+     This needs every adelic lattice to come from a rational one;
    * the "only if" direction of the finiteness criterion, which needs the infiniteness half of
      item 1;
-   * the genus of one lattice anisotropic at `2` is that of a positive definite integral lattice,
-     so it has finitely many classes;
-   * the mass of a lattice flag is the product of the masses of its pieces and of local indices at
-     the odd primes. The counting argument could be stated relative to the finiteness inputs; the
-     mass formula itself is not in Mathlib.
+   * finitely many classes in a genus anisotropic at `2`, by reduction theory or compactness
+     over `ℚ₂`;
+   * the mass of a chain as the product of the masses of its pieces and of local indices at the
+     odd primes. The class sums make this a counting argument, given the items above; the mass
+     formula itself is not in Mathlib.
