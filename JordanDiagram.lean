@@ -4,6 +4,7 @@ module
 -- *Symmetries of Jordan Algebra Diagrams over Varying Base Rings*, built on the `Jordan` library.
 
 -- Symmetries of a single, already-formalized Jordan algebra (no diagrams).
+public import JordanDiagram.Algebra.AdelicGenus
 public import JordanDiagram.Algebra.Automorphism
 public import JordanDiagram.Algebra.BaseChange
 public import JordanDiagram.Algebra.ChainFinite
@@ -29,6 +30,7 @@ public import JordanDiagram.Algebra.Tower
 
 -- General constructions missing from Mathlib (candidates for upstreaming).
 public import JordanDiagram.MathlibMissing.AnisotropicBound
+public import JordanDiagram.MathlibMissing.ClassSum
 public import JordanDiagram.MathlibMissing.FractionRingOrder
 public import JordanDiagram.MathlibMissing.GaloisDescent
 public import JordanDiagram.MathlibMissing.GrothendieckCocartesian
