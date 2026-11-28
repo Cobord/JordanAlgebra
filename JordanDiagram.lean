@@ -6,6 +6,7 @@ module
 -- Symmetries of a single, already-formalized Jordan algebra (no diagrams).
 public import JordanDiagram.Algebra.Automorphism
 public import JordanDiagram.Algebra.BaseChange
+public import JordanDiagram.Algebra.ChainFinite
 public import JordanDiagram.Algebra.DualNumber
 public import JordanDiagram.Algebra.DyadicFinite
 public import JordanDiagram.Algebra.Dyadic
