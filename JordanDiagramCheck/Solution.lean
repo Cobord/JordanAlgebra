@@ -515,6 +515,23 @@ theorem chain_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
     fun _ => Iff.rfl,
     ZHalf.finite_of_chainPiece B hmono htop b bp hpos h2 (fun _ hg => hg)⟩
 
+theorem genus_identity_class {E : Type} [AddCommGroup E] [Module ℚ E]
+    (B : LinearMap.BilinForm ℚ E) {ι : Type} {κ : ι → Type} [∀ i, Fintype (κ i)]
+    (b : ∀ i, κ i → E) (hb : ∀ i, LinearIndependent ℚ (b i)) :
+    (∀ q : ℚ, q ∈ AdelicGenus.dyadic ↔ ∀ v : IsDedekindDomain.HeightOneSpectrum ℤ,
+        (2 : ℤ) ∉ v.asIdeal → v.valuation ℚ q ≤ 1) ∧
+      (∀ q : ℚ, q ∈ AdelicGenus.dyadic ↔ ∃ z : ZHalf, ZHalf.toRat z = q) ∧
+      (∀ i, AdelicGenus.member b i = Submodule.span AdelicGenus.dyadic (Set.range (b i))) ∧
+      (∀ γ, γ ∈ AdelicGenus.chainAut B b ↔
+        (∀ x y, B (γ x) (γ y) = B x y) ∧ ∀ i x, γ x ∈ AdelicGenus.member b i ↔
+          x ∈ AdelicGenus.member b i) ∧
+      AdelicGenus.genusMass B b =
+        DoubleCoset.mass (AdelicGenus.ratImage B b) (AdelicGenus.adelicLevel B b) ∧
+      Nat.card (DoubleCoset.classAut (AdelicGenus.ratImage B b) (AdelicGenus.adelicLevel B b) 1) =
+        Nat.card (AdelicGenus.chainAut B b) :=
+  ⟨fun _ => Iff.rfl, fun _ => AdelicGenus.mem_dyadic_iff, fun _ => rfl, fun _ => Iff.rfl, rfl,
+    AdelicGenus.card_classAut_one hb⟩
+
 theorem forms_galois_cohomology {k L : Type u} [Field k] [Invertible (2 : k)] [Field L]
     [Algebra k L] [FiniteDimensional k L] [IsGalois k L] {I : Type w} [Category.{w'} I]
     (F : JordanDiagram.{u, u} k I) :

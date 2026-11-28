@@ -604,6 +604,32 @@ theorem chain_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
       Finite (SpinFactor.stabChain B L) := by
   sorry
 
+/-- **The adelic genus of a chain, at the identity class**. Let `E` be a `ℚ`-vector space with a
+bilinear form `B`, and let each family `bᵢ` be linearly independent over `ℚ`. The members `Lᵢ` are
+the spans of `bᵢ` over `Z[1/2]`, written as the rationals integral at every prime not containing
+`2`; these are exactly the images of `ZHalf` in `ℚ`. The genus is `Γ \ G(𝔸_f) / K`, with:
+* `G(𝔸_f)` the isometries of `𝔸_f ⊗ E` preserving every `𝔸_f`-span of `bᵢ`;
+* `Γ` the base change of the rational isometries preserving every `ℚ`-span;
+* `K` the stabilizer of the spans over the adeles integral at every odd prime.
+
+Its mass is `∑ 1 / #(Γ ∩ g K g⁻¹)`. The stabilizer `Γ ∩ K` of the class of `1` has the order of
+the automorphism group of the chain, the isometries of `E` preserving every `Lᵢ`. -/
+theorem genus_identity_class {E : Type} [AddCommGroup E] [Module ℚ E]
+    (B : LinearMap.BilinForm ℚ E) {ι : Type} {κ : ι → Type} [∀ i, Fintype (κ i)]
+    (b : ∀ i, κ i → E) (hb : ∀ i, LinearIndependent ℚ (b i)) :
+    (∀ q : ℚ, q ∈ AdelicGenus.dyadic ↔ ∀ v : IsDedekindDomain.HeightOneSpectrum ℤ,
+        (2 : ℤ) ∉ v.asIdeal → v.valuation ℚ q ≤ 1) ∧
+      (∀ q : ℚ, q ∈ AdelicGenus.dyadic ↔ ∃ z : ZHalf, ZHalf.toRat z = q) ∧
+      (∀ i, AdelicGenus.member b i = Submodule.span AdelicGenus.dyadic (Set.range (b i))) ∧
+      (∀ γ, γ ∈ AdelicGenus.chainAut B b ↔
+        (∀ x y, B (γ x) (γ y) = B x y) ∧ ∀ i x, γ x ∈ AdelicGenus.member b i ↔
+          x ∈ AdelicGenus.member b i) ∧
+      AdelicGenus.genusMass B b =
+        DoubleCoset.mass (AdelicGenus.ratImage B b) (AdelicGenus.adelicLevel B b) ∧
+      Nat.card (DoubleCoset.classAut (AdelicGenus.ratImage B b) (AdelicGenus.adelicLevel B b) 1) =
+        Nat.card (AdelicGenus.chainAut B b) := by
+  sorry
+
 /-- **Forms of a diagram and Galois cohomology**. For a finite Galois extension `L/k` and a
 diagram `F` over `k`, the isomorphism classes of forms of `F` split by `L` (diagrams `F'` over `k`
 with `L ⊗ F' ≅ L ⊗ F`) are in bijection with `H¹(Gal(L/k), G_F(L))`, by sending `θ` to the cocycle
