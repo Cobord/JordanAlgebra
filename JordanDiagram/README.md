@@ -83,6 +83,7 @@ The library has three parts:
 | [`PowerSeriesMatrix.lean`](MathlibMissing/PowerSeriesMatrix.lean) | `Matrix.eq_one_of_pow_eq_one`: over a torsion-free `R`, a matrix over `R⟦X⟧` with constant term `1` and finite order is `1` (the kernel of `GL_n(R⟦X⟧) → GL_n(R)` is torsion-free). |
 | [`FractionRingOrder.lean`](MathlibMissing/FractionRingOrder.lean) | The ordered fraction field of a totally ordered ring: `FractionRing R` ordered by the cone `{a / b | ab ≥ 0}` (`posCone`) as an `IsStrictOrderedRing`, extending the order of `R` (`algebraMap_le_iff`), and the unique such order (`le_iff_of_order`). |
 | [`GaloisDescent.lean`](MathlibMissing/GaloisDescent.lean) | Galois descent for vector spaces over a finite Galois `L/k`: invariants of `L ⊗ M` are `1 ⊗ M` (`exists_tmul_of_forall_rTensor_eq`), and **Speiser's lemma** `L ⊗ V^ρ ≅ V` for a semilinear action (`bijective_liftBaseChange_fixedPoints`, via Dedekind's independence of characters). |
+| [`HermiteReduction.lean`](MathlibMissing/HermiteReduction.lean) | **Hermite reduction of positive definite integral forms.** For `A` indexed by `Option ι`, the integral Schur complement `A' = m D - a aᵀ` (`schur`) is positive definite, with `m · xᵀ A x = (m x₀ + a·y)² + yᵀ A' y` (`corner_mul_quad`) and `m · det A' = m^#ι · det A` (`corner_mul_det_schur`). A primitive vector is a column of a unimodular matrix (`exists_unimodular_col`, via the Smith normal form). **Hermite's inequality** `m^(n+1) ≤ c_{n+1} det A` for the minimum `m` (`hermite`), and **Hermite's finiteness theorem**: for each dimension and determinant, finitely many classes under `A ↦ Pᵀ A P` (`finite_classes`). |
 | [`ClassSum.lean`](MathlibMissing/ClassSum.lean) | For subgroups `Γ`, `K` of a group: the stabilizer `Γ ∩ g K g⁻¹` of a double coset (`DoubleCoset.classAut`), whose order depends only on the double coset (`card_classAut_mul_mul`); the class sum `∑_{Γ\G/K} f(g)/#(Γ ∩ gKg⁻¹)` (`classSum`) and the mass (`mass`), independent of representatives for bi-invariant `f` (`classSum_eq_of_rep`). |
 | [`AnisotropicBound.lean`](MathlibMissing/AnisotropicBound.lean) | Over a normed field with compact closed balls (`ℝ`, `ℚ_[p]`), an anisotropic quadratic form satisfies `c ‖v‖² ≤ ‖vᵀ A v‖` with `c > 0` (`Matrix.exists_pos_mul_norm_sq_le_norm`). |
 | [`PosDefIntegerPoints.lean`](MathlibMissing/PosDefIntegerPoints.lean) | A rational quadratic form positive on nonzero integer vectors takes values `≤ C` at only finitely many integer vectors (`Matrix.finite_setOf_int_le`), via positivity over `ℝ` (`Matrix.pos_of_pos_int`) and compactness of the sphere. |
@@ -166,8 +167,10 @@ are no `sorry`s. The headline results use only `propext`, `Classical.choice` and
      This needs every adelic lattice to come from a rational one;
    * the "only if" direction of the finiteness criterion, which needs the infiniteness half of
      item 1;
-   * finitely many classes in a genus anisotropic at `2`, by reduction theory or compactness
-     over `ℚ₂`;
+   * finitely many classes in a genus anisotropic at `2`. Hermite's finiteness theorem for
+     positive definite integral forms is proved (`Hermite.finite_classes`); what remains is the
+     passage from a `Z[1/2]`-genus to an integral one (the lattice at `2` invariant under the
+     compact group `O(ℚ₂)`), and from double cosets to lattices;
    * the mass of a chain as the product of the masses of its pieces and of local indices at the
      odd primes. The class sums make this a counting argument, given the items above; the mass
      formula itself is not in Mathlib.
