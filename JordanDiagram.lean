@@ -34,6 +34,7 @@ public import JordanDiagram.MathlibMissing.ClassSum
 public import JordanDiagram.MathlibMissing.FractionRingOrder
 public import JordanDiagram.MathlibMissing.GaloisDescent
 public import JordanDiagram.MathlibMissing.GrothendieckCocartesian
+public import JordanDiagram.MathlibMissing.HermiteReduction
 public import JordanDiagram.MathlibMissing.LieRingCat
 public import JordanDiagram.MathlibMissing.Minkowski
 public import JordanDiagram.MathlibMissing.PiLie
