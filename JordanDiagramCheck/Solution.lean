@@ -494,6 +494,27 @@ theorem flag_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
     Finite (SpinFactor.stabFamily B (fun j => ⨆ i : {i : ι // i ≤ j}, U i)) :=
   JordanDiagram.finite_stabFlag B hU hO hN b hpos h2
 
+open Matrix in
+theorem chain_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
+    [Module.IsTorsionFree ZHalf V] (B : LinearMap.BilinForm ZHalf V) {n : ℕ}
+    (L : Fin (n + 1) → Submodule ZHalf V) (hmono : Monotone L) (htop : L (Fin.last n) = ⊤)
+    {κ : Fin (n + 1) → Type} [∀ j, Fintype (κ j)] [∀ j, DecidableEq (κ j)]
+    (b : ∀ j, Module.Basis (κ j) ZHalf (L j))
+    {κ' : Fin (n + 1) → Type} [∀ j, Fintype (κ' j)] [∀ j, DecidableEq (κ' j)]
+    (bp : ∀ j, Module.Basis (κ' j) ZHalf (SpinFactor.chainPiece B L j))
+    (hpos : ∀ v, v ≠ 0 → 0 < ZHalf.toRat (B v v))
+    (h2 : ∀ j (v : κ' j → ℚ_[2]), v ≠ 0 →
+      v ⬝ᵥ (Matrix.of fun k k' => ((ZHalf.toRat (B (bp j k) (bp j k')) : ℚ) : ℚ_[2])) *ᵥ v ≠ 0) :
+    (∀ v, v ∈ SpinFactor.chainPiece B L 0 ↔ v ∈ L 0) ∧
+      (∀ (j : Fin n) v, v ∈ SpinFactor.chainPiece B L j.succ ↔
+        v ∈ L j.succ ∧ ∀ w ∈ L j.castSucc, B w v = 0) ∧
+      (∀ g, g ∈ SpinFactor.stabChain B L ↔
+        ∀ j v, (g : V ≃ₗ[ZHalf] V) v ∈ L j ↔ v ∈ L j) ∧
+      Finite (SpinFactor.stabChain B L) :=
+  ⟨fun _ => SpinFactor.mem_chainPiece_zero B L, fun j _ => SpinFactor.mem_chainPiece_succ B L j,
+    fun _ => Iff.rfl,
+    ZHalf.finite_of_chainPiece B hmono htop b bp hpos h2 (fun _ hg => hg)⟩
+
 theorem forms_galois_cohomology {k L : Type u} [Field k] [Invertible (2 : k)] [Field L]
     [Algebra k L] [FiniteDimensional k L] [IsGalois k L] {I : Type w} [Category.{w'} I]
     (F : JordanDiagram.{u, u} k I) :

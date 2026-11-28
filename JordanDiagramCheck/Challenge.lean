@@ -581,6 +581,29 @@ theorem flag_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
     Finite (SpinFactor.stabFamily B (fun j => ⨆ i : {i : ι // i ≤ j}, U i)) := by
   sorry
 
+open Matrix in
+/-- **Chains with anisotropic pieces at `2`**. For a chain `L₀ ⊆ ⋯ ⊆ Lₙ = V` of finite free
+`Z[1/2]`-modules, whose members need not be direct summands, with `B(v, v) > 0` for `v ≠ 0`, the
+pieces are `L₀` and `L_{j+1} ∩ L_j^⊥`. If every piece has a basis in which `B` is anisotropic over
+`ℚ₂`, the stabilizer in `O(V, B)(Z[1/2])` of every member is finite. -/
+theorem chain_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
+    [Module.IsTorsionFree ZHalf V] (B : LinearMap.BilinForm ZHalf V) {n : ℕ}
+    (L : Fin (n + 1) → Submodule ZHalf V) (hmono : Monotone L) (htop : L (Fin.last n) = ⊤)
+    {κ : Fin (n + 1) → Type} [∀ j, Fintype (κ j)] [∀ j, DecidableEq (κ j)]
+    (b : ∀ j, Module.Basis (κ j) ZHalf (L j))
+    {κ' : Fin (n + 1) → Type} [∀ j, Fintype (κ' j)] [∀ j, DecidableEq (κ' j)]
+    (bp : ∀ j, Module.Basis (κ' j) ZHalf (SpinFactor.chainPiece B L j))
+    (hpos : ∀ v, v ≠ 0 → 0 < ZHalf.toRat (B v v))
+    (h2 : ∀ j (v : κ' j → ℚ_[2]), v ≠ 0 →
+      v ⬝ᵥ (Matrix.of fun k k' => ((ZHalf.toRat (B (bp j k) (bp j k')) : ℚ) : ℚ_[2])) *ᵥ v ≠ 0) :
+    (∀ v, v ∈ SpinFactor.chainPiece B L 0 ↔ v ∈ L 0) ∧
+      (∀ (j : Fin n) v, v ∈ SpinFactor.chainPiece B L j.succ ↔
+        v ∈ L j.succ ∧ ∀ w ∈ L j.castSucc, B w v = 0) ∧
+      (∀ g, g ∈ SpinFactor.stabChain B L ↔
+        ∀ j v, (g : V ≃ₗ[ZHalf] V) v ∈ L j ↔ v ∈ L j) ∧
+      Finite (SpinFactor.stabChain B L) := by
+  sorry
+
 /-- **Forms of a diagram and Galois cohomology**. For a finite Galois extension `L/k` and a
 diagram `F` over `k`, the isomorphism classes of forms of `F` split by `L` (diagrams `F'` over `k`
 with `L ⊗ F' ≅ L ⊗ F`) are in bijection with `H¹(Gal(L/k), G_F(L))`, by sending `θ` to the cocycle
