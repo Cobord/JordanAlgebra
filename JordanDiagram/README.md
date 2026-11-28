@@ -65,6 +65,7 @@ The library has three parts:
 | [`GaloisTwist.lean`](Algebra/GaloisTwist.lean) | For `L/k` and `θ : L ⊗ A ≅ L ⊗ B`, the automorphisms `twistAut θ σ = θ (σ ⊗ 1) θ⁻¹ (σ⁻¹ ⊗ 1)` form a cocycle (`twistAut_mul`), changed by coboundaries under change of `θ` (`twistAut_baseChange_trans`, `twistAut_trans_ofAut`); Galois-equivariant isomorphisms descend (`exists_baseChangeEquiv_eq`). |
 | [`TwistedDescent.lean`](Algebra/TwistedDescent.lean) | **Twisted Galois descent**: for a cocycle `a`, the fixed points of `a(σ) ∘ (σ ⊗ 1)` form a Jordan algebra `twistForm a` over `k` (`JordanAlgebra.ofSubmodule`) with `L ⊗ twistForm a ≅ L ⊗ B` (`twistIso`) whose cocycle is `a` (`twistAut_twistIso`). |
 | [`DyadicFinite.lean`](Algebra/DyadicFinite.lean) | **Finiteness at `2`.** `Z[1/2]` is discrete in `ℝ × ℚ₂` (`exists_int_of_norm_le_one`), so a rational form positive on nonzero vectors and anisotropic over `ℚ₂` has finitely many vectors of `Z[1/2]^ι` of a given value (`finite_setOf_zHalf`), and a group acting faithfully on a finite free `Z[1/2]`-module preserving such a form is finite (`finite_of_form`); e.g. `O(V, B)(Z[1/2])` (`finite_orthogonalGroup`). |
+| [`ChainFinite.lean`](Algebra/ChainFinite.lean) | **Chains with anisotropic pieces.** For a chain `L₀ ⊆ ⋯ ⊆ Lₙ = M` whose members need not be direct summands, the pieces are `L₀` and `L_{j+1} ∩ L_j^⊥` (`chainPiece`). Over a domain, with finite free members and an anisotropic form, linear maps agreeing on the pieces agree on every member (`eq_of_forall_chainPiece`, via the adjugate of a Gram matrix). So over `Z[1/2]` the stabilizer of every member (`stabChain`) is finite when every piece is positive and anisotropic over `ℚ₂` (`ZHalf.finite_of_chainPiece`). |
 | [`StabilizerFinite.lean`](Algebra/StabilizerFinite.lean) | Under a `G`-invariant biadditive `ℚ`-valued form with `β(x, x) > 0` for `x ≠ 0`, the stabilizer of every finitely generated spanning subgroup is finite (`finite_stabilizer_of_form`), so `maximal_finite_iff` holds unconditionally (`maximal_finite_iff_of_form`). |
 | [`SquareZero.lean`](Algebra/SquareZero.lean) | For `e² = 0` and a Jordan derivation `D`, `1 + e D` is a Jordan automorphism (`sqZeroAut`), with `(1 + e D)(1 + e D') = 1 + e (D + D')` and, for `e² = e'² = 0`, commutator `1 + e e' [D, D']` (`sqZeroAut_commutator`). |
 | [`DualNumber.lean`](Algebra/DualNumber.lean) | Over the dual numbers `S[ε]`: the `ε`-component `sndTensor`, the decomposition of `S[ε] ⊗ A`, and the derivation `derOfDual g` with `g = 1 + ε D` for an automorphism `g` reducing to the identity modulo `ε` (`sqZeroAut_derOfDual`, `derOfDual_sqZeroAut`). |
@@ -112,7 +113,7 @@ The library has three parts:
 | [`Finiteness.lean`](Diagram/Finiteness.lean) | The finite detector criterion: a faithful action on a finite `X` gives `\|G\| ≤ \|X\|!`. `card_autGroup_le`: a finite, stable, Jordan-generating `X ⊆ J` bounds `\|G_F(R)\|` by `\|X\|!`. |
 | [`Forms.lean`](Diagram/Forms.lean) | **Forms and Galois cohomology.** For a finite Galois `L/k`: forms of `F` split by `L` (`Form`), Galois cocycles in `G_F(L)` (`GaloisCocycle`) and `H1`. The cocycle of a form (`Form.cocycle`) is well defined on isomorphism classes, isomorphic exactly for cohomologous cocycles (`Form.cohomologous_cocycle_iff`), and every cocycle comes from a form (`GaloisCocycle.form_cocycle`): **`formsEquivH1 : FormClass L F ≃ H1 L F`**. |
 | [`SpinFactor.lean`](Diagram/SpinFactor.lean) | `spinDiagram B W` for monotone `W : I →o Submodule R V`. Its terminal maps are injective, with image `R 1 ⊕ Wᵢ`. `spinDiagramAutEquiv : G_F(R) ≃* Stab_{O(W ⊤, B)}(W)`, `spinDiagramDerEquiv : g_F(R) ≃ Stab_{o(W ⊤, B)}(W)`, and `spinDiagramIsoEquiv`: isomorphisms of spin-factor diagrams are isometries of the configurations. |
-| [`SpinFactorFinite.lean`](Diagram/SpinFactorFinite.lean) | **Dyadic points of definite spin-factor diagrams**: over `Z[1/2]`, with `B` positive and the top piece anisotropic over `ℚ₂`, `G_F(Z[1/2])` is finite (`finite_spinDiagram`); for an orthogonal flag it suffices that every piece is anisotropic over `ℚ₂` (`finite_stabFlag`). |
+| [`SpinFactorFinite.lean`](Diagram/SpinFactorFinite.lean) | **Dyadic points of definite spin-factor diagrams**: over `Z[1/2]`, with `B` positive and the top piece anisotropic over `ℚ₂`, `G_F(Z[1/2])` is finite (`finite_spinDiagram`); for an orthogonal flag it suffices that every piece is anisotropic over `ℚ₂` (`finite_stabFlag`). The same holds for a chain of free submodules that need not be direct summands, with pieces `W₀`, `W_{j+1} ∩ W_j^⊥` (`spinChainPiece`, `finite_spinDiagram_chain`). |
 | [`Functor.lean`](Diagram/Functor.lean) | **The functor `G_F`**: `autFunctor F : CommAlgCat R ⥤ GrpCat`, `S ↦ Aut(S ⊗[R] F)`, built from `autMap F φ : G_F(S) →* G_F(T)` with `autMap_id`, `autMap_comp`, and `autMap_comp_autBaseChange`. For `R = Z[1/2]`, `CommAlgCat R` is `CAlg_{Z[1/2]}`. **The functor `g_F`**: `derFunctor F : CommAlgCat R ⥤ LieRingCat`, built from the Lie ring homomorphisms `derMap F φ : g_F(S) →⁅⁆ g_F(T)` with `derMap_id`, `derMap_comp`, and `derMap_derBaseChange`. |
 | [`BaseChange.lean`](Diagram/BaseChange.lean) | `F.baseChange S = S ⊗[R] F`. `autBaseChange : G_F(R) →* G_F(S)`, injective when every `F(i) → S ⊗ F(i)` is (`autBaseChange_injective`), so every finite subgroup embeds with an image of the same order (`subgroupEquivMap`, `card_map_autBaseChange`). Its image is the set of automorphisms preserving every `1 ⊗ F(i)` (`range_autBaseChange`), with `autGroupEquivPreserving`. `autTowerDiagram : G_F(S) →* G_F(T)` for `R → S → T`, and `autTowerDiagram_comp_autBaseChange`: it composes with `G_F(R) → G_F(S)` to give `G_F(R) → G_F(T)`. `derBaseChange` on compatible derivations, additive and bracket-preserving. Terminal maps stay injective along flat `R → S`. |
 
@@ -144,3 +145,21 @@ are no `sorry`s. The headline results use only `propext`, `Classical.choice` and
    scheme, the frame diagrams, the Baez–Schwahn chain and its integral points.
 6. **Arbitrary octonion parameters.** The Jordan identity for `H₃` of the Cayley–Dickson algebra is
    proved for parameters that are not zero divisors, not for all parameters.
+7. **The genus of a chain of free submodules.** Done:
+   * A chain of finite free `Z[1/2]`-modules whose members need not be direct summands is already a
+     `spinDiagram` (which takes any monotone family of submodules). So its isomorphisms are
+     isometries of chains (`spinDiagramIsoEquiv`), and its automorphisms are the chain stabilizer
+     (`spinDiagramAutEquiv`).
+   * The stabilizer is finite when every piece `L₀`, `L_{j+1} ∩ L_j^⊥` is anisotropic over `ℚ₂`
+     (`ZHalf.finite_of_chainPiece`, `finite_spinDiagram_chain`).
+
+   Not done: the genus (local isometry at `ℝ` and at every odd prime) and the following results
+   about it.
+   * the pieces of chains in one genus are isometric over `ℚ` (Hasse–Minkowski);
+   * the "only if" direction of the finiteness criterion, which needs the infiniteness half of
+     item 1;
+   * the genus of one lattice anisotropic at `2` is that of a positive definite integral lattice,
+     so it has finitely many classes;
+   * the mass of a lattice flag is the product of the masses of its pieces and of local indices at
+     the odd primes. The counting argument could be stated relative to the finiteness inputs; the
+     mass formula itself is not in Mathlib.
