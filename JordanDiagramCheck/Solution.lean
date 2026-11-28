@@ -515,6 +515,13 @@ theorem chain_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
     fun _ => Iff.rfl,
     ZHalf.finite_of_chainPiece B hmono htop b bp hpos h2 (fun _ hg => hg)⟩
 
+open Matrix in
+theorem hermite_finite (n : ℕ) (d : ℤ) :
+    ∃ S : Finset (Matrix (Fin n) (Fin n) ℤ), ∀ A : Matrix (Fin n) (Fin n) ℤ, A.IsSymm →
+      (∀ v : Fin n → ℚ, v ≠ 0 → 0 < v ⬝ᵥ (A.map (Int.cast : ℤ → ℚ)) *ᵥ v) → A.det = d →
+        ∃ P : Matrix (Fin n) (Fin n) ℤ, IsUnit P.det ∧ Pᵀ * A * P ∈ S :=
+  Hermite.finite_classes n d
+
 theorem genus_identity_class {E : Type} [AddCommGroup E] [Module ℚ E]
     (B : LinearMap.BilinForm ℚ E) {ι : Type} {κ : ι → Type} [∀ i, Fintype (κ i)]
     (b : ∀ i, κ i → E) (hb : ∀ i, LinearIndependent ℚ (b i)) :

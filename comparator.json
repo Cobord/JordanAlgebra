@@ -70,6 +70,7 @@
         "JordanDiagramCheck.flag_finite_at_two",
         "JordanDiagramCheck.chain_finite_at_two",
         "JordanDiagramCheck.genus_identity_class",
+        "JordanDiagramCheck.hermite_finite",
         "JordanDiagramCheck.forms_galois_cohomology"
     ],
     "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]

@@ -604,6 +604,17 @@ theorem chain_finite_at_two {V : Type} [AddCommGroup V] [Module ZHalf V]
       Finite (SpinFactor.stabChain B L) := by
   sorry
 
+open Matrix in
+/-- **Hermite's finiteness theorem**. For each dimension `n` and determinant `d`, there are
+finitely many symmetric integer matrices, positive definite on nonzero rational vectors, such that
+every such matrix of determinant `d` is `Pᵀ A P` of one of them for some `P` with determinant
+`±1`. -/
+theorem hermite_finite (n : ℕ) (d : ℤ) :
+    ∃ S : Finset (Matrix (Fin n) (Fin n) ℤ), ∀ A : Matrix (Fin n) (Fin n) ℤ, A.IsSymm →
+      (∀ v : Fin n → ℚ, v ≠ 0 → 0 < v ⬝ᵥ (A.map (Int.cast : ℤ → ℚ)) *ᵥ v) → A.det = d →
+        ∃ P : Matrix (Fin n) (Fin n) ℤ, IsUnit P.det ∧ Pᵀ * A * P ∈ S := by
+  sorry
+
 /-- **The adelic genus of a chain, at the identity class**. Let `E` be a `ℚ`-vector space with a
 bilinear form `B`, and let each family `bᵢ` be linearly independent over `ℚ`. The members `Lᵢ` are
 the spans of `bᵢ` over `Z[1/2]`, written as the rationals integral at every prime not containing

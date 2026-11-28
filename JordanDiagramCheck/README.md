@@ -58,6 +58,7 @@ permitted axioms, and is accepted by the kernel.
 | `finite_at_two` | A group acting faithfully on a finite free `Z[1/2]`-module and preserving a form positive on nonzero vectors and anisotropic over `ℚ₂` is finite |
 | `spin_diagram_finite_at_two` | A spin-factor diagram over `Z[1/2]` with positive form, whose top piece is anisotropic over `ℚ₂`, has finite `G_F(Z[1/2])` |
 | `flag_finite_at_two` | For an orthogonal flag over `Z[1/2]` with positive form and every piece anisotropic over `ℚ₂`, the flag stabilizer in `O(V, B)(Z[1/2])` is finite |
+| `hermite_finite` | Hermite's finiteness theorem: for each dimension and determinant, finitely many positive definite symmetric integer matrices represent all of them up to `A ↦ Pᵀ A P` with `P` unimodular |
 | `genus_identity_class` | The adelic genus `Γ \ G(𝔸_f) / K` of a chain of `Z[1/2]`-spans of linearly independent families in a `ℚ`-space: the stabilizer `Γ ∩ K` of the class of `1` has the order of the group of isometries preserving every member |
 | `chain_finite_at_two` | For a chain `L₀ ⊆ ⋯ ⊆ Lₙ = V` of finite free `Z[1/2]`-modules (members need not be direct summands) with positive form, whose pieces `L₀`, `L_{j+1} ∩ L_j^⊥` are anisotropic over `ℚ₂`, the stabilizer of every member in `O(V, B)(Z[1/2])` is finite |
 | `forms_galois_cohomology` | For a finite Galois `L/k`, isomorphism classes of forms of a diagram split by `L` are in bijection with `H¹(Gal(L/k), G_F(L))` via `θ ↦ (σ ↦ θ (σ ⊗ 1) θ⁻¹ (σ⁻¹ ⊗ 1))`; forms are isomorphic exactly when their cocycles are cohomologous |
